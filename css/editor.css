@@ -20,6 +20,11 @@
 
 .ficha-item{padding:14px;margin-bottom:10px;border:1px solid var(--linea);border-radius:8px;
   background:var(--marfil)}
-.ficha-item__cabecera{display:flex;align-items:flex-end;gap:6px;margin-bottom:10px}
+/* El precio y la fila de botones se ponen en línea, pero en pantallas
+   estrechas no caben (precio + Foto/Copiar/▲/▼/Eliminar suman más que el
+   ancho del móvil). Sin envolver, esa fila estiraba toda la rejilla y la
+   página crecía a lo ancho al abrir un grupo. Con flex-wrap los botones
+   bajan a la línea siguiente y el ancho se mantiene igual. */
+.ficha-item__cabecera{display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px;margin-bottom:10px}
 .ficha-item__cabecera .campo{width:130px}
 .ficha-item__botones{display:flex;gap:4px;margin-left:auto;padding-bottom:2px}
