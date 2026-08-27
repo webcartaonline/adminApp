@@ -1,10 +1,9 @@
 {
-  "version": "1.0.0",
+  "version": "1.2.2",
   "fecha": "2026-08-27",
   "titulo": "ACTUALIZACIÓN DEL EDITOR DISPONIBLE",
   "cambios": [
-    "Se han corregido problemas visuales en pantallas pequeñas.",
-    "El nombre de la aplicación ha cambiado, ahora se llama (Editor de carta).",
+    "Se ha limpiado visualmente el panel lateral.",
     "Es importante mantener el editor actualizado para tener las últimas características y correcciones."
   ]
 }

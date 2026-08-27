@@ -21,6 +21,13 @@
 .fila{display:flex;align-items:center;gap:2px;min-height:38px}
 .subarbol .fila{min-height:34px}
 
+/* Las flechas de reordenar (el bloque a la derecha de cada fila) solo se
+   enseñan en la sección o el grupo seleccionado, para no recargar el árbol.
+   Se ocultan con visibility para que las filas no se descoloquen al elegir
+   una. En los ítems se dejan siempre: allí no estorban al diseño. */
+.fila>div{visibility:hidden}
+.fila>.nodo[aria-current="true"]~div{visibility:visible}
+
 /* Triángulo de abrir/cerrar, con área de toque cómoda en el móvil. */
 .desplegar{flex:none;width:28px;height:30px;display:grid;place-items:center;padding:0;
   border:1px solid transparent;border-radius:6px;background:transparent;
