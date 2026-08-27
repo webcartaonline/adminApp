@@ -1,10 +1,10 @@
 {
-  "version": "1.0.0",
+  "version": "1.2.1",
   "fecha": "2026-08-27",
-  "titulo": "El editor ya se actualiza solo",
+  "titulo": "ACTUALIZACIÓN DEL EDITOR DISPONIBLE",
   "cambios": [
-    "El editor se puede instalar en el móvil y en el ordenador como una aplicación normal, con su icono.",
-    "Cuando haya una versión nueva, se descarga sola y te avisa al abrir o después de publicar: nunca en mitad de una edición.",
-    "Abre al instante y sigue funcionando aunque se caiga la conexión (para publicar sí hace falta internet)."
+    "Se han corregido problemas visuales en pantallas pequeñas.",
+    "El nombre de la aplicación ha cambiado, ahora se llama (Editor de carta).",
+    "Es importante mantener el editor actualizado para tener las últimas características y correcciones."
   ]
 }

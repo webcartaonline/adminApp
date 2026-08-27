@@ -39,6 +39,10 @@
 }
 
 *,*::before,*::after{box-sizing:border-box}
+/* Nada debe desbordar a los lados: evita los huecos y el scroll
+   horizontal que aparecían en móvil. Va en <html> para no romper el
+   position:sticky de la barra superior. */
+html{overflow-x:hidden}
 body{margin:0;background:var(--marfil);color:var(--tinta);font-family:var(--texto);
   font-size:15px;line-height:1.5;transition:background .2s,color .2s}
 

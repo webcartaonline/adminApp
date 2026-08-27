@@ -29,3 +29,15 @@
   font-family:var(--texto);font-size:.78rem;line-height:1.45;text-align:left}
 .espera__globo b{display:block;margin-bottom:6px;font-size:.82rem}
 .espera__globo p{margin:0 0 8px}
+
+/* En móvil la barra se pliega y la cuenta atrás queda a la izquierda, así
+   que el globo anclado a la derecha se salía de la pantalla y no se podía
+   leer. En pantallas estrechas se muestra centrado, como una ventana
+   emergente sobre un fondo oscuro. */
+@media(max-width:600px){
+  .espera__globo{position:fixed;top:50%;left:50%;right:auto;
+    transform:translate(-50%,-50%);width:min(340px,calc(100vw - 32px));
+    max-height:80vh;overflow:auto;z-index:80}
+  .espera__globo::before{content:'';position:fixed;inset:0;z-index:-1;
+    background:rgba(0,0,0,.55)}
+}
