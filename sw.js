@@ -11,7 +11,7 @@
    entera de que hay algo nuevo.
    ========================================================= */
 
-const VERSION = '1.2.2';
+const VERSION = '1.2.3';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
