@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editor de la carta</title>
+
+<script>
+/* Fija el tema antes de pintar, para que no haya parpadeo de color.
+   Va aquí y no en un archivo aparte a propósito: tiene que ejecutarse
+   antes de que el navegador dibuje nada. */
+(function(){try{var t=localStorage.getItem('editorCartaUniversal.tema');
+if(t!=='claro'&&t!=='oscuro'){t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'oscuro':'claro';}
+document.documentElement.setAttribute('data-tema',t);}catch(e){document.documentElement.setAttribute('data-tema','claro');}})();
+</script>
+
+<!-- Aplicación instalable -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0F2E52">
+<link rel="icon" href="img/icono-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="img/icono-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Editor">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/botones.css">
+<link rel="stylesheet" href="css/formularios.css">
+<link rel="stylesheet" href="css/barra.css">
+<link rel="stylesheet" href="css/ajustes.css">
+<link rel="stylesheet" href="css/arbol.css">
+<link rel="stylesheet" href="css/editor.css">
+<link rel="stylesheet" href="css/estadisticas.css">
+<link rel="stylesheet" href="css/imagenes.css">
+<link rel="stylesheet" href="css/actualizacion.css">
+</head>
+<body>
+
+<div class="barra">
+  <div class="barra__cabecera">
+    <div class="barra__marca">
+      <div class="barra__titulo">Editor de <span id="marcaNombre">la carta</span></div>
+      <div class="barra__sub">Panel del local</div>
+    </div>
+    <button class="btn btn--tema" id="btnTema" type="button" aria-pressed="false">Modo oscuro</button>
+  </div>
+  <div class="barra__acciones">
+    <button class="btn btn--claro" id="btnAjustes" type="button">Ajustes</button>
+    <button class="btn btn--claro" id="btnCargar" type="button">Traer de GitHub</button>
+    <button class="btn btn--claro" id="btnEstadisticas" type="button" hidden>Estadísticas</button>
+    <button class="btn btn--principal" id="btnPublicar" type="button" disabled>Publicar cambios</button>
+
+    <div class="espera" id="espera" hidden>
+      <span class="espera__reloj" id="esperaReloj" aria-live="polite">2:00</span>
+      <button class="espera__ayuda" id="btnEsperaAyuda" type="button"
+              aria-expanded="false" aria-label="¿Por qué no puedo publicar ahora?">?</button>
+      <div class="espera__globo" id="esperaGlobo" hidden role="dialog"
+           aria-label="Por qué se bloquea el botón de publicar">
+        <b>¿Por qué hay que esperar?</b>
+        <p>Cuando publicas, GitHub tarda un par de minutos en montar y subir la web
+           con los cambios nuevos. Si publicas otra vez antes de que termine, los dos
+           despliegues se pisan: el primero se queda a medias y el segundo puede
+           salir incompleto o con las fotos antiguas.</p>
+        <p>Por eso el botón se bloquea 2 minutos. Mientras tanto puedes seguir
+           editando con tranquilidad: los cambios se guardan y se publicarán todos
+           juntos en cuanto acabe la cuenta atrás.</p>
+        <button class="btn btn--suave btn--mini" id="btnEsperaCerrar" type="button">Entendido</button>
+      </div>
+    </div>
+
+    <!-- Solo aparece si llega una versión nueva y no era buen momento
+         para interrumpir. Se puede pulsar cuando se quiera. -->
+    <button class="chincheta" id="chincheta" type="button" hidden
+            title="Hay una versión nueva del editor lista para instalar">
+      <span class="chincheta__punto" aria-hidden="true"></span>
+      Versión nueva
+    </button>
+  </div>
+</div>
+
+<p class="mensaje" id="mensaje" hidden></p>
+
+<section class="ajustes" id="ajustes">
+  <div class="ajustes__local">
+    <label class="campo"><span class="campo__etiqueta">Nombre del editor</span>
+      <input type="text" id="cfgNombre">
+      <span class="campo__pista">Aparece en el título como «Editor de …». Útil para reconocer de un vistazo en qué local estás si gestionas varios.</span></label>
+  </div>
+  <div class="ajustes__rejilla">
+    <label class="campo"><span class="campo__etiqueta">Cuenta de GitHub</span>
+      <input type="text" id="cfgOwner"></label>
+    <label class="campo"><span class="campo__etiqueta">Repositorio</span>
+      <input type="text" id="cfgRepo"></label>
+    <label class="campo"><span class="campo__etiqueta">Rama</span>
+      <input type="text" id="cfgRama"></label>
+    <label class="campo"><span class="campo__etiqueta">Ruta del archivo</span>
+      <input type="text" id="cfgRuta" value="carta.json"></label>
+    <label class="campo"><span class="campo__etiqueta">Token de acceso</span>
+      <input type="password" id="cfgToken">
+      <span class="campo__pista">Token de permisos limitados (Contents: Read and write) solo para este repositorio. Se guarda en este navegador.</span></label>
+  </div>
+  <div class="ajustes__acciones">
+    <button class="btn btn--suave" id="btnGuardarCfg" type="button">Guardar ajustes</button>
+    <button class="btn btn--peligro" id="btnOlvidarToken" type="button">Olvidar el token</button>
+    <span class="ajustes__version" id="cfgVersion">Versión —</span>
+  </div>
+</section>
+
+<div class="taller">
+  <aside class="panel" id="panelLateral">
+    <h2 class="panel__titulo">Secciones y grupos</h2>
+    <ul class="arbol" id="arbol"></ul>
+    <button class="btn btn--suave" id="btnNuevaSeccion" type="button" style="width:100%">
+      Añadir sección
+    </button>
+  </aside>
+
+  <section class="zona" id="zona">
+    <p class="vacio">Trae la carta de GitHub o abre un archivo para empezar.</p>
+  </section>
+</div>
+
+<!-- ===== Ventana para subir y encuadrar una imagen ===== -->
+<div class="modal" id="modalImagen" hidden role="dialog" aria-modal="true" aria-labelledby="modalImagenTitulo">
+  <div class="modal__caja">
+    <h2 class="modal__titulo" id="modalImagenTitulo">Imagen de la sección</h2>
+    <p class="modal__pista" id="modalImagenPista"></p>
+
+    <label class="campo">
+      <span class="campo__etiqueta">Elegir una foto</span>
+      <input type="file" id="imgArchivo" accept="image/jpeg,image/png,image/webp">
+      <span class="campo__pista">Formatos aceptados: JPG, PNG o WEBP. Máximo 25 MB.</span>
+    </label>
+
+    <div class="recorte" id="recorte" hidden>
+      <span class="campo__etiqueta">Encuadre</span>
+      <canvas class="recorte__lienzo" id="imgLienzo" width="700" height="280"
+              aria-label="Vista previa del recorte. Arrastra para mover la foto."></canvas>
+      <div class="recorte__zoom">
+        <span>Zoom</span>
+        <input type="range" id="imgZoom" min="1" max="3" step="0.01" value="1">
+      </div>
+      <p class="recorte__nota">Arrastra la foto dentro del marco para elegir qué parte se ve.
+        Lo que quede fuera del marco no aparecerá en la carta.</p>
+    </div>
+
+    <p class="mensaje mensaje--error" id="imgError" hidden></p>
+
+    <div class="modal__acc">
+      <button class="btn btn--peligro" id="btnQuitarImagen" type="button" hidden>Quitar imagen</button>
+      <button class="btn btn--suave" id="btnRecuperarImagen" type="button" hidden>Recuperar la guardada</button>
+      <button class="btn btn--suave" id="btnCerrarImagen" type="button">Cancelar</button>
+      <button class="btn btn--principal" id="btnGuardarImagen" type="button" disabled>Guardar imagen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Ventana de versión nueva ===== -->
+<div class="modal" id="modalActualizacion" hidden role="dialog" aria-modal="true" aria-labelledby="actTitulo">
+  <div class="modal__caja">
+    <h2 class="modal__titulo" id="actTitulo">Hay una versión nueva del editor</h2>
+    <p class="modal__pista">Ya está descargada. Instalarla es cuestión de un segundo.</p>
+
+    <p class="version-salto" id="actSalto" hidden></p>
+
+    <ul class="novedades" id="actNovedades"></ul>
+
+    <p class="mensaje mensaje--error" id="actAviso" hidden>
+      Tienes cambios en la carta sin publicar. Publícalos primero: al actualizar,
+      la página se recarga y se perderían.
+    </p>
+
+    <p class="actualizacion__nota">Tus ajustes, tu token y tu carta no se tocan.
+      Solo cambia el programa.</p>
+
+    <div class="modal__acc">
+      <button class="btn btn--suave" id="btnActualizarLuego" type="button">Ahora no</button>
+      <button class="btn btn--principal" id="btnActualizarAhora" type="button">Actualizar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Programa =====
+     El orden importa: cada archivo usa cosas definidas en los
+     anteriores. Si añades uno nuevo, colócalo en su sitio. -->
+<script src="js/config.js"></script>
+<script src="js/utiles.js"></script>
+<script src="js/estado.js"></script>
+<script src="js/tema.js"></script>
+<script src="js/ajustes.js"></script>
+<script src="js/idiomas.js"></script>
+<script src="js/espera.js"></script>
+<script src="js/imagenes.js"></script>
+<script src="js/imagen-recorte.js"></script>
+<script src="js/github.js"></script>
+<script src="js/vista.js"></script>
+<script src="js/vista-arbol.js"></script>
+<script src="js/vista-editor.js"></script>
+<script src="js/vista-estadisticas.js"></script>
+<script src="js/portapapeles.js"></script>
+<script src="js/sucesos.js"></script>
+<script src="js/actualizacion.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

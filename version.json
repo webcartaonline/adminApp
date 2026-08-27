@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "fecha": "2026-08-27",
+  "titulo": "El editor ya se actualiza solo",
+  "cambios": [
+    "El editor se puede instalar en el móvil y en el ordenador como una aplicación normal, con su icono.",
+    "Cuando haya una versión nueva, se descarga sola y te avisa al abrir o después de publicar: nunca en mitad de una edición.",
+    "Abre al instante y sigue funcionando aunque se caiga la conexión (para publicar sí hace falta internet)."
+  ]
+}

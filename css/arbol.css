@@ -1,0 +1,67 @@
+/* =========================================================
+   TALLER Y ÁRBOL LATERAL
+   El taller es la zona de trabajo: panel de secciones a la
+   izquierda, formulario a la derecha.
+   El árbol se lee como el explorador de archivos: cada
+   sección es una carpeta que se abre, y sus grupos cuelgan
+   de ella con una guía en L.
+   ========================================================= */
+
+.taller{display:grid;grid-template-columns:290px 1fr;min-height:64vh}
+.taller--ancho{grid-template-columns:1fr}
+@media(max-width:840px){.taller{grid-template-columns:1fr}}
+.panel{padding:16px;background:var(--marfil-alto);border-right:1px solid var(--linea)}
+.zona{padding:20px 22px 60px}
+.panel__titulo{margin:0 0 12px;font-family:var(--display);font-weight:800;font-size:1rem}
+
+.arbol{list-style:none;margin:0 0 14px;padding:0}
+.rama{margin-bottom:1px}
+/* Alto mínimo generoso: deja sitio a las flechas de ordenar y hace las
+   filas más fáciles de acertar con el dedo. */
+.fila{display:flex;align-items:center;gap:2px;min-height:38px}
+.subarbol .fila{min-height:34px}
+
+/* Triángulo de abrir/cerrar, con área de toque cómoda en el móvil. */
+.desplegar{flex:none;width:28px;height:30px;display:grid;place-items:center;padding:0;
+  border:1px solid transparent;border-radius:6px;background:transparent;
+  color:var(--tinta-suave);cursor:pointer}
+.desplegar svg{width:14px;height:14px;transition:transform .15s ease}
+.desplegar:hover{background:var(--marfil);border-color:var(--linea);color:var(--naranja-hondo)}
+.desplegar[aria-expanded=true]{color:var(--naranja-hondo)}
+.desplegar[aria-expanded=true] svg{transform:rotate(90deg)}
+
+/* Fila con nombre: icono + nombre + contador. */
+.nodo{flex:1;min-width:0;display:flex;align-items:center;gap:8px;
+  padding:7px 9px;border:1px solid transparent;border-radius:6px;background:transparent;
+  font-family:inherit;text-align:left;color:var(--tinta);cursor:pointer}
+.nodo:hover{background:var(--marfil);border-color:var(--linea)}
+.nodo__icono{flex:none;display:grid;place-items:center;color:var(--naranja-hondo)}
+.nodo__icono svg{width:17px;height:17px;display:block}
+.nodo__nombre{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:.85rem;font-weight:700;letter-spacing:.01em}
+.nodo__cuenta{flex:none;padding:1px 7px;border-radius:100px;background:var(--pastilla);
+  font-size:.65rem;font-weight:700;color:var(--tinta-suave);line-height:1.6}
+.nodo[aria-current=true]{background:var(--barra);border-color:var(--barra);color:var(--barra-texto)}
+.nodo[aria-current=true] .nodo__icono{color:var(--naranja)}
+.nodo[aria-current=true] .nodo__cuenta{background:rgba(255,255,255,.18);color:var(--barra-texto)}
+
+/* Los grupos van más pequeños y en verde, para no confundirlos con las secciones. */
+.nodo--grupo{padding:6px 9px}
+.nodo--grupo .nodo__nombre{font-size:.8rem;font-weight:500}
+.nodo--grupo .nodo__icono{color:var(--verde)}
+.nodo--grupo .nodo__icono svg{width:15px;height:15px}
+.nodo--grupo[aria-current=true]{background:var(--verde);border-color:var(--verde);color:#F4FBF6}
+.nodo--grupo[aria-current=true] .nodo__icono{color:#F4FBF6}
+.nodo--grupo[aria-current=true] .nodo__cuenta{background:rgba(255,255,255,.22);color:#F4FBF6}
+
+/* Guías del árbol: una vertical por sección abierta y una L por cada hijo. */
+.subarbol{position:relative;list-style:none;margin:1px 0 8px;padding:0 0 0 27px}
+.subarbol::before{content:'';position:absolute;left:13px;top:-3px;bottom:0;
+  border-left:2px solid var(--guia)}
+.subarbol>li{position:relative}
+.subarbol>li::before{content:'';position:absolute;left:-14px;top:50%;width:11px;
+  border-top:2px solid var(--guia)}
+/* El último hijo corta la vertical justo en su codo, como en un tree. */
+.subarbol>li:last-child::after{content:'';position:absolute;left:-14px;top:calc(50% + 2px);
+  bottom:-4px;width:2px;background:var(--marfil-alto)}
+.subarbol__accion{padding-top:2px}

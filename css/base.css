@@ -1,0 +1,56 @@
+/* =========================================================
+   BASE
+   Colores, tema claro/oscuro, tipografía y utilidades que
+   usa toda la aplicación. Si quieres cambiar el aspecto
+   general (colores, fuentes), este es el archivo.
+   ========================================================= */
+
+:root{
+  /* Superficies */
+  --marfil:#FFFFFF;            /* fondo de página */
+  --marfil-alto:#F5F7FA;       /* tarjetas, inputs, panel */
+  /* Barra superior */
+  --barra:#0F2E52;             /* azul oscuro */
+  --barra-texto:#EAF1F8;
+  /* Acentos */
+  --naranja:#E8641A; --naranja-hondo:#BF4E0E;   /* avisos y delimitaciones */
+  --verde:#2F7D4F;   --verde-hondo:#256A43;     /* botones y acciones */
+  /* Texto */
+  --tinta:#1E242E; --tinta-suave:#5B6470;
+  /* Estados y líneas */
+  --aviso:#C0491B; --bien:#2F7D4F;
+  --linea:rgba(232,100,26,.30); /* delimitaciones en tono naranja */
+  --guia:rgba(30,36,46,.20);    /* guías del árbol lateral */
+  --pastilla:rgba(30,36,46,.07);/* contadores del árbol */
+  --display:"Bricolage Grotesque",system-ui,sans-serif; --texto:"Hanken Grotesk",system-ui,sans-serif;
+}
+[data-tema="oscuro"]{
+  --marfil:#000000;            /* fondo totalmente negro */
+  --marfil-alto:#141518;       /* superficies elevadas */
+  --barra:#0F2E52;             /* misma barra azul que en claro */
+  --barra-texto:#EAF1F8;
+  --naranja:#F2762C; --naranja-hondo:#E8641A;
+  --verde:#41A268;   --verde-hondo:#5BBB82;
+  --tinta:#ECEFF3; --tinta-suave:#9AA3AE;
+  --aviso:#E5713A; --bien:#41A268;
+  --linea:rgba(242,118,44,.34);
+  --guia:rgba(236,239,243,.24);
+  --pastilla:rgba(236,239,243,.11);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--marfil);color:var(--tinta);font-family:var(--texto);
+  font-size:15px;line-height:1.5;transition:background .2s,color .2s}
+
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--naranja);outline-offset:2px}
+
+/* Franja de aviso bajo la barra superior */
+.mensaje{padding:10px 18px;font-size:.85rem;font-weight:500}
+.mensaje--info{background:rgba(232,100,26,.14);color:var(--naranja-hondo)}
+.mensaje--bien{background:rgba(47,125,79,.16);color:var(--verde-hondo)}
+.mensaje--error{background:rgba(192,73,27,.16);color:var(--aviso)}
+
+/* Recuadro punteado para "aquí todavía no hay nada" */
+.vacio{padding:36px 18px;text-align:center;color:var(--tinta-suave);font-size:.86rem;
+  border:1px dashed var(--linea);border-radius:8px}

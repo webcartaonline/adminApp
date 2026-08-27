@@ -1,0 +1,15 @@
+/* =========================================================
+   AJUSTES
+   El panel plegable con los datos de conexión a GitHub.
+   ========================================================= */
+
+.ajustes{padding:18px;background:var(--marfil-alto);border-bottom:1px solid var(--linea)}
+.ajustes__local{max-width:920px;margin-bottom:16px;padding:14px 16px;
+  border:1px solid var(--linea);border-left:4px solid var(--verde);border-radius:8px;
+  background:var(--marfil)}
+.ajustes__local .campo{max-width:380px}
+.ajustes__rejilla{display:grid;gap:12px;max-width:920px;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.ajustes__acciones{margin-top:14px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.ajustes__version{margin-left:auto;font-size:.72rem;color:var(--tinta-suave);
+  font-variant-numeric:tabular-nums}

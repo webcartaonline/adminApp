@@ -1,0 +1,40 @@
+/* =========================================================
+   ESTADÍSTICAS
+   Las cifras de arriba y las barras de comparación.
+   ========================================================= */
+
+.resumen{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:26px}
+.resumen__caja{padding:16px;border:1px solid var(--linea);border-radius:8px;background:var(--marfil-alto)}
+.resumen__cifra{font-family:var(--display);font-weight:800;font-size:1.9rem;color:var(--naranja-hondo)}
+.resumen__etq{font-size:.72rem;color:var(--tinta-suave);letter-spacing:.04em;text-transform:uppercase}
+
+.bloque-est{margin-bottom:28px}
+.bloque-est__titulo{margin:0 0 4px;font-family:var(--display);font-weight:800;font-size:1.15rem;
+  color:var(--verde-hondo)}
+.bloque-est__sub{margin:0 0 14px;font-size:.8rem;color:var(--tinta-suave)}
+
+.barras{display:flex;flex-direction:column;gap:10px}
+.barra-fila{display:grid;grid-template-columns:150px 1fr 46px;align-items:center;gap:10px}
+.barra-fila__nombre{font-size:.86rem;font-weight:500}
+.barra-fila__pista{position:relative;height:14px;border-radius:100px;background:var(--linea);overflow:hidden}
+.barra-fila__relleno{position:absolute;inset:0 auto 0 0;border-radius:100px;background:var(--naranja)}
+.barra-fila--verde .barra-fila__relleno{background:var(--verde)}
+.barra-fila--aviso .barra-fila__relleno{background:var(--aviso)}
+.barra-fila__num{font-size:.8rem;font-weight:700;text-align:right;color:var(--tinta-suave)}
+
+.idioma-comparativa{display:flex;gap:6px;height:34px;border-radius:8px;overflow:hidden;
+  border:1px solid var(--linea);margin-bottom:8px}
+.idioma-comparativa>div{display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;font-weight:700;color:#F4FBF6}
+.idioma-comparativa .c0{background:var(--verde)}
+.idioma-comparativa .c1{background:var(--naranja)}
+.idioma-comparativa .c2{background:var(--naranja-hondo)}
+
+/* Bloques del mismo tipo, unos al lado de otros cuando la pantalla lo
+   permite; apilados en pantallas estrechas. */
+.est-rejilla{display:grid;gap:18px;align-items:start;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.est-rejilla .bloque-est{margin-bottom:0;padding:16px;
+  border:1px solid var(--linea);border-radius:10px;background:var(--marfil-alto)}
+.est-rejilla .barra-fila{grid-template-columns:minmax(90px,120px) 1fr 40px}
+.est-rejilla .barra-fila__nombre{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
