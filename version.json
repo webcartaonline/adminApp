@@ -1,11 +1,8 @@
 {
-  "version": "2.1",
+  "version": "3.0",
   "fecha": "2026-08-28",
-  "titulo": "⚠️ ACTUALIZACIÓN DEL SERVIDOR ⚠️",
+  "titulo": "Nueva identidad visual",
   "cambios": [
-    "Se ha cambiado la direcicón del servidor para mejorar tu experiencia.",
-    "Por favor, desinstale la aplicación y vuelva a instalarla desde el navegador con está nueva dirección: https://adminapp-16c.pages.dev.",
-    "Lamentamos las molestias, pero recuerde que mantener la aplicación actualizada es importante para recibir mejoras y corregir errores",
-    "Con esta nueva versión se a mejorado la experiencia, para que nada interrumpa su trabajo y para poder proporcionarle siempre un buen servicio."
+    "Se ha rediseñado el apartado visual para mejorar la apariencia general de la aplicación."
   ]
 }

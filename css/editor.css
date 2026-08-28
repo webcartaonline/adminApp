@@ -3,22 +3,23 @@
    Los recuadros de sección y grupo, y la ficha de cada plato.
    ========================================================= */
 
-.bloque{padding:16px;margin-bottom:16px;border:1px solid var(--linea);border-radius:8px;
-  background:var(--marfil-alto)}
-.bloque__titulo{margin:0 0 12px;font-family:var(--display);font-weight:800;font-size:1.05rem;
-  display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.bloque{padding:22px;margin-bottom:18px;border:1px solid var(--linea);border-radius:var(--radio);
+  background:var(--marfil-alto);box-shadow:var(--sombra);
+  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur))}
+.bloque__titulo{margin:0 0 16px;font-family:var(--display);font-weight:800;font-size:1.14rem;
+  letter-spacing:-.015em;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .bloque__acciones{margin-left:auto;display:flex;gap:8px}
 
 /* Etiquetita de color que dice si el recuadro es una sección o un grupo */
-.etq{font-family:var(--texto);font-size:.62rem;font-weight:700;letter-spacing:.1em;
-  text-transform:uppercase;padding:2px 8px;border-radius:100px}
-.etq--seccion{background:var(--naranja);color:#2A1305}
-.etq--grupo{background:var(--verde);color:#fff}
+.etq{font-family:var(--texto);font-size:.62rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;padding:4px 11px;border-radius:100px;color:#fff}
+.etq--seccion{background:var(--grad);box-shadow:var(--glow)}
+.etq--grupo{background:linear-gradient(135deg,var(--verde),var(--verde-hondo));color:#04170F}
 
 /* Fila de botones al pie de un recuadro */
-.acc{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.acc{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 
-.ficha-item{padding:14px;margin-bottom:10px;border:1px solid var(--linea);border-radius:8px;
+.ficha-item{padding:16px;margin-bottom:12px;border:1px solid var(--linea);border-radius:var(--radio-m);
   background:var(--marfil)}
 /* El precio y la fila de botones se ponen en línea, pero en pantallas
    estrechas no caben (precio + Foto/Copiar/▲/▼/Eliminar suman más que el

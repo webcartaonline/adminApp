@@ -1,32 +1,49 @@
 /* =========================================================
    BOTONES Y CONTROLES PEQUEÑOS
    Todos los botones de la aplicación salen de aquí.
+   El principal es un degradado de acento con brillo; los
+   demás, cristal o contorno fino.
    ========================================================= */
 
-.btn{padding:8px 15px;border:1px solid transparent;border-radius:100px;font-family:inherit;
-  font-size:.82rem;font-weight:700;cursor:pointer;transition:filter .15s,background .15s,color .15s}
-.btn:hover{filter:brightness(1.07)}
-.btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
-.btn--principal{background:var(--verde);color:#F4FBF6}
-.btn--claro{background:transparent;color:var(--barra-texto);border-color:rgba(234,241,248,.4)}
-.btn--claro:hover{background:rgba(234,241,248,.14)}
-.btn--suave{background:var(--marfil-alto);color:var(--verde-hondo);border-color:var(--linea)}
-.btn--suave:hover{background:var(--verde);color:#F4FBF6}
-.btn--peligro{background:transparent;color:var(--aviso);border-color:var(--linea)}
-.btn--peligro:hover{background:var(--aviso);color:#fff}
-.btn--mini{padding:3px 9px;font-size:.7rem}
-.btn--tema{background:rgba(255,255,255,.10);color:var(--barra-texto);border-color:rgba(234,241,248,.4)}
-.btn--tema:hover{background:rgba(255,255,255,.18)}
+.btn{padding:9px 17px;border:1px solid transparent;border-radius:100px;font-family:inherit;
+  font-size:.82rem;font-weight:600;letter-spacing:.01em;cursor:pointer;
+  transition:background .16s,color .16s,border-color .16s,box-shadow .16s,transform .08s}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+
+/* Acción principal: degradado violeta→azul con resplandor */
+.btn--principal{background:var(--grad);color:#fff;box-shadow:var(--glow)}
+.btn--principal:hover:not(:disabled){filter:brightness(1.08);box-shadow:0 12px 34px rgba(76,134,255,.45)}
+
+/* Botones sobre la barra superior (degradada): contorno claro translúcido */
+.btn--claro{background:rgba(255,255,255,.08);color:var(--barra-texto);
+  border-color:rgba(255,255,255,.22);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.btn--claro:hover:not(:disabled){background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4)}
+
+/* Botón suave: cristal esmerilado con texto de acento */
+.btn--suave{background:var(--marfil-alto);color:var(--acento-2);border-color:var(--linea-fuerte);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.btn--suave:hover:not(:disabled){background:var(--grad);color:#fff;border-color:transparent;box-shadow:var(--glow)}
+
+.btn--peligro{background:transparent;color:var(--aviso);border-color:var(--linea-fuerte)}
+.btn--peligro:hover:not(:disabled){background:var(--aviso);color:#fff;border-color:transparent}
+.btn--mini{padding:4px 12px;font-size:.72rem}
+.btn--tema{background:rgba(255,255,255,.1);color:var(--barra-texto);border-color:rgba(255,255,255,.24);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.btn--tema:hover:not(:disabled){background:rgba(255,255,255,.2)}
 
 /* Flechitas de ordenar (▲ ▼) */
-.mover{padding:2px 6px;border:1px solid var(--linea);border-radius:4px;background:transparent;
-  color:var(--tinta-suave);font-size:.6rem;cursor:pointer;line-height:1}
-.mover:hover{border-color:var(--naranja);color:var(--naranja-hondo)}
+.mover{padding:2px 6px;border:1px solid var(--linea);border-radius:7px;background:var(--velo);
+  color:var(--tinta-suave);font-size:.6rem;cursor:pointer;line-height:1;
+  transition:background .14s,border-color .14s,color .14s}
+.mover:hover{border-color:var(--acento-1);color:var(--acento-2);background:var(--acento-tenue)}
 .mover:disabled{opacity:.3;cursor:not-allowed}
 
 /* Pastillas de alérgenos */
-.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
-.chip{padding:4px 10px;border:1px solid var(--linea);border-radius:100px;background:transparent;
-  font-family:inherit;font-size:.73rem;color:var(--tinta-suave);cursor:pointer;transition:all .12s}
-.chip:hover{border-color:var(--verde)}
-.chip[aria-pressed=true]{background:var(--verde);border-color:var(--verde);color:#fff;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{padding:5px 12px;border:1px solid var(--linea-fuerte);border-radius:100px;background:var(--velo);
+  font-family:inherit;font-size:.73rem;color:var(--tinta-suave);cursor:pointer;
+  transition:background .12s,border-color .12s,color .12s,box-shadow .12s}
+.chip:hover{border-color:var(--acento-1);color:var(--tinta)}
+.chip[aria-pressed=true]{background:var(--grad);border-color:transparent;color:#fff;font-weight:700;
+  box-shadow:var(--glow)}

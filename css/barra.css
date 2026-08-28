@@ -4,14 +4,16 @@
    2 minutos que hay que esperar entre publicaciones.
    ========================================================= */
 
-.barra{position:sticky;top:0;z-index:20;display:flex;flex-direction:column;gap:12px;
-  padding:14px 18px;background:var(--barra);color:var(--barra-texto);
-  box-shadow:0 2px 12px rgba(0,0,0,.28)}
+.barra{position:sticky;top:0;z-index:20;display:flex;flex-direction:column;gap:14px;
+  padding:18px 22px;background:var(--grad-barra);color:var(--barra-texto);
+  border-bottom:1px solid rgba(255,255,255,.12);
+  box-shadow:0 14px 40px rgba(24,20,70,.34)}
 .barra__cabecera{display:flex;align-items:center;gap:12px}
 .barra__marca{margin-right:auto}
-.barra__titulo{font-family:var(--display);font-weight:800;font-size:1.15rem}
+.barra__titulo{font-family:var(--display);font-weight:800;font-size:1.28rem;letter-spacing:-.015em;
+  text-shadow:0 1px 12px rgba(0,0,0,.22)}
 .barra__sub{font-family:var(--texto);font-size:.6rem;font-weight:700;
-  letter-spacing:.22em;text-transform:uppercase;color:var(--naranja);margin-top:2px}
+  letter-spacing:.26em;text-transform:uppercase;color:rgba(243,245,255,.72);margin-top:3px}
 .barra__acciones{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 
 /* ---------- Cuenta atrás tras publicar ---------- */
@@ -23,10 +25,10 @@
   color:var(--barra-texto);font-family:inherit;font-size:.68rem;font-weight:800;
   line-height:1;cursor:pointer;padding:0}
 .espera__ayuda:hover{background:rgba(234,241,248,.18)}
-.espera__globo{position:absolute;top:calc(100% + 8px);right:0;z-index:60;width:min(300px,78vw);
-  background:var(--marfil-alto);color:var(--verde-hondo);border:1px solid var(--linea);
-  border-radius:14px;padding:12px 14px;box-shadow:0 10px 28px rgba(0,0,0,.22);
-  font-family:var(--texto);font-size:.78rem;line-height:1.45;text-align:left}
+.espera__globo{position:absolute;top:calc(100% + 10px);right:0;z-index:60;width:min(320px,78vw);
+  background:var(--solido);color:var(--tinta);border:1px solid var(--linea-fuerte);
+  border-radius:var(--radio);padding:16px 18px;box-shadow:var(--sombra-alta);
+  font-family:var(--texto);font-size:.78rem;line-height:1.5;text-align:left}
 .espera__globo b{display:block;margin-bottom:6px;font-size:.82rem}
 .espera__globo p{margin:0 0 8px}
 

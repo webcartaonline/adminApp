@@ -1,41 +1,76 @@
 /* =========================================================
    BASE
    Colores, tema claro/oscuro, tipografía y utilidades que
-   usa toda la aplicación. Si quieres cambiar el aspecto
-   general (colores, fuentes), este es el archivo.
+   usa toda la aplicación.
+   Lenguaje visual: fondo "aurora" con degradados suaves,
+   superficies de cristal esmerilado (blur), acento violeta→azul
+   y sombras suaves. Cambiar el acento o el fondo aquí cambia
+   toda la app.
    ========================================================= */
 
 :root{
   /* Superficies */
-  --marfil:#FFFFFF;            /* fondo de página */
-  --marfil-alto:#F5F7FA;       /* tarjetas, inputs, panel */
+  --marfil:#EBEDF7;                       /* base del fondo */
+  --marfil-alto:rgba(255,255,255,.72);    /* cristal esmerilado (tarjetas, panel) */
+  --velo:rgba(255,255,255,.55);           /* relleno hundido (inputs) */
+  --solido:#FFFFFF;                        /* superficie totalmente opaca */
+  /* Fondo aurora de la página */
+  --fondo:
+    radial-gradient(900px 520px at 10% -8%, rgba(122,92,251,.22), transparent 60%),
+    radial-gradient(1040px 540px at 110% 2%, rgba(76,134,255,.20), transparent 55%),
+    radial-gradient(820px 640px at 92% 118%, rgba(16,185,129,.14), transparent 60%),
+    var(--marfil);
   /* Barra superior */
-  --barra:#0F2E52;             /* azul oscuro */
-  --barra-texto:#EAF1F8;
-  /* Acentos */
-  --naranja:#E8641A; --naranja-hondo:#BF4E0E;   /* avisos y delimitaciones */
-  --verde:#2F7D4F;   --verde-hondo:#256A43;     /* botones y acciones */
+  --grad-barra:linear-gradient(100deg,#5B3FE0 0%,#4361EE 52%,#3B82F6 100%);
+  --barra-texto:#F3F5FF;
+  /* Acento (degradado violeta → azul) */
+  --acento-1:#7A5CFB; --acento-2:#4C86FF;
+  --grad:linear-gradient(135deg,var(--acento-1),var(--acento-2));
+  --acento-tenue:rgba(122,92,251,.12);
+  --glow:0 10px 30px rgba(76,134,255,.30);
+  /* Acentos secundarios */
+  --naranja:#F97316; --naranja-hondo:#EA6A0C;   /* cálido, uso puntual */
+  --verde:#10B981;   --verde-hondo:#0EA372;     /* esmeralda: acciones positivas */
   /* Texto */
-  --tinta:#1E242E; --tinta-suave:#5B6470;
+  --tinta:#1B2233; --tinta-suave:#5B6478;
   /* Estados y líneas */
-  --aviso:#C0491B; --bien:#2F7D4F;
-  --linea:rgba(232,100,26,.30); /* delimitaciones en tono naranja */
-  --guia:rgba(30,36,46,.20);    /* guías del árbol lateral */
-  --pastilla:rgba(30,36,46,.07);/* contadores del árbol */
+  --aviso:#EF4444; --bien:#10B981;
+  --linea:rgba(23,29,45,.10);
+  --linea-fuerte:rgba(23,29,45,.17);
+  --guia:rgba(23,29,45,.14);
+  --pastilla:rgba(23,29,45,.06);
+  /* Elevación, curvatura y desenfoque */
+  --sombra:0 2px 8px rgba(20,26,50,.06),0 14px 34px rgba(20,26,50,.10);
+  --sombra-alta:0 30px 70px rgba(20,26,50,.22);
+  --blur:16px;
+  --radio:18px; --radio-m:12px; --radio-s:10px;
   --display:"Bricolage Grotesque",system-ui,sans-serif; --texto:"Hanken Grotesk",system-ui,sans-serif;
 }
 [data-tema="oscuro"]{
-  --marfil:#000000;            /* fondo totalmente negro */
-  --marfil-alto:#141518;       /* superficies elevadas */
-  --barra:#0F2E52;             /* misma barra azul que en claro */
-  --barra-texto:#EAF1F8;
-  --naranja:#F2762C; --naranja-hondo:#E8641A;
-  --verde:#41A268;   --verde-hondo:#5BBB82;
-  --tinta:#ECEFF3; --tinta-suave:#9AA3AE;
-  --aviso:#E5713A; --bien:#41A268;
-  --linea:rgba(242,118,44,.34);
-  --guia:rgba(236,239,243,.24);
-  --pastilla:rgba(236,239,243,.11);
+  --marfil:#080B14;                       /* casi negro azulado */
+  --marfil-alto:rgba(26,31,46,.60);       /* cristal oscuro esmerilado */
+  --velo:rgba(255,255,255,.045);
+  --solido:#141824;
+  --fondo:
+    radial-gradient(900px 540px at 8% -10%, rgba(96,66,232,.30), transparent 60%),
+    radial-gradient(1060px 580px at 112% 0%, rgba(20,70,140,.42), transparent 55%),
+    radial-gradient(860px 680px at 92% 120%, rgba(16,185,129,.14), transparent 60%),
+    var(--marfil);
+  --grad-barra:linear-gradient(100deg,#241C54 0%,#1E2A66 52%,#123A73 100%);
+  --barra-texto:#EAECF7;
+  --acento-1:#8B7BFF; --acento-2:#54A0FF;
+  --acento-tenue:rgba(139,123,255,.16);
+  --glow:0 10px 34px rgba(84,160,255,.32);
+  --naranja:#FB923C; --naranja-hondo:#F97316;
+  --verde:#34D399;   --verde-hondo:#10B981;
+  --tinta:#E7EAF3; --tinta-suave:#98A2B8;
+  --aviso:#F87171; --bien:#34D399;
+  --linea:rgba(255,255,255,.09);
+  --linea-fuerte:rgba(255,255,255,.15);
+  --guia:rgba(255,255,255,.12);
+  --pastilla:rgba(255,255,255,.06);
+  --sombra:0 2px 10px rgba(0,0,0,.35),0 18px 42px rgba(0,0,0,.5);
+  --sombra-alta:0 30px 80px rgba(0,0,0,.62);
 }
 
 *,*::before,*::after{box-sizing:border-box}
@@ -43,18 +78,21 @@
    horizontal que aparecían en móvil. Va en <html> para no romper el
    position:sticky de la barra superior. */
 html{overflow-x:hidden}
-body{margin:0;background:var(--marfil);color:var(--tinta);font-family:var(--texto);
-  font-size:15px;line-height:1.5;transition:background .2s,color .2s}
+body{margin:0;background:var(--fondo) fixed;background-color:var(--marfil);
+  color:var(--tinta);font-family:var(--texto);font-size:15px;line-height:1.55;
+  letter-spacing:.005em;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  transition:color .2s}
 
 [hidden]{display:none!important}
-:focus-visible{outline:2px solid var(--naranja);outline-offset:2px}
+:focus-visible{outline:2px solid var(--acento-1);outline-offset:2px}
+::selection{background:var(--acento-tenue)}
 
 /* Franja de aviso bajo la barra superior */
-.mensaje{padding:10px 18px;font-size:.85rem;font-weight:500}
-.mensaje--info{background:rgba(232,100,26,.14);color:var(--naranja-hondo)}
-.mensaje--bien{background:rgba(47,125,79,.16);color:var(--verde-hondo)}
-.mensaje--error{background:rgba(192,73,27,.16);color:var(--aviso)}
+.mensaje{padding:11px 20px;font-size:.85rem;font-weight:500}
+.mensaje--info{background:var(--acento-tenue);color:var(--acento-2)}
+.mensaje--bien{background:rgba(16,185,129,.14);color:var(--verde-hondo)}
+.mensaje--error{background:rgba(239,68,68,.14);color:var(--aviso)}
 
 /* Recuadro punteado para "aquí todavía no hay nada" */
-.vacio{padding:36px 18px;text-align:center;color:var(--tinta-suave);font-size:.86rem;
-  border:1px dashed var(--linea);border-radius:8px}
+.vacio{padding:44px 22px;text-align:center;color:var(--tinta-suave);font-size:.86rem;
+  border:1.5px dashed var(--linea-fuerte);border-radius:var(--radio-m);background:var(--velo)}

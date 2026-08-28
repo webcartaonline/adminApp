@@ -7,12 +7,15 @@
    de ella con una guía en L.
    ========================================================= */
 
-.taller{display:grid;grid-template-columns:290px 1fr;min-height:64vh}
-.taller--ancho{grid-template-columns:1fr}
-@media(max-width:840px){.taller{grid-template-columns:1fr}}
-.panel{padding:16px;background:var(--marfil-alto);border-right:1px solid var(--linea)}
-.zona{padding:20px 22px 60px}
-.panel__titulo{margin:0 0 12px;font-family:var(--display);font-weight:800;font-size:1rem}
+.taller{display:grid;grid-template-columns:300px minmax(0,1fr);min-height:64vh}
+.taller--ancho{grid-template-columns:minmax(0,1fr)}
+@media(max-width:840px){.taller{grid-template-columns:minmax(0,1fr)}}
+.panel{padding:22px 16px;background:var(--marfil-alto);border-right:1px solid var(--linea);
+  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur))}
+@media(max-width:840px){.panel{border-right:none;border-bottom:1px solid var(--linea)}}
+.zona{padding:24px 24px 72px}
+.panel__titulo{margin:2px 6px 14px;font-family:var(--texto);font-weight:700;font-size:.68rem;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--tinta-suave)}
 
 .arbol{list-style:none;margin:0 0 14px;padding:0}
 .rama{margin-bottom:1px}
@@ -30,36 +33,41 @@
 
 /* Triángulo de abrir/cerrar, con área de toque cómoda en el móvil. */
 .desplegar{flex:none;width:28px;height:30px;display:grid;place-items:center;padding:0;
-  border:1px solid transparent;border-radius:6px;background:transparent;
-  color:var(--tinta-suave);cursor:pointer}
-.desplegar svg{width:14px;height:14px;transition:transform .15s ease}
-.desplegar:hover{background:var(--marfil);border-color:var(--linea);color:var(--naranja-hondo)}
-.desplegar[aria-expanded=true]{color:var(--naranja-hondo)}
+  border:1px solid transparent;border-radius:8px;background:transparent;
+  color:var(--tinta-suave);cursor:pointer;transition:background .14s,color .14s}
+.desplegar svg{width:14px;height:14px;transition:transform .18s ease}
+.desplegar:hover{background:var(--acento-tenue);color:var(--acento-2)}
+.desplegar[aria-expanded=true]{color:var(--acento-2)}
 .desplegar[aria-expanded=true] svg{transform:rotate(90deg)}
 
 /* Fila con nombre: icono + nombre + contador. */
-.nodo{flex:1;min-width:0;display:flex;align-items:center;gap:8px;
-  padding:7px 9px;border:1px solid transparent;border-radius:6px;background:transparent;
-  font-family:inherit;text-align:left;color:var(--tinta);cursor:pointer}
-.nodo:hover{background:var(--marfil);border-color:var(--linea)}
-.nodo__icono{flex:none;display:grid;place-items:center;color:var(--naranja-hondo)}
+.nodo{flex:1;min-width:0;display:flex;align-items:center;gap:9px;
+  padding:9px 11px;border:1px solid transparent;border-radius:var(--radio-s);background:transparent;
+  font-family:inherit;text-align:left;color:var(--tinta);cursor:pointer;
+  transition:background .14s,color .14s,box-shadow .14s}
+.nodo:hover{background:var(--acento-tenue)}
+.nodo__icono{flex:none;display:grid;place-items:center;color:var(--acento-2)}
 .nodo__icono svg{width:17px;height:17px;display:block}
 .nodo__nombre{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  font-size:.85rem;font-weight:700;letter-spacing:.01em}
-.nodo__cuenta{flex:none;padding:1px 7px;border-radius:100px;background:var(--pastilla);
-  font-size:.65rem;font-weight:700;color:var(--tinta-suave);line-height:1.6}
-.nodo[aria-current=true]{background:var(--barra);border-color:var(--barra);color:var(--barra-texto)}
-.nodo[aria-current=true] .nodo__icono{color:var(--naranja)}
-.nodo[aria-current=true] .nodo__cuenta{background:rgba(255,255,255,.18);color:var(--barra-texto)}
+  font-size:.85rem;font-weight:600;letter-spacing:.005em}
+.nodo__cuenta{flex:none;padding:1px 8px;border-radius:100px;background:var(--pastilla);
+  font-size:.65rem;font-weight:700;color:var(--tinta-suave);line-height:1.7}
+/* Sección seleccionada: degradado de acento con resplandor */
+.nodo[aria-current=true]{background:var(--grad);color:#fff;box-shadow:var(--glow)}
+.nodo[aria-current=true]:hover{background:var(--grad)}
+.nodo[aria-current=true] .nodo__icono{color:#fff}
+.nodo[aria-current=true] .nodo__cuenta{background:rgba(255,255,255,.24);color:#fff}
 
-/* Los grupos van más pequeños y en verde, para no confundirlos con las secciones. */
-.nodo--grupo{padding:6px 9px}
+/* Los grupos van más pequeños y en esmeralda, para no confundirlos con las secciones. */
+.nodo--grupo{padding:8px 11px}
 .nodo--grupo .nodo__nombre{font-size:.8rem;font-weight:500}
 .nodo--grupo .nodo__icono{color:var(--verde)}
 .nodo--grupo .nodo__icono svg{width:15px;height:15px}
-.nodo--grupo[aria-current=true]{background:var(--verde);border-color:var(--verde);color:#F4FBF6}
-.nodo--grupo[aria-current=true] .nodo__icono{color:#F4FBF6}
-.nodo--grupo[aria-current=true] .nodo__cuenta{background:rgba(255,255,255,.22);color:#F4FBF6}
+.nodo--grupo[aria-current=true]{background:linear-gradient(135deg,var(--verde),var(--verde-hondo));
+  color:#04170F;box-shadow:0 8px 24px rgba(16,185,129,.36)}
+.nodo--grupo[aria-current=true]:hover{filter:brightness(1.03)}
+.nodo--grupo[aria-current=true] .nodo__icono{color:#04170F}
+.nodo--grupo[aria-current=true] .nodo__cuenta{background:rgba(0,0,0,.18);color:#04170F}
 
 /* Guías del árbol: una vertical por sección abierta y una L por cada hijo. */
 .subarbol{position:relative;list-style:none;margin:1px 0 8px;padding:0 0 0 27px}
