@@ -87,6 +87,10 @@
    position:sticky de la barra superior. */
 html{overflow-x:hidden}
 body{margin:0;background:var(--fondo) fixed;background-color:var(--marfil);
+  /* Columna a pantalla completa: así el taller puede estirarse hasta
+     abajo y no queda una franja de fondo suelta cuando hay poco
+     contenido. dvh tiene en cuenta la barra del navegador en móvil. */
+  display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;
   color:var(--tinta);font-family:var(--texto);font-size:15px;line-height:1.55;
   letter-spacing:.005em;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
   transition:color .2s}

@@ -7,9 +7,11 @@
    de ella con una guía en L.
    ========================================================= */
 
-.taller{display:grid;grid-template-columns:300px minmax(0,1fr);min-height:64vh}
+/* Ocupa todo el alto que quede bajo la barra: el panel lateral y la
+   zona de trabajo llegan siempre hasta abajo del todo. */
+.taller{display:grid;grid-template-columns:300px minmax(0,1fr);flex:1 0 auto}
 .taller--ancho{grid-template-columns:minmax(0,1fr)}
-@media(max-width:840px){.taller{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:840px){.taller{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr}}
 .panel{padding:22px 16px;background:var(--marfil-alto);border-right:1px solid var(--linea);
   -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur))}
 @media(max-width:840px){.panel{border-right:none;border-bottom:1px solid var(--linea)}}
