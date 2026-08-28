@@ -5,6 +5,7 @@
    ========================================================= */
 
 sincronizarBotonTema();
+arrancarAnchoPanel();
 aplicarAjustes();
 
 // Si al cerrar quedaba cuenta atrás de publicación, se retoma.

@@ -19,6 +19,11 @@ document.documentElement.setAttribute('data-tema',t);}catch(e){document.document
 (function(){try{var g=JSON.parse(localStorage.getItem("editorCartaUniversal.color")||"null");
 if(!g||!g.vars)return;var t=document.documentElement.getAttribute("data-tema")==="oscuro"?"oscuro":"claro";
 var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setProperty(k,v[k]);}catch(e){}})();
+
+/* Y el ancho del panel lateral que dejó puesto el usuario, para
+   que no se vea saltar de un ancho a otro al abrir. */
+(function(){try{var a=parseInt(localStorage.getItem("editorCartaUniversal.panelAncho"),10);
+if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}catch(e){}})();
 </script>
 
 <!-- Aplicación instalable -->
@@ -119,6 +124,10 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
       Añadir sección
     </button>
   </aside>
+
+  <div class="separador" id="separador" role="separator" aria-orientation="vertical"
+       tabindex="0" aria-label="Ajustar el ancho del panel lateral"
+       title="Arrastra para ajustar el ancho del panel"></div>
 
   <section class="zona" id="zona">
     <p class="vacio">Trae la carta de GitHub o abre un archivo para empezar.</p>
@@ -240,6 +249,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 <script src="js/estado.js"></script>
 <script src="js/tema.js"></script>
 <script src="js/color.js"></script>
+<script src="js/panel.js"></script>
 <script src="js/ajustes.js"></script>
 <script src="js/idiomas.js"></script>
 <script src="js/espera.js"></script>

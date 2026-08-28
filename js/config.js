@@ -25,6 +25,7 @@ const CLAVE_COPIA          = 'editorCartaUniversal.itemCopiado';
 const CLAVE_ESPERA         = 'editorCartaUniversal.esperaHasta';
 const CLAVE_VERSION_VISTA  = 'editorCartaUniversal.versionVista';
 const CLAVE_COLOR          = 'editorCartaUniversal.color';
+const CLAVE_PANEL_ANCHO    = 'editorCartaUniversal.panelAncho';
 
 /* ---------- Espera entre publicaciones ---------- */
 const MS_ESPERA = 2*60*1000;   // 2 minutos
