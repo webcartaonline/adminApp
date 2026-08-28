@@ -1,8 +1,8 @@
 {
-  "name": "Editor de carta",
+  "name": "Editor de la carta",
   "short_name": "Editor",
   "description": "Editor de la carta digital del local: secciones, grupos, platos, fotos y alérgenos.",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",

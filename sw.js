@@ -15,14 +15,13 @@
    automáticamente la ventana con lo que ha cambiado.
    ========================================================= */
 
-const VERSION = '2.0';
+const VERSION = '1.0.1';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
    Si añades un archivo css o js, apúntalo también aquí. */
 const ARCHIVOS = [
   './',
-  './index.html',
   './manifest.json',
   './css/base.css',
   './css/botones.css',
@@ -95,10 +94,13 @@ self.addEventListener('fetch',(ev)=>{
     return;
   }
 
-  // Al abrir la aplicación se sirve la copia guardada del index.
+  // Al abrir la aplicación se sirve la copia guardada de la página
+  // principal. Ojo: se pide './' y no './index.html' a propósito —
+  // Cloudflare redirige index.html hacia '/', y una copia guardada que
+  // venga de una redirección hace que el navegador se niegue a abrirla.
   if(pet.mode==='navigate'){
     ev.respondWith(
-      caches.match('./index.html').then(r=>r||fetch(pet))
+      caches.match('./').then(r=>r||fetch(pet))
     );
     return;
   }

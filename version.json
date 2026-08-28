@@ -1,15 +1,8 @@
 {
-  "version": "2.0",
+  "version": "1.0.1",
   "fecha": "2026-08-28",
-  "titulo": "ACTUALIZACIÓN DEL EDITOR DISPONIBLE",
+  "titulo": "Arreglado un problema al abrir la aplicación",
   "cambios": [
-    "Se han realizado cambios en el servidor para mejorar el serivicio que prestamos.",
-    "Se ha cambiado el enlace al editor, por lo que tendrá que seguir lo siguiente pasos:",
-    "Por favor, copie este enclace: https://adminapp-16c.pages.dev/",
-    "Debe desnstalar esta versión y descargar la nueva versión del editor, desde el navegador.",
-    "Puede descargar la nueva versión desde el navegador copiando la dirección anterior y pegandola en el navegador.",
-    "Luego instale la página como una aplicación en su dispositivo.",
-    "Si necesita ayuda visite nuestra págia: https://webcartaonline.github.io/ProfessionalWeb/",
-    "Es importante mantener el editor actualizado para tener las últimas características y correcciones del editor."
+    "Se ha corregido un fallo que a veces impedía que la aplicación se abriera correctamente."
   ]
 }
