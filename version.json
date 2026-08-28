@@ -1,8 +1,11 @@
 {
-  "version": "1.0.1",
+  "version": "2.1",
   "fecha": "2026-08-28",
-  "titulo": "Arreglado un problema al abrir la aplicación",
+  "titulo": "⚠️ ACTUALIZACIÓN DEL SERVIDOR ⚠️",
   "cambios": [
-    "Se ha corregido un fallo que a veces impedía que la aplicación se abriera correctamente."
+    "Se ha cambiado la direcicón del servidor para mejorar tu experiencia.",
+    "Por favor, desinstale la aplicación y vuelva a instalarla desde el navegador con está nueva dirección: https://adminapp-16c.pages.dev.",
+    "Lamentamos las molestias, pero recuerde que mantener la aplicación actualizada es importante para recibir mejoras y corregir errores",
+    "Con esta nueva versión se a mejorado la experiencia, para que nada interrumpa su trabajo y para poder proporcionarle siempre un buen servicio."
   ]
 }
