@@ -8,7 +8,7 @@
   background:var(--marfil-alto);box-shadow:var(--sombra);
   -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur))}
 .resumen__cifra{font-family:var(--display);font-weight:800;font-size:1.9rem;
-  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  background:var(--grad-texto);-webkit-background-clip:text;background-clip:text;color:transparent}
 .resumen__etq{font-size:.72rem;color:var(--tinta-suave);letter-spacing:.04em;text-transform:uppercase}
 
 .bloque-est{margin-bottom:28px}

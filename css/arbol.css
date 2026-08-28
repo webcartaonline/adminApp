@@ -36,8 +36,8 @@
   border:1px solid transparent;border-radius:8px;background:transparent;
   color:var(--tinta-suave);cursor:pointer;transition:background .14s,color .14s}
 .desplegar svg{width:14px;height:14px;transition:transform .18s ease}
-.desplegar:hover{background:var(--acento-tenue);color:var(--acento-2)}
-.desplegar[aria-expanded=true]{color:var(--acento-2)}
+.desplegar:hover{background:var(--acento-tenue);color:var(--acento-texto)}
+.desplegar[aria-expanded=true]{color:var(--acento-texto)}
 .desplegar[aria-expanded=true] svg{transform:rotate(90deg)}
 
 /* Fila con nombre: icono + nombre + contador. */
@@ -46,17 +46,17 @@
   font-family:inherit;text-align:left;color:var(--tinta);cursor:pointer;
   transition:background .14s,color .14s,box-shadow .14s}
 .nodo:hover{background:var(--acento-tenue)}
-.nodo__icono{flex:none;display:grid;place-items:center;color:var(--acento-2)}
+.nodo__icono{flex:none;display:grid;place-items:center;color:var(--acento-texto)}
 .nodo__icono svg{width:17px;height:17px;display:block}
 .nodo__nombre{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   font-size:.85rem;font-weight:600;letter-spacing:.005em}
 .nodo__cuenta{flex:none;padding:1px 8px;border-radius:100px;background:var(--pastilla);
   font-size:.65rem;font-weight:700;color:var(--tinta-suave);line-height:1.7}
 /* Sección seleccionada: degradado de acento con resplandor */
-.nodo[aria-current=true]{background:var(--grad);color:#fff;box-shadow:var(--glow)}
+.nodo[aria-current=true]{background:var(--grad);color:var(--sobre-acento);box-shadow:var(--glow)}
 .nodo[aria-current=true]:hover{background:var(--grad)}
-.nodo[aria-current=true] .nodo__icono{color:#fff}
-.nodo[aria-current=true] .nodo__cuenta{background:rgba(255,255,255,.24);color:#fff}
+.nodo[aria-current=true] .nodo__icono{color:var(--sobre-acento)}
+.nodo[aria-current=true] .nodo__cuenta{background:rgba(255,255,255,.24);color:var(--sobre-acento)}
 
 /* Los grupos van más pequeños y en esmeralda, para no confundirlos con las secciones. */
 .nodo--grupo{padding:8px 11px}
@@ -80,3 +80,11 @@
 .subarbol>li:last-child::after{content:'';position:absolute;left:-14px;top:calc(50% + 2px);
   bottom:-4px;width:2px;background:var(--marfil-alto)}
 .subarbol__accion{padding-top:2px}
+
+/* Pantallas grandes: el panel puede permitirse algo más de sitio. */
+@media(min-width:1500px){.taller{grid-template-columns:340px minmax(0,1fr)}}
+/* Móvil: menos margen lateral, que cada píxel cuenta. */
+@media(max-width:600px){
+  .panel{padding:16px 12px}
+  .zona{padding:16px 14px 60px}
+}

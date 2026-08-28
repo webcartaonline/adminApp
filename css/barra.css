@@ -43,3 +43,19 @@
   .espera__globo::before{content:'';position:fixed;inset:0;z-index:-1;
     background:rgba(0,0,0,.55)}
 }
+
+/* En móvil la marca y los botones necesitan menos aire y algo menos
+   de cuerpo, para que la barra no se coma media pantalla. */
+@media(max-width:600px){
+  .barra{padding:14px 15px;gap:12px}
+  .barra__titulo{font-size:1.12rem}
+  .barra__acciones{gap:8px}
+  .barra__acciones .btn{padding:8px 13px;font-size:.78rem}
+}
+/* Pantallas muy estrechas (360 px y menos): los botones de acción
+   ocupan el ancho a partes iguales en vez de desbordar. */
+@media(max-width:380px){
+  .barra__acciones{display:grid;grid-template-columns:1fr 1fr}
+  .barra__acciones .btn{width:100%}
+  .barra__acciones .espera{grid-column:1 / -1}
+}

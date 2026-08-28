@@ -12,8 +12,8 @@
 .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
 
 /* Acción principal: degradado violeta→azul con resplandor */
-.btn--principal{background:var(--grad);color:#fff;box-shadow:var(--glow)}
-.btn--principal:hover:not(:disabled){filter:brightness(1.08);box-shadow:0 12px 34px rgba(76,134,255,.45)}
+.btn--principal{background:var(--grad);color:var(--sobre-acento);box-shadow:var(--glow)}
+.btn--principal:hover:not(:disabled){filter:brightness(1.08);box-shadow:var(--glow)}
 
 /* Botones sobre la barra superior (degradada): contorno claro translúcido */
 .btn--claro{background:rgba(255,255,255,.08);color:var(--barra-texto);
@@ -21,9 +21,9 @@
 .btn--claro:hover:not(:disabled){background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4)}
 
 /* Botón suave: cristal esmerilado con texto de acento */
-.btn--suave{background:var(--marfil-alto);color:var(--acento-2);border-color:var(--linea-fuerte);
+.btn--suave{background:var(--marfil-alto);color:var(--acento-texto);border-color:var(--linea-fuerte);
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-.btn--suave:hover:not(:disabled){background:var(--grad);color:#fff;border-color:transparent;box-shadow:var(--glow)}
+.btn--suave:hover:not(:disabled){background:var(--grad);color:var(--sobre-acento);border-color:transparent;box-shadow:var(--glow)}
 
 .btn--peligro{background:transparent;color:var(--aviso);border-color:var(--linea-fuerte)}
 .btn--peligro:hover:not(:disabled){background:var(--aviso);color:#fff;border-color:transparent}
@@ -36,7 +36,7 @@
 .mover{padding:2px 6px;border:1px solid var(--linea);border-radius:7px;background:var(--velo);
   color:var(--tinta-suave);font-size:.6rem;cursor:pointer;line-height:1;
   transition:background .14s,border-color .14s,color .14s}
-.mover:hover{border-color:var(--acento-1);color:var(--acento-2);background:var(--acento-tenue)}
+.mover:hover{border-color:var(--acento-1);color:var(--acento-texto);background:var(--acento-tenue)}
 .mover:disabled{opacity:.3;cursor:not-allowed}
 
 /* Pastillas de alérgenos */
@@ -45,5 +45,5 @@
   font-family:inherit;font-size:.73rem;color:var(--tinta-suave);cursor:pointer;
   transition:background .12s,border-color .12s,color .12s,box-shadow .12s}
 .chip:hover{border-color:var(--acento-1);color:var(--tinta)}
-.chip[aria-pressed=true]{background:var(--grad);border-color:transparent;color:#fff;font-weight:700;
+.chip[aria-pressed=true]{background:var(--grad);border-color:transparent;color:var(--sobre-acento);font-weight:700;
   box-shadow:var(--glow)}

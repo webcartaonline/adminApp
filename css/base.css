@@ -28,6 +28,11 @@
   --grad:linear-gradient(135deg,var(--acento-1),var(--acento-2));
   --acento-tenue:rgba(122,92,251,.12);
   --glow:0 10px 30px rgba(76,134,255,.30);
+  /* Texto SOBRE el acento, y acento usado COMO texto sobre fondo claro.
+     El selector de color los recalcula para que siempre se lean. */
+  --sobre-acento:#FFFFFF;
+  --acento-texto:#4361EE;
+  --grad-texto:linear-gradient(135deg,#6D4CF0,#3B6FE0);
   /* Acentos secundarios */
   --naranja:#F97316; --naranja-hondo:#EA6A0C;   /* cálido, uso puntual */
   --verde:#10B981;   --verde-hondo:#0EA372;     /* esmeralda: acciones positivas */
@@ -61,6 +66,9 @@
   --acento-1:#8B7BFF; --acento-2:#54A0FF;
   --acento-tenue:rgba(139,123,255,.16);
   --glow:0 10px 34px rgba(84,160,255,.32);
+  --sobre-acento:#FFFFFF;
+  --acento-texto:#8FB8FF;
+  --grad-texto:linear-gradient(135deg,#A594FF,#7FC0FF);
   --naranja:#FB923C; --naranja-hondo:#F97316;
   --verde:#34D399;   --verde-hondo:#10B981;
   --tinta:#E7EAF3; --tinta-suave:#98A2B8;
@@ -89,7 +97,7 @@ body{margin:0;background:var(--fondo) fixed;background-color:var(--marfil);
 
 /* Franja de aviso bajo la barra superior */
 .mensaje{padding:11px 20px;font-size:.85rem;font-weight:500}
-.mensaje--info{background:var(--acento-tenue);color:var(--acento-2)}
+.mensaje--info{background:var(--acento-tenue);color:var(--acento-texto)}
 .mensaje--bien{background:rgba(16,185,129,.14);color:var(--verde-hondo)}
 .mensaje--error{background:rgba(239,68,68,.14);color:var(--aviso)}
 

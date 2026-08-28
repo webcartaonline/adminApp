@@ -1,0 +1,50 @@
+/* =========================================================
+   SELECTOR DE COLOR PRINCIPAL
+   El botón redondo de la barra y la ventana donde se elige
+   el color (o el degradado) de toda la aplicación.
+   ========================================================= */
+
+/* Botón de la barra: una gota con el color actual dentro. */
+.btn--color{display:inline-grid;place-items:center;flex:none;
+  width:38px;height:38px;padding:0;border-radius:50%;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.24);
+  cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  transition:background .16s,border-color .16s,transform .08s}
+.btn--color:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.45)}
+.btn--color:active{transform:translateY(1px)}
+.btn--color__gota{width:18px;height:18px;border-radius:50%;background:var(--grad);
+  border:1.5px solid rgba(255,255,255,.75);box-shadow:0 1px 4px rgba(0,0,0,.35)}
+
+/* ---------- Ventana ---------- */
+.color__modos{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+
+/* Vista previa: una barra de mentira con un botón dentro. */
+.color__previa{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  flex-wrap:wrap;padding:16px 18px;border-radius:var(--radio-m);margin-bottom:18px;
+  border:1px solid var(--linea);box-shadow:var(--sombra)}
+.color__previa-titulo{font-family:var(--display);font-weight:800;font-size:1rem;
+  letter-spacing:-.01em}
+.color__previa-boton{padding:9px 17px;border:none;border-radius:100px;font-family:inherit;
+  font-size:.82rem;font-weight:600;pointer-events:none}
+
+/* Ruedas de color */
+.color__ruedas{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  margin-bottom:18px}
+.color__rueda{display:flex;flex-direction:column;gap:6px}
+.color__rueda input[type=color]{width:100%;height:46px;padding:3px;cursor:pointer;
+  border:1px solid var(--linea-fuerte);border-radius:var(--radio-s);background:var(--velo)}
+.color__rueda input[type=color]::-webkit-color-swatch{border:none;border-radius:6px}
+.color__rueda input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+.color__rueda input[type=color]::-moz-color-swatch{border:none;border-radius:6px}
+
+/* Combinaciones ya hechas */
+.color__sugerencias{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.color__sugerencia{width:38px;height:38px;flex:none;padding:0;border-radius:50%;cursor:pointer;
+  border:2px solid var(--linea-fuerte);transition:transform .12s,border-color .12s}
+.color__sugerencia:hover{transform:scale(1.09);border-color:var(--acento-1)}
+
+/* En un móvil estrecho, que los botones del pie no se aprieten. */
+@media(max-width:420px){
+  .color__previa{flex-direction:column;align-items:flex-start}
+  .modal__acc .btn{flex:1 1 auto}
+}

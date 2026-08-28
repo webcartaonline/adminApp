@@ -12,7 +12,7 @@
 
 /* Etiquetita de color que dice si el recuadro es una sección o un grupo */
 .etq{font-family:var(--texto);font-size:.62rem;font-weight:700;letter-spacing:.12em;
-  text-transform:uppercase;padding:4px 11px;border-radius:100px;color:#fff}
+  text-transform:uppercase;padding:4px 11px;border-radius:100px;color:var(--sobre-acento)}
 .etq--seccion{background:var(--grad);box-shadow:var(--glow)}
 .etq--grupo{background:linear-gradient(135deg,var(--verde),var(--verde-hondo));color:#04170F}
 
@@ -29,3 +29,10 @@
 .ficha-item__cabecera{display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px;margin-bottom:10px}
 .ficha-item__cabecera .campo{width:130px}
 .ficha-item__botones{display:flex;gap:4px;margin-left:auto;padding-bottom:2px}
+
+/* Móvil: las tarjetas se ciñen un poco para ganar ancho útil. */
+@media(max-width:600px){
+  .bloque{padding:16px;border-radius:var(--radio-m)}
+  .ficha-item{padding:14px}
+  .bloque__acciones{margin-left:0;width:100%}
+}

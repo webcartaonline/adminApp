@@ -1,8 +1,11 @@
 {
-  "version": "3.0",
+  "version": "3.2",
   "fecha": "2026-08-28",
-  "titulo": "Nueva identidad visual",
+  "titulo": "Elige el color de tu editor",
   "cambios": [
-    "Se ha rediseñado el apartado visual para mejorar la apariencia general de la aplicación."
+    "Nuevo botón junto al de modo oscuro para elegir el color principal de la aplicación.",
+    "Puedes usar un color único o un degradado de dos, con combinaciones ya hechas.",
+    "Tu color se guarda en este navegador y se mantiene al cerrar o actualizar la aplicación.",
+    "Botón para volver al color original cuando quieras."
   ]
 }
