@@ -29,12 +29,6 @@ function marcarSucio(){
   if(!enEspera())$('#btnPublicar').disabled=false;
 }
 
-/* ¿Es buen momento para interrumpir al cliente? Se usa para no sacar
-   la ventana de actualización en mitad de una edición. */
-function trabajoSinGuardar(){
-  return estado.sucio || Object.keys(estado.imagenesPendientes).length>0;
-}
-
 /* ---------- Accesores ---------- */
 function seccionActual(){return (estado.datos?.secciones??[]).find(s=>s.id===estado.seccionActiva);}
 function grupoActual(){const s=seccionActual();return (s?.grupos??[]).find(g=>g.id===estado.grupoActivo);}

@@ -1,9 +1,9 @@
 {
-  "version": "1.2.3",
-  "fecha": "2026-08-27",
+  "version": "1.3",
+  "fecha": "2026-08-28",
   "titulo": "ACTUALIZACIÓN DEL EDITOR DISPONIBLE",
   "cambios": [
-    "Correción de diseño del panel lateral en pantallas pequeñas.",
+    "Cambios en la forma en la que se reciben e instalan las actualizaciones.",
     "Es importante mantener el editor actualizado para tener las últimas características y correcciones."
   ]
 }

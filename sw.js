@@ -2,16 +2,20 @@
    EL VIGILANTE (service worker)
    Guarda una copia de la aplicación en el navegador del
    cliente. Gracias a él la aplicación abre al instante,
-   funciona sin internet y se puede actualizar de golpe.
+   funciona sin internet y se puede instalar como una app.
 
    ⚠️ PARA PUBLICAR UNA VERSIÓN NUEVA:
    cambia el número de VERSION aquí abajo y escribe las
    novedades en version.json. Nada más.
    Si no cambias VERSION, el navegador de los clientes no se
    entera de que hay algo nuevo.
+
+   Las versiones se instalan solas, sin pedir nada al
+   cliente: la próxima vez que abra el editor verá
+   automáticamente la ventana con lo que ha cambiado.
    ========================================================= */
 
-const VERSION = '1.2.3';
+const VERSION = '1.3';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
@@ -29,7 +33,7 @@ const ARCHIVOS = [
   './css/editor.css',
   './css/estadisticas.css',
   './css/imagenes.css',
-  './css/actualizacion.css',
+  './css/version.css',
   './js/config.js',
   './js/utiles.js',
   './js/estado.js',
@@ -46,7 +50,7 @@ const ARCHIVOS = [
   './js/vista-estadisticas.js',
   './js/portapapeles.js',
   './js/sucesos.js',
-  './js/actualizacion.js',
+  './js/version.js',
   './js/app.js',
   './img/icono-192.png',
   './img/icono-512.png',
@@ -55,30 +59,23 @@ const ARCHIVOS = [
 ];
 
 /* ---------- Instalación ----------
-   Se descarga la versión nueva entera y se guarda aparte.
-   NO se activa sola: se queda esperando a que el cliente
-   diga que sí desde la ventana de novedades. */
+   Se descarga la versión nueva entera y se pone en marcha
+   sin esperar el visto bueno de nadie. */
 self.addEventListener('install',(ev)=>{
   ev.waitUntil(
-    caches.open(CACHE).then(c=>c.addAll(ARCHIVOS))
+    caches.open(CACHE).then(c=>c.addAll(ARCHIVOS)).then(()=>self.skipWaiting())
   );
 });
 
 /* ---------- Activación ----------
-   Ya somos la versión buena: se tiran las copias viejas. */
+   Ya somos la versión buena: se tiran las copias viejas y se
+   toma el control de las pestañas que ya estaban abiertas. */
 self.addEventListener('activate',(ev)=>{
   ev.waitUntil((async()=>{
     const nombres=await caches.keys();
     await Promise.all(nombres.filter(n=>n!==CACHE).map(n=>caches.delete(n)));
     await self.clients.claim();
   })());
-});
-
-/* ---------- Mensajes desde la aplicación ---------- */
-self.addEventListener('message',(ev)=>{
-  const tipo=ev.data?.tipo;
-  if(tipo==='toma-el-relevo'){self.skipWaiting();return;}
-  if(tipo==='que-version'){ev.ports[0]?.postMessage({version:VERSION});return;}
 });
 
 /* ---------- Peticiones ---------- */

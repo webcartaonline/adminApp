@@ -35,7 +35,7 @@ document.documentElement.setAttribute('data-tema',t);}catch(e){document.document
 <link rel="stylesheet" href="css/editor.css">
 <link rel="stylesheet" href="css/estadisticas.css">
 <link rel="stylesheet" href="css/imagenes.css">
-<link rel="stylesheet" href="css/actualizacion.css">
+<link rel="stylesheet" href="css/version.css">
 </head>
 <body>
 
@@ -70,14 +70,6 @@ document.documentElement.setAttribute('data-tema',t);}catch(e){document.document
         <button class="btn btn--suave btn--mini" id="btnEsperaCerrar" type="button">Entendido</button>
       </div>
     </div>
-
-    <!-- Solo aparece si llega una versión nueva y no era buen momento
-         para interrumpir. Se puede pulsar cuando se quiera. -->
-    <button class="chincheta" id="chincheta" type="button" hidden
-            title="Hay una versión nueva del editor lista para instalar">
-      <span class="chincheta__punto" aria-hidden="true"></span>
-      Versión nueva
-    </button>
   </div>
 </div>
 
@@ -158,27 +150,18 @@ document.documentElement.setAttribute('data-tema',t);}catch(e){document.document
   </div>
 </div>
 
-<!-- ===== Ventana de versión nueva ===== -->
+<!-- ===== Ventana de novedades ===== -->
 <div class="modal" id="modalActualizacion" hidden role="dialog" aria-modal="true" aria-labelledby="actTitulo">
   <div class="modal__caja">
-    <h2 class="modal__titulo" id="actTitulo">Hay una versión nueva del editor</h2>
-    <p class="modal__pista">Ya está descargada. Instalarla es cuestión de un segundo.</p>
+    <h2 class="modal__titulo" id="actTitulo">Novedades del editor</h2>
+    <p class="modal__pista">Esto es lo que ha cambiado desde la última vez que abriste el editor.</p>
 
     <p class="version-salto" id="actSalto" hidden></p>
 
     <ul class="novedades" id="actNovedades"></ul>
 
-    <p class="mensaje mensaje--error" id="actAviso" hidden>
-      Tienes cambios en la carta sin publicar. Publícalos primero: al actualizar,
-      la página se recarga y se perderían.
-    </p>
-
-    <p class="actualizacion__nota">Tus ajustes, tu token y tu carta no se tocan.
-      Solo cambia el programa.</p>
-
     <div class="modal__acc">
-      <button class="btn btn--suave" id="btnActualizarLuego" type="button">Ahora no</button>
-      <button class="btn btn--principal" id="btnActualizarAhora" type="button">Actualizar</button>
+      <button class="btn btn--principal" id="btnCerrarNovedades" type="button">Entendido</button>
     </div>
   </div>
 </div>
@@ -202,7 +185,7 @@ document.documentElement.setAttribute('data-tema',t);}catch(e){document.document
 <script src="js/vista-estadisticas.js"></script>
 <script src="js/portapapeles.js"></script>
 <script src="js/sucesos.js"></script>
-<script src="js/actualizacion.js"></script>
+<script src="js/version.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

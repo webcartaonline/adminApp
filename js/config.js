@@ -19,10 +19,11 @@ const ETIQUETAS = {
 const NOMBRE_IDIOMA = { es:'Español', en:'English', fr:'Français', de:'Deutsch', it:'Italiano', pt:'Português' };
 
 /* ---------- Lo que se guarda en este navegador ---------- */
-const CLAVE_AJUSTES = 'editorCartaUniversal.ajustes';
-const CLAVE_TEMA    = 'editorCartaUniversal.tema';
-const CLAVE_COPIA   = 'editorCartaUniversal.itemCopiado';
-const CLAVE_ESPERA  = 'editorCartaUniversal.esperaHasta';
+const CLAVE_AJUSTES        = 'editorCartaUniversal.ajustes';
+const CLAVE_TEMA           = 'editorCartaUniversal.tema';
+const CLAVE_COPIA          = 'editorCartaUniversal.itemCopiado';
+const CLAVE_ESPERA         = 'editorCartaUniversal.esperaHasta';
+const CLAVE_VERSION_VISTA  = 'editorCartaUniversal.versionVista';
 
 /* ---------- Espera entre publicaciones ---------- */
 const MS_ESPERA = 2*60*1000;   // 2 minutos

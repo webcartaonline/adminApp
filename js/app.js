@@ -1,7 +1,7 @@
 /* =========================================================
    ARRANQUE
-   Lo último que se ejecuta. Deja la pantalla lista y pone
-   en marcha la comprobación de actualizaciones.
+   Lo último que se ejecuta. Deja la pantalla lista y
+   comprueba la versión instalada.
    ========================================================= */
 
 sincronizarBotonTema();
@@ -13,5 +13,6 @@ aplicarAjustes();
 // La copia de un ítem sobrevive a cerrar la aplicación.
 estado.itemCopiado=leerCopiaGuardada();
 
-// Comprobación de versión nueva, en segundo plano y sin molestar.
-arrancarActualizaciones();
+// Registra el service worker (para instalarse y funcionar sin
+// conexión) y enseña las novedades si ha cambiado la versión.
+arrancarVersion();

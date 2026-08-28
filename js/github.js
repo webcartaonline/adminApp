@@ -169,10 +169,6 @@ async function publicar(){
     }else{
       avisar(`Publicado.${extra} La carta se actualiza en un par de minutos. Mientras se despliega, el botón de publicar queda bloqueado.`,'bien');
     }
-
-    // Momento tranquilo: si había una versión nueva del editor esperando,
-    // es ahora cuando se ofrece, no en mitad de la edición.
-    trasPublicar();
   }catch(e){if(!enEspera())$('#btnPublicar').disabled=false;avisar(`No se ha podido publicar: ${e.message}`,'error');}
 }
 

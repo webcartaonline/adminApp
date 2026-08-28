@@ -29,12 +29,13 @@ A partir de ahí tiene un icono propio y se abre a pantalla completa.
 
 Cada vez que cambies algo del editor, **dos archivos**:
 
-### `sw.js` — línea 15
+### `sw.js` — la constante `VERSION`, al principio del archivo
 ```js
 const VERSION = '1.0.0';   // ← súbelo: 1.0.1, 1.1.0, 2.0.0…
 ```
-Esto es lo que hace que los navegadores se enteren. **Si no lo cambias, nadie
-recibe la actualización**, aunque hayas cambiado el resto de archivos.
+Esto es lo que hace que los navegadores se enteren de que hay algo nuevo. **Si
+no lo cambias, nadie recibe la actualización**, aunque hayas cambiado el resto
+de archivos.
 
 ### `version.json`
 ```json
@@ -50,31 +51,29 @@ recibe la actualización**, aunque hayas cambiado el resto de archivos.
 ```
 Es lo que el cliente lee en la ventana de novedades.
 
-Sube los cambios a GitHub y ya está. Los clientes reciben el aviso la próxima
-vez que abran la aplicación, o justo después de publicar su carta.
+Sube los cambios a GitHub y ya está. **La versión nueva se instala sola**, sin
+que el cliente tenga que hacer ni aceptar nada.
 
 > **Si añades un archivo `.css` o `.js` nuevo**, apúntalo también en la lista
 > `ARCHIVOS` de `sw.js`, o no se guardará para funcionar sin conexión.
 
-## 4. Cuándo ve el cliente el aviso
+## 4. Qué ve el cliente cuando hay una versión nueva
 
-Nunca en mitad de una edición. Solo:
+Nada que decidir. La aplicación se pone al día ella sola en cuanto puede, sin
+avisos a mitad de una edición ni botones que pulsar.
 
-- **Al abrir la aplicación**, si no tiene nada a medias.
-- **Justo después de publicar** su carta.
-- **Cuando él quiera**, pulsando la chincheta naranja «Versión nueva» de la
-  barra de arriba, que aparece si la actualización llegó mientras trabajaba.
-
-Si tiene cambios sin publicar, el botón de actualizar se queda bloqueado y se
-le explica que publique primero. Al actualizar, la página se recarga: sus
-ajustes, su token y su carta publicada no se tocan.
+Lo único que aparece es una **ventana informativa** con la lista de novedades,
+la primera vez que abre el editor después de que haya cambiado la versión. Se
+cierra con un botón «Entendido» y no vuelve a salir hasta la siguiente
+publicación. Sus ajustes, su token y su carta no se ven afectados en ningún
+momento por este proceso.
 
 ## 5. Estructura
 
 ```
 index.html          la página
 manifest.json       nombre e icono de la app instalada
-sw.js               el "vigilante": caché y actualizaciones
+sw.js               el "vigilante": guarda copia y actualiza sin preguntar
 version.json        las novedades que lee el cliente
 css/                estilos, uno por parte de la interfaz
 js/                 programa, uno por responsabilidad
