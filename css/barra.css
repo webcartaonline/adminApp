@@ -6,14 +6,14 @@
 
 .barra{position:sticky;top:0;z-index:20;display:flex;flex-direction:column;gap:14px;
   padding:18px 22px;background:var(--grad-barra);color:var(--barra-texto);
-  border-bottom:1px solid rgba(255,255,255,.12);
+  border-bottom:1px solid var(--barra-velo-mas);
   box-shadow:0 14px 40px rgba(24,20,70,.34)}
 .barra__cabecera{display:flex;align-items:center;gap:12px}
 .barra__marca{margin-right:auto}
 .barra__titulo{font-family:var(--display);font-weight:800;font-size:1.28rem;letter-spacing:-.015em;
   text-shadow:0 1px 12px rgba(0,0,0,.22)}
 .barra__sub{font-family:var(--texto);font-size:.6rem;font-weight:700;
-  letter-spacing:.26em;text-transform:uppercase;color:rgba(243,245,255,.72);margin-top:3px}
+  letter-spacing:.26em;text-transform:uppercase;color:var(--barra-sub);margin-top:3px}
 .barra__acciones{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 
 /* ---------- Cuenta atrás tras publicar ---------- */
@@ -21,10 +21,10 @@
 .espera__reloj{font-family:var(--texto);font-size:.78rem;font-weight:700;
   font-variant-numeric:tabular-nums;color:var(--barra-texto);opacity:.85}
 .espera__ayuda{width:18px;height:18px;flex:none;display:grid;place-items:center;
-  border-radius:50%;border:1px solid rgba(234,241,248,.5);background:transparent;
+  border-radius:50%;border:1px solid var(--barra-borde-mas);background:transparent;
   color:var(--barra-texto);font-family:inherit;font-size:.68rem;font-weight:800;
   line-height:1;cursor:pointer;padding:0}
-.espera__ayuda:hover{background:rgba(234,241,248,.18)}
+.espera__ayuda:hover{background:var(--barra-velo-mas)}
 .espera__globo{position:absolute;top:calc(100% + 10px);right:0;z-index:60;width:min(320px,78vw);
   background:var(--solido);color:var(--tinta);border:1px solid var(--linea-fuerte);
   border-radius:var(--radio);padding:16px 18px;box-shadow:var(--sombra-alta);

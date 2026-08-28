@@ -60,7 +60,7 @@
 .nodo[aria-current=true]{background:var(--grad);color:var(--sobre-acento);box-shadow:var(--glow)}
 .nodo[aria-current=true]:hover{background:var(--grad)}
 .nodo[aria-current=true] .nodo__icono{color:var(--sobre-acento)}
-.nodo[aria-current=true] .nodo__cuenta{background:rgba(255,255,255,.24);color:var(--sobre-acento)}
+.nodo[aria-current=true] .nodo__cuenta{background:var(--sobre-acento-velo);color:var(--sobre-acento)}
 
 /* Los grupos van más pequeños y en esmeralda, para no confundirlos con las secciones. */
 .nodo--grupo{padding:8px 11px}

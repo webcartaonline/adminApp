@@ -1,9 +1,9 @@
 {
-  "version": "3.5",
+  "version": "3.5.2",
   "fecha": "2026-08-28",
   "titulo": "Elige el color de tu editor",
   "cambios": [
-    "Al recivir una actualización se muestra el votón actualizar para aplicar los cambios.",
-    "Ahora la división entre el panel lateral izquierdo y el fondo en el que se muestran los ítems es regulable."
+    "Corrección de colores en votones cuando el fondo es claro.",
+    "La combinación de colores ahora si funciona."
   ]
 }

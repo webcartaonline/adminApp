@@ -19,7 +19,9 @@ const COLOR_DE_FABRICA = { modo:'degradado', c1:'#7A5CFB', c2:'#4C86FF' };
 /* Variables que gobierna el color principal. Se apuntan aquí
    para poder quitarlas todas de golpe al restaurar. */
 const COLOR_VARIABLES = ['--acento-1','--acento-2','--grad','--grad-barra','--barra-texto',
-  '--acento-tenue','--glow','--sobre-acento','--acento-texto','--grad-texto'];
+  '--acento-tenue','--glow','--sobre-acento','--acento-texto','--grad-texto',
+  '--barra-velo','--barra-velo-mas','--barra-borde','--barra-borde-mas','--barra-sub',
+  '--sobre-acento-velo','--acento-borde'];
 
 /* ---------- Cuentas de color ---------- */
 function colorAComponentes(hex){
@@ -79,6 +81,14 @@ function calcularVariablesColor(c1,c2,tema){
   const textoAcento=componentesAColor(colorLegibleComoTexto(medio,oscuro));
   const textoAcento1=componentesAColor(colorLegibleComoTexto(a,oscuro));
 
+  /* Si el color elegido es claro, la barra queda clara: entonces las
+     veladuras y los bordes de dentro tienen que ser OSCUROS, porque en
+     blanco sobre blanco no se vería nada (ni el subtítulo, ni el borde
+     de los botones). */
+  const barraClara=textoLegibleSobre(barMedio)!=='#FFFFFF';
+  const velo=(x)=>barraClara?`rgba(0,0,0,${x})`:`rgba(255,255,255,${x})`;
+  const sobreAcentoClaro=textoLegibleSobre(medio)==='#FFFFFF';
+
   return {
     '--acento-1':componentesAColor(a),
     '--acento-2':componentesAColor(b),
@@ -89,7 +99,17 @@ function calcularVariablesColor(c1,c2,tema){
     '--glow':'0 10px 30px rgba('+enteros(medio)+','+(oscuro?.34:.32)+')',
     '--sobre-acento':textoLegibleSobre(medio),
     '--acento-texto':textoAcento,
-    '--grad-texto':'linear-gradient(135deg,'+textoAcento1+','+textoAcento+')'
+    '--grad-texto':'linear-gradient(135deg,'+textoAcento1+','+textoAcento+')',
+    /* Veladuras y bordes de dentro de la barra, ya adaptados. */
+    '--barra-velo':velo(barraClara?.05:.08),
+    '--barra-velo-mas':velo(barraClara?.10:.18),
+    '--barra-borde':velo(barraClara?.16:.22),
+    '--barra-borde-mas':velo(barraClara?.30:.42),
+    '--barra-sub':barraClara?'rgba(20,24,36,.62)':'rgba(243,245,255,.72)',
+    '--sobre-acento-velo':sobreAcentoClaro?'rgba(255,255,255,.22)':'rgba(0,0,0,.14)',
+    /* Filo del botón principal: imprescindible si el acento es casi
+       blanco, porque si no se funde con el fondo. */
+    '--acento-borde':componentesAColor(mezclarColor(medio,[10,14,26],.14))
   };
 }
 
@@ -180,8 +200,11 @@ $('#colorC2').addEventListener('input',(ev)=>{colorEnEdicion.c2=ev.target.value;
 $('#colorSugerencias').addEventListener('click',(ev)=>{
   const s=ev.target.closest('[data-color-1]');
   if(!s)return;
-  colorEnEdicion={modo:s.dataset.color2?'degradado':'solido',
-    c1:s.dataset.color1,c2:s.dataset.color2||s.dataset.color1};
+  /* Ojo: cuando detrás del guion va un número, dataset no sirve
+     (data-color-1 NO es s.dataset.color1). Se leen a mano. */
+  const uno=s.getAttribute('data-color-1');
+  const dos=s.getAttribute('data-color-2');
+  colorEnEdicion={modo:dos?'degradado':'solido',c1:uno,c2:dos||uno};
   pintarVistaPreviaColor();
 });
 

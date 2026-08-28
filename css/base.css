@@ -33,6 +33,16 @@
   --sobre-acento:#FFFFFF;
   --acento-texto:#4361EE;
   --grad-texto:linear-gradient(135deg,#6D4CF0,#3B6FE0);
+  /* Veladuras y bordes DENTRO de la barra. Son claros porque la barra
+     es oscura; si el usuario elige un color claro, el selector de color
+     los cambia a oscuros para que se sigan viendo. */
+  --barra-velo:rgba(255,255,255,.08);
+  --barra-velo-mas:rgba(255,255,255,.18);
+  --barra-borde:rgba(255,255,255,.22);
+  --barra-borde-mas:rgba(255,255,255,.42);
+  --barra-sub:rgba(243,245,255,.72);
+  --sobre-acento-velo:rgba(255,255,255,.22);
+  --acento-borde:transparent;
   /* Acentos secundarios */
   --naranja:#F97316; --naranja-hondo:#EA6A0C;   /* cálido, uso puntual */
   --verde:#10B981;   --verde-hondo:#0EA372;     /* esmeralda: acciones positivas */
@@ -69,6 +79,13 @@
   --sobre-acento:#FFFFFF;
   --acento-texto:#8FB8FF;
   --grad-texto:linear-gradient(135deg,#A594FF,#7FC0FF);
+  --barra-velo:rgba(255,255,255,.08);
+  --barra-velo-mas:rgba(255,255,255,.18);
+  --barra-borde:rgba(255,255,255,.22);
+  --barra-borde-mas:rgba(255,255,255,.42);
+  --barra-sub:rgba(243,245,255,.72);
+  --sobre-acento-velo:rgba(255,255,255,.22);
+  --acento-borde:transparent;
   --naranja:#FB923C; --naranja-hondo:#F97316;
   --verde:#34D399;   --verde-hondo:#10B981;
   --tinta:#E7EAF3; --tinta-suave:#98A2B8;

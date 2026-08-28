@@ -12,13 +12,14 @@
 .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
 
 /* Acción principal: degradado violeta→azul con resplandor */
-.btn--principal{background:var(--grad);color:var(--sobre-acento);box-shadow:var(--glow)}
+.btn--principal{background:var(--grad);color:var(--sobre-acento);box-shadow:var(--glow);
+  border-color:var(--acento-borde)}
 .btn--principal:hover:not(:disabled){filter:brightness(1.08);box-shadow:var(--glow)}
 
 /* Botones sobre la barra superior (degradada): contorno claro translúcido */
-.btn--claro{background:rgba(255,255,255,.08);color:var(--barra-texto);
-  border-color:rgba(255,255,255,.22);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-.btn--claro:hover:not(:disabled){background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4)}
+.btn--claro{background:var(--barra-velo);color:var(--barra-texto);
+  border-color:var(--barra-borde)}
+.btn--claro:hover:not(:disabled){background:var(--barra-velo-mas);border-color:var(--barra-borde-mas)}
 
 /* Botón suave: cristal esmerilado con texto de acento */
 .btn--suave{background:var(--marfil-alto);color:var(--acento-texto);border-color:var(--linea-fuerte);
@@ -28,9 +29,8 @@
 .btn--peligro{background:transparent;color:var(--aviso);border-color:var(--linea-fuerte)}
 .btn--peligro:hover:not(:disabled){background:var(--aviso);color:#fff;border-color:transparent}
 .btn--mini{padding:4px 12px;font-size:.72rem}
-.btn--tema{background:rgba(255,255,255,.1);color:var(--barra-texto);border-color:rgba(255,255,255,.24);
-  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-.btn--tema:hover:not(:disabled){background:rgba(255,255,255,.2)}
+.btn--tema{background:var(--barra-velo);color:var(--barra-texto);border-color:var(--barra-borde)}
+.btn--tema:hover:not(:disabled){background:var(--barra-velo-mas);border-color:var(--barra-borde-mas)}
 
 /* Flechitas de ordenar (▲ ▼) */
 .mover{padding:2px 6px;border:1px solid var(--linea);border-radius:7px;background:var(--velo);
