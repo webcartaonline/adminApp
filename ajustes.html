@@ -201,7 +201,79 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
     </div>
   </article>
 
-  <!-- ============ 3. Información de la aplicación ============ -->
+  <!-- ============ 3. Exportar e importar ============ -->
+  <article class="apartado" id="apCopia">
+    <button class="apartado__cabecera" type="button" aria-expanded="false" aria-controls="cuerpoCopia">
+      <span class="apartado__icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>
+          <path d="M8 8.5 12 4.5l4 4"/><path d="M12 4.5V15"/>
+        </svg>
+      </span>
+      <span class="apartado__texto">
+        <span class="apartado__titulo">Exportar e importar</span>
+        <span class="apartado__pista">Guardar los ajustes en un archivo y volver a ponerlos en otro navegador.</span>
+      </span>
+      <span class="apartado__flecha" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </span>
+    </button>
+
+    <div class="apartado__cuerpo" id="cuerpoCopia" hidden>
+      <p class="apartado__nota">Los ajustes se guardan solo en este navegador, así que se pierden al
+        cambiar de dispositivo, al borrar los datos del navegador o al reinstalar. Aquí puedes meterlos
+        todos en un archivo y volver a soltarlos donde haga falta. <b>La carta no va dentro</b>: esa
+        está en el repositorio y se trae desde el editor.</p>
+
+      <section class="bloque">
+        <h3 class="bloque__titulo">Exportar</h3>
+        <p class="bloque__nota">Se descarga un archivo <code>.json</code> con los datos de conexión
+          (servicio, cliente, rama y ruta), la web conectada, el nombre del editor, el color principal
+          y el modo claro u oscuro.</p>
+
+        <span class="campo__etiqueta">Qué más incluir</span>
+        <div class="chips">
+          <button class="chip" id="btnIncluirToken" type="button" aria-pressed="false">Incluir el token de acceso</button>
+        </div>
+        <p class="bloque__aviso" id="copiaAvisoToken" hidden>
+          Con el token dentro, quien abra el archivo puede publicar cambios en la página. Guárdalo
+          donde nadie más lo vea y no lo mandes por correo ni por mensajería. Sin él, el archivo es
+          inofensivo, pero al importarlo habrá que volver a pegar el token a mano.</p>
+
+        <div class="ajustes__acciones">
+          <button class="btn btn--principal" id="btnExportar" type="button">Descargar archivo de ajustes</button>
+        </div>
+      </section>
+
+      <section class="bloque">
+        <h3 class="bloque__titulo">Importar</h3>
+        <p class="bloque__nota">Elige un archivo exportado desde aquí. Antes de cambiar nada se te
+          enseña lo que trae dentro; solo se aplica cuando lo confirmas.</p>
+
+        <label class="campo">
+          <span class="campo__etiqueta">Archivo de ajustes</span>
+          <input type="file" id="importArchivo" accept="application/json,.json">
+          <span class="campo__pista">Lo que traiga el archivo sustituye a lo que haya ahora; lo que no
+            traiga se queda como está.</span>
+        </label>
+
+        <dl class="ficha" id="importFicha" hidden></dl>
+
+        <p class="bloque__aviso" id="importFuturo" hidden>
+          Este archivo se hizo con una versión más nueva del editor. Se importará lo que se entienda;
+          si algo no aparece, actualiza la aplicación y vuelve a probar.</p>
+
+        <div class="ajustes__acciones">
+          <button class="btn btn--principal" id="btnImportar" type="button" disabled>Importar estos ajustes</button>
+          <button class="btn btn--suave" id="btnImportarCancelar" type="button">Cancelar</button>
+        </div>
+      </section>
+    </div>
+  </article>
+
+  <!-- ============ 4. Información de la aplicación ============ -->
   <article class="apartado" id="apInformacion">
     <button class="apartado__cabecera" type="button" aria-expanded="false" aria-controls="cuerpoInformacion">
       <span class="apartado__icono" aria-hidden="true">
@@ -279,5 +351,6 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 <script src="js/color-ui.js"></script>
 <script src="js/version.js"></script>
 <script src="js/pagina-ajustes.js"></script>
+<script src="js/copia-ajustes.js"></script>
 </body>
 </html>

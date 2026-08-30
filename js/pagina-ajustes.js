@@ -209,21 +209,27 @@ function pintarInfoApp(){
     : '<li>Mejoras y correcciones internas.</li>';
 }
 
-/* ---------- Arranque ---------- */
-sincronizarBotonTema();
-volcarConexion();
-$('#cfgNombre').value=leerAjustes().nombre||'';
-aplicarNombreGuardado();
-pintarNombreEjemplo();
-sincronizarColorUI();
+/* ---------- Repintar la pantalla entera ----------
+   Deja todos los mandos y todas las fichas como están los datos
+   guardados ahora mismo. Se usa al abrir la página y también después
+   de importar unos ajustes de un archivo, que cambia todo de golpe. */
+function refrescarPantallaAjustes(){
+  sincronizarBotonTema();
+  volcarConexion();
+  $('#cfgNombre').value=leerAjustes().nombre||'';
+  aplicarNombreGuardado();
+  pintarNombreEjemplo();
+  sincronizarColorUI();
 
-{
   const s=leerSitio();
   $('#sitioNombre').value=s.nombre||'';
   $('#sitioUrl').value=s.url||'';
+  pintarFichaSitio();
+  pintarFichaConexion();
 }
-pintarFichaSitio();
-pintarFichaConexion();
+
+/* ---------- Arranque ---------- */
+refrescarPantallaAjustes();
 pintarInfoApp();
 
 /* Registra el vigilante (para que esta página también funcione sin
