@@ -1,38 +1,27 @@
 /* =========================================================
-   AJUSTES
+   AJUSTES (lo compartido)
    Los datos de conexión (cuenta, repositorio, rama, ruta y
    token) se guardan en el navegador de cada cliente, no en
    los archivos de la aplicación. Por eso todos los clientes
    pueden compartir la misma dirección web sin mezclarse.
+
+   Aquí solo está lo que necesitan las DOS páginas: leer y
+   escribir esos datos. La pantalla donde se rellenan vive
+   en ajustes.html y la maneja js/pagina-ajustes.js.
    ========================================================= */
 
 function leerAjustes(){try{return JSON.parse(localStorage.getItem(CLAVE_AJUSTES))||{};}catch{return{};}}
 
-function aplicarAjustes(){
-  const a=leerAjustes();
-  $('#cfgNombre').value=a.nombre||'';
-  $('#cfgOwner').value=a.owner||''; $('#cfgRepo').value=a.repo||'';
-  $('#cfgRama').value=a.rama||''; $('#cfgRuta').value=a.ruta||'carta.json';
-  $('#cfgToken').value=a.token||'';
-  aplicarNombreEditor(a.nombre);
-  if(a.owner&&a.repo&&a.token)$('#ajustes').hidden=true;
+function guardarAjustes(a){
+  try{localStorage.setItem(CLAVE_AJUSTES,JSON.stringify(a));}catch{}
 }
 
-$('#btnGuardarCfg').addEventListener('click',()=>{
-  const nombre=$('#cfgNombre').value.trim();
-  localStorage.setItem(CLAVE_AJUSTES,JSON.stringify({
-    nombre,
-    owner:$('#cfgOwner').value.trim(),repo:$('#cfgRepo').value.trim(),
-    rama:$('#cfgRama').value.trim()||'main',ruta:$('#cfgRuta').value.trim()||'carta.json',
-    token:$('#cfgToken').value.trim()
-  }));
-  aplicarNombreEditor(nombre);
-  avisar('Ajustes guardados en este navegador.','bien');
-});
+/* Datos de la web que se publica: nombre y dirección. Se guardan
+   aparte porque una parte se averigua sola desde GitHub y la otra
+   la puede escribir el usuario a mano. */
+function leerSitio(){try{return JSON.parse(localStorage.getItem(CLAVE_SITIO))||{};}catch{return{};}}
+function guardarSitio(s){try{localStorage.setItem(CLAVE_SITIO,JSON.stringify(s));}catch{}}
 
-$('#btnOlvidarToken').addEventListener('click',()=>{
-  const a=leerAjustes();delete a.token;localStorage.setItem(CLAVE_AJUSTES,JSON.stringify(a));
-  $('#cfgToken').value='';avisar('Token borrado de este navegador.','bien');
-});
-
-$('#btnAjustes').addEventListener('click',()=>{$('#ajustes').hidden=!$('#ajustes').hidden;});
+/* Pone el rótulo «Editor de …» con el nombre guardado. En las
+   páginas que no tienen ese rótulo, solo cambia el título. */
+function aplicarNombreGuardado(){aplicarNombreEditor(leerAjustes().nombre);}

@@ -10,6 +10,10 @@
   transition:background .16s,color .16s,border-color .16s,box-shadow .16s,transform .08s}
 .btn:active{transform:translateY(1px)}
 .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+/* Un botón que en realidad es un enlace (ir a los ajustes, volver al
+   editor). Sin esto el relleno de arriba y abajo no se aplicaría. */
+a.btn{display:inline-flex;align-items:center;justify-content:center;
+  text-decoration:none;line-height:1.2}
 
 /* Acción principal: degradado violeta→azul con resplandor */
 .btn--principal{background:var(--grad);color:var(--sobre-acento);box-shadow:var(--glow);

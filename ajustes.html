@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ajustes del editor</title>
+
+<script>
+/* Los mismos arranques que en index.html: el tema y el color, antes
+   de pintar nada, para que no haya parpadeo de color al
+   pasar de una página a la otra. */
+(function(){try{var t=localStorage.getItem('editorCartaUniversal.tema');
+if(t!=='claro'&&t!=='oscuro'){t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'oscuro':'claro';}
+document.documentElement.setAttribute('data-tema',t);}catch(e){document.documentElement.setAttribute('data-tema','claro');}})();
+
+(function(){try{var g=JSON.parse(localStorage.getItem("editorCartaUniversal.color")||"null");
+if(!g||!g.vars)return;var t=document.documentElement.getAttribute("data-tema")==="oscuro"?"oscuro":"claro";
+var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setProperty(k,v[k]);}catch(e){}})();
+</script>
+
+<!-- Aplicación instalable -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0F2E52">
+<link rel="icon" href="img/icono-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="img/icono-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Editor">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/botones.css">
+<link rel="stylesheet" href="css/formularios.css">
+<link rel="stylesheet" href="css/barra.css">
+<link rel="stylesheet" href="css/ajustes.css">
+<link rel="stylesheet" href="css/color.css">
+<link rel="stylesheet" href="css/version.css">
+</head>
+<body data-pagina="ajustes">
+
+<div class="barra">
+  <div class="barra__cabecera">
+    <a class="btn btn--claro btn--volver" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg>
+      Volver al editor
+    </a>
+    <div class="barra__marca barra__marca--centro">
+      <div class="barra__titulo">Ajustes</div>
+      <div class="barra__sub">Editor de <span data-nombre-editor>la carta</span></div>
+    </div>
+    <button class="btn btn--tema" id="btnTema" type="button" aria-pressed="false">Modo oscuro</button>
+  </div>
+</div>
+
+<p class="mensaje" id="mensaje" hidden></p>
+
+<main class="ajustes">
+
+  <!-- ============ 1. Conexión con GitHub (la API KEY) ============ -->
+  <article class="apartado" id="apConexion">
+    <button class="apartado__cabecera" type="button" aria-expanded="false" aria-controls="cuerpoConexion">
+      <span class="apartado__icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.5 13.5a4 4 0 0 0 5.7 0l2.6-2.6a4 4 0 0 0-5.7-5.7l-1.3 1.3"/>
+          <path d="M13.5 10.5a4 4 0 0 0-5.7 0l-2.6 2.6a4 4 0 0 0 5.7 5.7l1.3-1.3"/>
+        </svg>
+      </span>
+      <span class="apartado__texto">
+        <span class="apartado__titulo">Conexión con GitHub</span>
+        <span class="apartado__pista">La clave de acceso y el archivo de la carta que se publica.</span>
+      </span>
+      <span class="apartado__estado" id="estadoConexion">—</span>
+      <span class="apartado__flecha" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </span>
+    </button>
+
+    <div class="apartado__cuerpo" id="cuerpoConexion" hidden>
+      <p class="apartado__nota">Estos datos se guardan solo en este navegador, nunca en la
+        aplicación. Por eso varios locales pueden usar la misma dirección web sin mezclarse.</p>
+
+      <label class="campo campo--clave">
+        <span class="campo__etiqueta">Token de acceso (API key)</span>
+        <span class="campo__conboton">
+          <input type="password" id="cfgToken" autocomplete="off" spellcheck="false">
+          <button class="btn btn--suave btn--mini" id="btnVerToken" type="button" aria-pressed="false">Ver</button>
+        </span>
+        <span class="campo__pista">Token de permisos limitados (Contents: Read and write) solo para este
+          repositorio. Se guarda en este navegador y no viaja a ningún otro sitio.</span>
+      </label>
+
+      <div class="ajustes__rejilla">
+        <label class="campo"><span class="campo__etiqueta">Cuenta de GitHub</span>
+          <input type="text" id="cfgOwner" autocomplete="off" spellcheck="false"></label>
+        <label class="campo"><span class="campo__etiqueta">Repositorio</span>
+          <input type="text" id="cfgRepo" autocomplete="off" spellcheck="false"></label>
+        <label class="campo"><span class="campo__etiqueta">Rama</span>
+          <input type="text" id="cfgRama" autocomplete="off" spellcheck="false"></label>
+        <label class="campo"><span class="campo__etiqueta">Ruta del archivo</span>
+          <input type="text" id="cfgRuta" value="carta.json" autocomplete="off" spellcheck="false"></label>
+      </div>
+
+      <div class="ajustes__acciones">
+        <button class="btn btn--principal" id="btnGuardarCfg" type="button">Guardar conexión</button>
+        <button class="btn btn--peligro" id="btnOlvidarToken" type="button">Olvidar el token</button>
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ 2. Personalización ============ -->
+  <article class="apartado" id="apPersonalizacion">
+    <button class="apartado__cabecera" type="button" aria-expanded="false" aria-controls="cuerpoPersonalizacion">
+      <span class="apartado__icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a9 9 0 1 0 0 18 2.2 2.2 0 0 0 1.7-3.6 2.2 2.2 0 0 1 1.7-3.6H18a3 3 0 0 0 3-3 9 9 0 0 0-9-7.8Z"/>
+          <circle cx="7.6" cy="11.4" r="1"/><circle cx="10.4" cy="7.4" r="1"/><circle cx="15.4" cy="8.4" r="1"/>
+        </svg>
+      </span>
+      <span class="apartado__texto">
+        <span class="apartado__titulo">Personalización</span>
+        <span class="apartado__pista">El nombre que aparece arriba y el color principal de la aplicación.</span>
+      </span>
+      <span class="apartado__flecha" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </span>
+    </button>
+
+    <div class="apartado__cuerpo" id="cuerpoPersonalizacion" hidden>
+
+      <section class="bloque">
+        <h3 class="bloque__titulo">Nombre del editor</h3>
+        <label class="campo">
+          <span class="campo__etiqueta">Nombre</span>
+          <input type="text" id="cfgNombre" autocomplete="off">
+          <span class="campo__pista">Aparece en el título como «Editor de …». Útil para reconocer de un
+            vistazo en qué local estás si gestionas varios.</span>
+        </label>
+        <p class="bloque__ejemplo">Se verá así: <b id="nombreEjemplo">Editor de la carta</b></p>
+        <div class="ajustes__acciones">
+          <button class="btn btn--principal" id="btnGuardarNombre" type="button">Guardar nombre</button>
+        </div>
+      </section>
+
+      <section class="bloque">
+        <h3 class="bloque__titulo">Color principal</h3>
+        <p class="bloque__nota">Es el color de la barra de arriba, de los botones de acción y de la
+          sección marcada. Se guarda en este navegador.</p>
+
+        <div class="color__modos">
+          <button class="chip" id="colorModoDegradado" type="button" aria-pressed="true">Degradado</button>
+          <button class="chip" id="colorModoSolido" type="button" aria-pressed="false">Un color</button>
+        </div>
+
+        <div class="color__previa" id="colorPrevia">
+          <span class="color__previa-titulo">Editor de la carta</span>
+          <span class="color__previa-boton" id="colorPreviaBoton">Publicar cambios</span>
+        </div>
+
+        <div class="color__ruedas">
+          <label class="color__rueda"><span class="campo__etiqueta">Color</span>
+            <input type="color" id="colorC1" value="#7A5CFB"></label>
+          <label class="color__rueda" id="colorSegundo"><span class="campo__etiqueta">Segundo color</span>
+            <input type="color" id="colorC2" value="#4C86FF"></label>
+        </div>
+
+        <span class="campo__etiqueta">Combinaciones hechas</span>
+        <div class="color__sugerencias" id="colorSugerencias">
+          <button class="color__sugerencia" type="button" title="Violeta y azul (original)"
+                  data-color-1="#7A5CFB" data-color-2="#4C86FF"
+                  style="background:linear-gradient(135deg,#7A5CFB,#4C86FF)"></button>
+          <button class="color__sugerencia" type="button" title="Esmeralda"
+                  data-color-1="#0EA372" data-color-2="#34D399"
+                  style="background:linear-gradient(135deg,#0EA372,#34D399)"></button>
+          <button class="color__sugerencia" type="button" title="Atardecer"
+                  data-color-1="#F97316" data-color-2="#EF4444"
+                  style="background:linear-gradient(135deg,#F97316,#EF4444)"></button>
+          <button class="color__sugerencia" type="button" title="Océano"
+                  data-color-1="#0EA5E9" data-color-2="#14B8A6"
+                  style="background:linear-gradient(135deg,#0EA5E9,#14B8A6)"></button>
+          <button class="color__sugerencia" type="button" title="Frambuesa"
+                  data-color-1="#DB2777" data-color-2="#8B5CF6"
+                  style="background:linear-gradient(135deg,#DB2777,#8B5CF6)"></button>
+          <button class="color__sugerencia" type="button" title="Azul marino"
+                  data-color-1="#1E3A8A" style="background:#1E3A8A"></button>
+          <button class="color__sugerencia" type="button" title="Grafito"
+                  data-color-1="#334155" style="background:#334155"></button>
+        </div>
+
+        <div class="ajustes__acciones">
+          <button class="btn btn--principal" id="btnColorGuardar" type="button">Guardar color</button>
+          <button class="btn btn--peligro" id="btnColorRestaurar" type="button">Restaurar original</button>
+        </div>
+      </section>
+    </div>
+  </article>
+
+  <!-- ============ 3. Información de la aplicación ============ -->
+  <article class="apartado" id="apInformacion">
+    <button class="apartado__cabecera" type="button" aria-expanded="false" aria-controls="cuerpoInformacion">
+      <span class="apartado__icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.8h.01"/>
+        </svg>
+      </span>
+      <span class="apartado__texto">
+        <span class="apartado__titulo">Información de la aplicación</span>
+        <span class="apartado__pista">Versión instalada, novedades y web con la que conecta.</span>
+      </span>
+      <span class="apartado__estado" id="estadoVersion">—</span>
+      <span class="apartado__flecha" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </span>
+    </button>
+
+    <div class="apartado__cuerpo" id="cuerpoInformacion" hidden>
+
+      <section class="bloque">
+        <h3 class="bloque__titulo">Versión instalada</h3>
+        <p class="version-salto"><b id="infoVersion">Versión —</b>
+          <span id="infoFecha">Fecha de publicación desconocida</span></p>
+        <p class="bloque__nota" id="infoTitulo">Novedades del editor</p>
+        <ul class="novedades" id="infoCambios"></ul>
+      </section>
+
+      <section class="bloque">
+        <h3 class="bloque__titulo">Web con la que conecta</h3>
+        <p class="bloque__nota">Es la página que se actualiza al pulsar «Publicar cambios».
+          Se intenta averiguar sola a partir de GitHub; si no acierta, escríbela a mano.</p>
+
+        <dl class="ficha">
+          <div class="ficha__fila">
+            <dt>Nombre</dt><dd id="fichaSitioNombre">Sin nombre</dd>
+          </div>
+          <div class="ficha__fila">
+            <dt>Dirección</dt>
+            <dd><a class="ficha__enlace" id="fichaSitioUrl" target="_blank" rel="noopener noreferrer"
+                   aria-disabled="true">Sin averiguar todavía</a></dd>
+          </div>
+          <div class="ficha__fila">
+            <dt>Repositorio</dt><dd id="fichaRepo">Sin configurar</dd>
+          </div>
+          <div class="ficha__fila">
+            <dt>Archivo</dt><dd id="fichaArchivo">carta.json · rama main</dd>
+          </div>
+        </dl>
+
+        <div class="ajustes__rejilla">
+          <label class="campo"><span class="campo__etiqueta">Nombre de la web</span>
+            <input type="text" id="sitioNombre" autocomplete="off"></label>
+          <label class="campo"><span class="campo__etiqueta">Dirección web</span>
+            <input type="text" id="sitioUrl" inputmode="url" autocomplete="off" spellcheck="false"
+                   placeholder="https://…"></label>
+        </div>
+
+        <div class="ajustes__acciones">
+          <button class="btn btn--principal" id="btnGuardarSitio" type="button">Guardar</button>
+          <button class="btn btn--suave" id="btnDetectarSitio" type="button">Averiguar desde GitHub</button>
+        </div>
+      </section>
+    </div>
+  </article>
+
+</main>
+
+<!-- ===== Programa =====
+     El orden importa: cada archivo usa cosas definidas en los
+     anteriores. Si añades uno nuevo, colócalo en su sitio. -->
+<script src="js/config.js"></script>
+<script src="js/utiles.js"></script>
+<script src="js/tema.js"></script>
+<script src="js/ajustes.js"></script>
+<script src="js/color.js"></script>
+<script src="js/color-ui.js"></script>
+<script src="js/version.js"></script>
+<script src="js/pagina-ajustes.js"></script>
+</body>
+</html>

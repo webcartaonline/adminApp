@@ -15,13 +15,15 @@
    automáticamente la ventana con lo que ha cambiado.
    ========================================================= */
 
-const VERSION = '3.8.0';
+const VERSION = '3.9.0';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
-   Si añades un archivo css o js, apúntalo también aquí. */
+   Si añades un archivo css, js o una página html, apúntalo también
+   aquí (y si es una página, en el apartado de navegación de abajo). */
 const ARCHIVOS = [
   './',
+  './ajustes.html',
   './manifest.json',
   './css/base.css',
   './css/botones.css',
@@ -39,8 +41,10 @@ const ARCHIVOS = [
   './js/estado.js',
   './js/tema.js',
   './js/color.js',
+  './js/color-ui.js',
   './js/panel.js',
   './js/ajustes.js',
+  './js/pagina-ajustes.js',
   './js/idiomas.js',
   './js/espera.js',
   './js/imagenes.js',
@@ -98,13 +102,21 @@ self.addEventListener('fetch',(ev)=>{
   }
 
   // Al abrir la aplicación se sirve la copia guardada de la página
-  // principal. Ojo: se pide './' y no './index.html' a propósito —
-  // Cloudflare redirige index.html hacia '/', y una copia guardada que
-  // venga de una redirección hace que el navegador se niegue a abrirla.
+  // que toca. Ojo con la principal: se pide './' y no './index.html'
+  // a propósito — Cloudflare redirige index.html hacia '/', y una copia
+  // guardada que venga de una redirección hace que el navegador se
+  // niegue a abrirla.
+  // Los ajustes son una página aparte, así que hay que mirar a dónde
+  // se va: si se contestara siempre con './' se abriría el editor al
+  // pulsar «Ajustes».
   if(pet.mode==='navigate'){
-    ev.respondWith(
-      caches.match('./').then(r=>r||fetch(pet))
-    );
+    ev.respondWith((async()=>{
+      const destino=url.pathname.endsWith('/ajustes.html')?'./ajustes.html':'./';
+      const guardada=await caches.match(destino);
+      if(guardada)return guardada;
+      try{return await fetch(pet);}
+      catch(e){return (await caches.match('./'))||new Response('Sin conexión',{status:503});}
+    })());
     return;
   }
 

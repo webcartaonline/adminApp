@@ -25,17 +25,17 @@ async function leerNotas(){
     const r=await fetch(`version.json?b=${Date.now().toString(36)}`,{cache:'no-store'});
     if(!r.ok)return;
     notaVersion=await r.json();
-    $('#cfgVersion').textContent=`Versión ${notaVersion.version||'—'}`;
     mostrarNovedadesSiToca();
-  }catch{
-    $('#cfgVersion').textContent='Versión —';
-  }
+  }catch{ /* sin conexión: la versión se queda sin saber, y ya está */ }
 }
 
 /* Compara con la última versión que este navegador ya vio (se guarda
-   en el propio navegador). Si coincide, no hay nada que contar. */
+   en el propio navegador). Si coincide, no hay nada que contar.
+   La ventana solo existe en el editor: en la página de ajustes no
+   hay nada que enseñar y se sale sin hacer ruido. */
 function mostrarNovedadesSiToca(){
   if(!notaVersion?.version)return;
+  if(!$('#modalActualizacion'))return;
   let vista=null;
   try{vista=localStorage.getItem(CLAVE_VERSION_VISTA);}catch{}
   if(vista===notaVersion.version)return;
@@ -97,4 +97,4 @@ async function actualizarAhora(){
   location.reload();
 }
 
-$('#btnActualizarAhora').addEventListener('click',actualizarAhora);
+$('#btnActualizarAhora')?.addEventListener('click',actualizarAhora);

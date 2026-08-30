@@ -6,7 +6,7 @@
 
 sincronizarBotonTema();
 arrancarAnchoPanel();
-aplicarAjustes();
+aplicarNombreGuardado();
 
 // Si al cerrar quedaba cuenta atrás de publicación, se retoma.
 {const pendiente=leerEsperaGuardada();if(pendiente)empezarEspera(pendiente);}

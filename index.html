@@ -42,12 +42,10 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <link rel="stylesheet" href="css/botones.css">
 <link rel="stylesheet" href="css/formularios.css">
 <link rel="stylesheet" href="css/barra.css">
-<link rel="stylesheet" href="css/ajustes.css">
 <link rel="stylesheet" href="css/arbol.css">
 <link rel="stylesheet" href="css/editor.css">
 <link rel="stylesheet" href="css/estadisticas.css">
 <link rel="stylesheet" href="css/imagenes.css">
-<link rel="stylesheet" href="css/color.css">
 <link rel="stylesheet" href="css/version.css">
 </head>
 <body>
@@ -55,15 +53,15 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <div class="barra">
   <div class="barra__cabecera">
     <div class="barra__marca">
-      <div class="barra__titulo">Editor de <span id="marcaNombre">la carta</span></div>
+      <div class="barra__titulo">Editor de <span id="marcaNombre" data-nombre-editor>la carta</span></div>
       <div class="barra__sub">Panel del local</div>
     </div>
-    <button class="btn btn--color" id="btnColor" type="button"
-            title="Elegir el color principal" aria-label="Elegir el color principal"><span class="btn--color__gota" aria-hidden="true"></span></button>
     <button class="btn btn--tema" id="btnTema" type="button" aria-pressed="false">Modo oscuro</button>
   </div>
   <div class="barra__acciones">
-    <button class="btn btn--claro" id="btnAjustes" type="button">Ajustes</button>
+    <!-- Los ajustes son una página aparte: así caben todos juntos y
+         el editor se queda solo con lo de editar. -->
+    <a class="btn btn--claro" id="btnAjustes" href="ajustes.html">Ajustes</a>
     <button class="btn btn--claro" id="btnCargar" type="button">Traer de GitHub</button>
     <button class="btn btn--claro" id="btnEstadisticas" type="button" hidden>Estadísticas</button>
     <button class="btn btn--principal" id="btnPublicar" type="button" disabled>Publicar cambios</button>
@@ -109,32 +107,6 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
          stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
   </span>
 </button>
-
-<section class="ajustes" id="ajustes">
-  <div class="ajustes__local">
-    <label class="campo"><span class="campo__etiqueta">Nombre del editor</span>
-      <input type="text" id="cfgNombre">
-      <span class="campo__pista">Aparece en el título como «Editor de …». Útil para reconocer de un vistazo en qué local estás si gestionas varios.</span></label>
-  </div>
-  <div class="ajustes__rejilla">
-    <label class="campo"><span class="campo__etiqueta">Cuenta de GitHub</span>
-      <input type="text" id="cfgOwner"></label>
-    <label class="campo"><span class="campo__etiqueta">Repositorio</span>
-      <input type="text" id="cfgRepo"></label>
-    <label class="campo"><span class="campo__etiqueta">Rama</span>
-      <input type="text" id="cfgRama"></label>
-    <label class="campo"><span class="campo__etiqueta">Ruta del archivo</span>
-      <input type="text" id="cfgRuta" value="carta.json"></label>
-    <label class="campo"><span class="campo__etiqueta">Token de acceso</span>
-      <input type="password" id="cfgToken">
-      <span class="campo__pista">Token de permisos limitados (Contents: Read and write) solo para este repositorio. Se guarda en este navegador.</span></label>
-  </div>
-  <div class="ajustes__acciones">
-    <button class="btn btn--suave" id="btnGuardarCfg" type="button">Guardar ajustes</button>
-    <button class="btn btn--peligro" id="btnOlvidarToken" type="button">Olvidar el token</button>
-    <span class="ajustes__version" id="cfgVersion">Versión —</span>
-  </div>
-</section>
 
 <div class="taller">
   <aside class="panel" id="panelLateral">
@@ -206,61 +178,6 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 
     <div class="modal__acc">
       <button class="btn btn--principal" id="btnActualizarAhora" type="button">Actualizar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== Ventana para elegir el color principal ===== -->
-<div class="modal" id="modalColor" hidden role="dialog" aria-modal="true" aria-labelledby="colorTitulo">
-  <div class="modal__caja">
-    <h2 class="modal__titulo" id="colorTitulo">Color principal</h2>
-    <p class="modal__pista">Es el color de la barra de arriba, de los botones de acción y de
-      la sección marcada. Se guarda en este navegador.</p>
-
-    <div class="color__modos">
-      <button class="chip" id="colorModoDegradado" type="button" aria-pressed="true">Degradado</button>
-      <button class="chip" id="colorModoSolido" type="button" aria-pressed="false">Un color</button>
-    </div>
-
-    <div class="color__previa" id="colorPrevia">
-      <span class="color__previa-titulo">Editor de la carta</span>
-      <span class="color__previa-boton" id="colorPreviaBoton">Publicar cambios</span>
-    </div>
-
-    <div class="color__ruedas">
-      <label class="color__rueda"><span class="campo__etiqueta">Color</span>
-        <input type="color" id="colorC1" value="#7A5CFB"></label>
-      <label class="color__rueda" id="colorSegundo"><span class="campo__etiqueta">Segundo color</span>
-        <input type="color" id="colorC2" value="#4C86FF"></label>
-    </div>
-
-    <span class="campo__etiqueta">Combinaciones hechas</span>
-    <div class="color__sugerencias" id="colorSugerencias">
-      <button class="color__sugerencia" type="button" title="Violeta y azul (original)"
-              data-color-1="#7A5CFB" data-color-2="#4C86FF"
-              style="background:linear-gradient(135deg,#7A5CFB,#4C86FF)"></button>
-      <button class="color__sugerencia" type="button" title="Esmeralda"
-              data-color-1="#0EA372" data-color-2="#34D399"
-              style="background:linear-gradient(135deg,#0EA372,#34D399)"></button>
-      <button class="color__sugerencia" type="button" title="Atardecer"
-              data-color-1="#F97316" data-color-2="#EF4444"
-              style="background:linear-gradient(135deg,#F97316,#EF4444)"></button>
-      <button class="color__sugerencia" type="button" title="Océano"
-              data-color-1="#0EA5E9" data-color-2="#14B8A6"
-              style="background:linear-gradient(135deg,#0EA5E9,#14B8A6)"></button>
-      <button class="color__sugerencia" type="button" title="Frambuesa"
-              data-color-1="#DB2777" data-color-2="#8B5CF6"
-              style="background:linear-gradient(135deg,#DB2777,#8B5CF6)"></button>
-      <button class="color__sugerencia" type="button" title="Azul marino"
-              data-color-1="#1E3A8A" style="background:#1E3A8A"></button>
-      <button class="color__sugerencia" type="button" title="Grafito"
-              data-color-1="#334155" style="background:#334155"></button>
-    </div>
-
-    <div class="modal__acc">
-      <button class="btn btn--peligro" id="btnColorRestaurar" type="button">Restaurar original</button>
-      <button class="btn btn--suave" id="btnColorCerrar" type="button">Cancelar</button>
-      <button class="btn btn--principal" id="btnColorGuardar" type="button">Guardar color</button>
     </div>
   </div>
 </div>

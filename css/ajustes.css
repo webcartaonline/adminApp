@@ -1,18 +1,112 @@
 /* =========================================================
-   AJUSTES
-   El panel plegable con los datos de conexión a GitHub.
+   PÁGINA DE AJUSTES
+   Una lista de apartados: cada uno es una tarjeta de cristal
+   con su cabecera pulsable. Al pulsarla se despliega dentro
+   el ajuste correspondiente.
    ========================================================= */
 
-.ajustes{padding:24px 22px;background:transparent;border-bottom:1px solid var(--linea)}
-.ajustes__local{max-width:920px;margin-bottom:16px;padding:18px 20px;
-  border:1px solid var(--linea);border-radius:var(--radio-m);position:relative;overflow:hidden;
+.ajustes{width:100%;max-width:860px;margin:0 auto;padding:26px 22px 60px;
+  display:flex;flex-direction:column;gap:14px}
+
+/* ---------- Botón de volver, en la barra de arriba ---------- */
+.btn--volver{display:inline-flex;align-items:center;gap:6px;flex:none;
+  text-decoration:none;line-height:1}
+.btn--volver svg{width:16px;height:16px;flex:none}
+/* Con el botón de volver a la izquierda, la marca se centra sola. */
+.barra__marca--centro{margin:0 auto;text-align:center}
+
+/* ---------- Apartado desplegable ---------- */
+.apartado{border:1px solid var(--linea);border-radius:var(--radio);overflow:hidden;
   background:var(--marfil-alto);box-shadow:var(--sombra);
-  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur))}
-/* Filo de acento a la izquierda de la tarjeta */
-.ajustes__local::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--grad)}
-.ajustes__local .campo{max-width:380px}
-.ajustes__rejilla{display:grid;gap:12px;max-width:920px;
+  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
+  transition:border-color .16s,box-shadow .16s}
+.apartado--abierto{border-color:var(--linea-fuerte);box-shadow:var(--sombra-alta)}
+
+.apartado__cabecera{display:flex;align-items:center;gap:13px;width:100%;
+  padding:16px 18px;border:0;background:transparent;color:var(--tinta);
+  font-family:inherit;text-align:left;cursor:pointer;
+  transition:background .14s}
+.apartado__cabecera:hover{background:var(--velo)}
+
+/* El icono va en una pastilla con el color principal, para que cada
+   apartado se distinga de un vistazo sin leer. */
+.apartado__icono{width:38px;height:38px;flex:none;display:grid;place-items:center;
+  border-radius:12px;background:var(--grad);color:var(--sobre-acento);
+  box-shadow:var(--glow)}
+.apartado__icono svg{width:20px;height:20px}
+
+.apartado__texto{display:flex;flex-direction:column;gap:2px;min-width:0;margin-right:auto}
+.apartado__titulo{font-family:var(--display);font-weight:800;font-size:1rem;
+  letter-spacing:-.01em}
+.apartado__pista{font-size:.76rem;color:var(--tinta-suave);line-height:1.35}
+
+/* Etiqueta corta a la derecha: «Configurada», el número de versión… */
+.apartado__estado{flex:none;padding:3px 10px;border-radius:100px;
+  background:var(--pastilla);color:var(--tinta-suave);
+  font-size:.7rem;font-weight:700;letter-spacing:.03em;font-variant-numeric:tabular-nums}
+.apartado__estado--bien{background:var(--verde-tenue);color:var(--verde-texto)}
+.apartado__estado--falta{background:rgba(239,68,68,.14);color:var(--aviso)}
+
+.apartado__flecha{flex:none;display:grid;place-items:center;width:22px;height:22px;
+  color:var(--tinta-suave);transition:transform .2s}
+.apartado__flecha svg{width:18px;height:18px}
+.apartado--abierto .apartado__flecha{transform:rotate(180deg);color:var(--acento-texto)}
+
+.apartado__cuerpo{padding:4px 18px 20px;border-top:1px solid var(--linea)}
+.apartado__nota{margin:14px 0 16px;font-size:.79rem;color:var(--tinta-suave);line-height:1.5}
+
+/* ---------- Bloques dentro de un apartado ---------- */
+.bloque{padding:16px 0}
+.bloque+.bloque{border-top:1px solid var(--linea)}
+.bloque__titulo{margin:0 0 10px;font-family:var(--display);font-weight:800;
+  font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-suave)}
+.bloque__nota{margin:0 0 14px;font-size:.79rem;color:var(--tinta-suave);line-height:1.5}
+.bloque__ejemplo{margin:12px 0 0;font-size:.8rem;color:var(--tinta-suave)}
+.bloque__ejemplo b{font-family:var(--display);font-size:.95rem;color:var(--tinta)}
+
+/* ---------- Rejilla de campos y pie de acciones ---------- */
+.ajustes__rejilla{display:grid;gap:12px;
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
-.ajustes__acciones{margin-top:14px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-.ajustes__version{margin-left:auto;font-size:.72rem;color:var(--tinta-suave);
-  font-variant-numeric:tabular-nums}
+.ajustes__acciones{margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+
+/* Campo con un botón pegado a la derecha (el «Ver» del token) */
+.campo--clave{margin-bottom:16px}
+.campo__conboton{display:flex;align-items:center;gap:8px}
+.campo__conboton input{flex:1 1 auto;min-width:0}
+.campo__conboton .btn{flex:none}
+
+/* ---------- Ficha de datos (nombre, dirección, repositorio…) ---------- */
+.ficha{margin:0 0 16px;padding:14px 16px;border:1px solid var(--linea);
+  border-radius:var(--radio-m);background:var(--velo);
+  display:flex;flex-direction:column;gap:9px}
+.ficha__fila{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.ficha dt{flex:none;width:98px;font-size:.66rem;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--tinta-suave)}
+.ficha dd{margin:0;flex:1 1 200px;min-width:0;font-size:.85rem;
+  overflow-wrap:anywhere}
+.ficha__enlace{color:var(--acento-texto);font-weight:600;text-decoration:none;
+  border-bottom:1px solid var(--acento-tenue)}
+.ficha__enlace:hover{border-bottom-color:currentColor}
+.ficha__enlace[aria-disabled=true]{color:var(--tinta-suave);font-weight:400;
+  border-bottom:0;cursor:default}
+
+/* ---------- Móvil ---------- */
+@media(max-width:600px){
+  .ajustes{padding:16px 14px 48px;gap:12px}
+  .apartado__cabecera{padding:14px;gap:11px}
+  .apartado__cuerpo{padding:4px 14px 18px}
+  .apartado__icono{width:34px;height:34px;border-radius:11px}
+  .apartado__icono svg{width:18px;height:18px}
+  /* La pista de debajo del título sobra cuando hay poco ancho:
+     el título ya dice de qué va el apartado. */
+  .apartado__pista{display:none}
+  .ficha dt{width:auto}
+  .ajustes__acciones .btn{flex:1 1 auto}
+}
+@media(max-width:420px){
+  /* Con la barra plegada, el botón de volver y el de tema caben
+     en una línea y la marca pasa debajo. */
+  .barra__cabecera{flex-wrap:wrap}
+  .barra__marca--centro{order:3;width:100%;margin:0;text-align:left}
+  .btn--volver{margin-right:auto}
+}

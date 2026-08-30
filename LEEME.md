@@ -54,8 +54,10 @@ Es lo que el cliente lee en la ventana de novedades.
 Sube los cambios a GitHub y ya está. **La versión nueva se instala sola**, sin
 que el cliente tenga que hacer ni aceptar nada.
 
-> **Si añades un archivo `.css` o `.js` nuevo**, apúntalo también en la lista
-> `ARCHIVOS` de `sw.js`, o no se guardará para funcionar sin conexión.
+> **Si añades un archivo `.css`, `.js` o `.html` nuevo**, apúntalo también en la
+> lista `ARCHIVOS` de `sw.js`, o no se guardará para funcionar sin conexión. Si
+> es una página nueva, añádela además al apartado de navegación del `fetch` de
+> `sw.js`, donde se decide qué copia guardada se sirve.
 
 ## 4. Qué ve el cliente cuando hay una versión nueva
 
@@ -71,7 +73,8 @@ momento por este proceso.
 ## 5. Estructura
 
 ```
-index.html          la página
+index.html          el editor de la carta
+ajustes.html        la página de ajustes (conexión, personalización, información)
 manifest.json       nombre e icono de la app instalada
 sw.js               el "vigilante": guarda copia y actualiza sin preguntar
 version.json        las novedades que lee el cliente

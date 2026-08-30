@@ -13,7 +13,7 @@ function rutaEstadisticas(ruta){
 
 async function traer(){
   const a=leerAjustes();
-  if(!a.owner||!a.repo||!a.ruta){avisar('Faltan datos de conexión. Abre los ajustes y complétalos.','error');$('#ajustes').hidden=false;return;}
+  if(!a.owner||!a.repo||!a.ruta){avisar('Faltan datos de conexión. Entra en «Ajustes» y complétalos.','error');return;}
   avisar('Trayendo la carta de GitHub…');
   const cab={'Accept':'application/vnd.github+json',...(a.token?{'Authorization':`Bearer ${a.token}`}:{})};
   const url=`https://api.github.com/repos/${a.owner}/${a.repo}/contents/${a.ruta}?ref=${a.rama||'main'}`;
@@ -113,7 +113,7 @@ async function publicar(){
     return;
   }
   const a=leerAjustes();
-  if(!a.token){avisar('Hace falta un token para publicar. Abre los ajustes.','error');$('#ajustes').hidden=false;return;}
+  if(!a.token){avisar('Hace falta un token para publicar. Entra en «Ajustes» y añádelo.','error');return;}
   if(!estado.datos){avisar('No hay ninguna carta cargada.','error');return;}
   const mensaje=prompt('¿Qué has cambiado?','chore(carta): actualizar precios');
   if(mensaje===null)return;
