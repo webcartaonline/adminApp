@@ -1,13 +1,8 @@
 {
-  "version": "3.9.0",
+  "version": "4.1",
   "fecha": "2026-08-31",
-  "titulo": "Los ajustes, en su propia página",
+  "titulo": "Arreglado el botón «Ajustes»",
   "cambios": [
-    "«Ajustes» ya no abre un panel dentro del editor: te lleva a una página propia con todo lo que se puede configurar.",
-    "La página de ajustes tiene tres apartados que se despliegan al pulsarlos: conexión con GitHub, personalización e información de la aplicación.",
-    "El nombre del editor y el color principal están ahora juntos en «Personalización», con una vista previa del nombre mientras lo escribes.",
-    "En «Información de la aplicación» se ve la versión instalada, lo que trae de nuevo y la web que se actualiza al publicar; la dirección se puede averiguar sola desde GitHub o escribirla a mano.",
-    "El token de acceso se puede mostrar un momento para comprobar que está bien copiado.",
-    "El botón de modo claro y oscuro sigue en la barra de arriba, a mano en las dos páginas."
+    "El botón «Ajustes» vuelve a abrir su página: antes daba un error de «no se puede obtener acceso a esta página»."
   ]
 }

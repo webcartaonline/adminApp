@@ -15,7 +15,7 @@
    automáticamente la ventana con lo que ha cambiado.
    ========================================================= */
 
-const VERSION = '3.9.0';
+const VERSION = '4.1';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
@@ -23,7 +23,7 @@ const CACHE   = `editor-carta-${VERSION}`;
    aquí (y si es una página, en el apartado de navegación de abajo). */
 const ARCHIVOS = [
   './',
-  './ajustes.html',
+  './ajustes',
   './manifest.json',
   './css/base.css',
   './css/botones.css',
@@ -102,16 +102,19 @@ self.addEventListener('fetch',(ev)=>{
   }
 
   // Al abrir la aplicación se sirve la copia guardada de la página
-  // que toca. Ojo con la principal: se pide './' y no './index.html'
-  // a propósito — Cloudflare redirige index.html hacia '/', y una copia
-  // guardada que venga de una redirección hace que el navegador se
-  // niegue a abrirla.
-  // Los ajustes son una página aparte, así que hay que mirar a dónde
-  // se va: si se contestara siempre con './' se abriría el editor al
-  // pulsar «Ajustes».
+  // que toca. Ojo con las direcciones: Cloudflare quita el '.html' del
+  // final y manda a la dirección corta ('/index.html' va a '/', y
+  // '/ajustes.html' va a '/ajustes'). Una copia guardada que venga de
+  // ese desvío hace que el navegador se niegue a abrirla, así que aquí
+  // se piden y se guardan SIEMPRE las direcciones cortas: './' y
+  // './ajustes'.
+  // Aun así se atiende la forma larga por si queda algún enlace o
+  // acceso directo viejo apuntando a '/ajustes.html'.
   if(pet.mode==='navigate'){
     ev.respondWith((async()=>{
-      const destino=url.pathname.endsWith('/ajustes.html')?'./ajustes.html':'./';
+      const ruta=url.pathname;
+      const esAjustes=ruta.endsWith('/ajustes')||ruta.endsWith('/ajustes.html');
+      const destino=esAjustes?'./ajustes':'./';
       const guardada=await caches.match(destino);
       if(guardada)return guardada;
       try{return await fetch(pet);}
