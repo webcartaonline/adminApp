@@ -59,7 +59,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 
 <main class="ajustes">
 
-  <!-- ============ 1. Conexión con GitHub (la API KEY) ============ -->
+  <!-- ============ 1. Conexión con la página (la API KEY) ============ -->
   <article class="apartado" id="apConexion">
     <button class="apartado__cabecera" type="button" aria-expanded="false" aria-controls="cuerpoConexion">
       <span class="apartado__icono" aria-hidden="true">
@@ -70,7 +70,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
         </svg>
       </span>
       <span class="apartado__texto">
-        <span class="apartado__titulo">Conexión con GitHub</span>
+        <span class="apartado__titulo">Conexión con la página</span>
         <span class="apartado__pista">La clave de acceso y el archivo de la carta que se publica.</span>
       </span>
       <span class="apartado__estado" id="estadoConexion">—</span>
@@ -95,9 +95,9 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
       </label>
 
       <div class="ajustes__rejilla">
-        <label class="campo"><span class="campo__etiqueta">Cuenta de GitHub</span>
+        <label class="campo"><span class="campo__etiqueta">Servicio</span>
           <input type="text" id="cfgOwner" autocomplete="off" spellcheck="false"></label>
-        <label class="campo"><span class="campo__etiqueta">Repositorio</span>
+        <label class="campo"><span class="campo__etiqueta">Cliente</span>
           <input type="text" id="cfgRepo" autocomplete="off" spellcheck="false"></label>
         <label class="campo"><span class="campo__etiqueta">Rama</span>
           <input type="text" id="cfgRama" autocomplete="off" spellcheck="false"></label>
@@ -247,9 +247,6 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
           </div>
           <div class="ficha__fila">
             <dt>Repositorio</dt><dd id="fichaRepo">Sin configurar</dd>
-          </div>
-          <div class="ficha__fila">
-            <dt>Archivo</dt><dd id="fichaArchivo">carta.json · rama main</dd>
           </div>
         </dl>
 

@@ -60,8 +60,13 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
   </div>
   <div class="barra__acciones">
     <!-- Los ajustes son una página aparte: así caben todos juntos y
-         el editor se queda solo con lo de editar. -->
-    <a class="btn btn--claro" id="btnAjustes" href="ajustes">Ajustes</a>
+         el editor se queda solo con lo de editar.
+         El enlace lleva el '.html' a propósito: es el nombre real del
+         archivo y funciona en todas partes (al probar en el ordenador,
+         en GitHub Pages y en Cloudflare). La dirección corta '/ajustes'
+         solo la entienden algunos servidores, y al probar en local da
+         un «Cannot GET /ajustes». -->
+    <a class="btn btn--claro" id="btnAjustes" href="ajustes.html">Ajustes</a>
     <button class="btn btn--claro" id="btnCargar" type="button">Traer de GitHub</button>
     <button class="btn btn--claro" id="btnEstadisticas" type="button" hidden>Estadísticas</button>
     <button class="btn btn--principal" id="btnPublicar" type="button" disabled>Publicar cambios</button>

@@ -54,10 +54,14 @@ Es lo que el cliente lee en la ventana de novedades.
 Sube los cambios a GitHub y ya está. **La versión nueva se instala sola**, sin
 que el cliente tenga que hacer ni aceptar nada.
 
-> **Si añades un archivo `.css`, `.js` o `.html` nuevo**, apúntalo también en la
-> lista `ARCHIVOS` de `sw.js`, o no se guardará para funcionar sin conexión. Si
-> es una página nueva, añádela además al apartado de navegación del `fetch` de
-> `sw.js`, donde se decide qué copia guardada se sirve.
+> **Si añades un archivo `.css` o `.js` nuevo**, apúntalo también en la lista
+> `ARCHIVOS` de `sw.js`, o no se guardará para funcionar sin conexión.
+>
+> **Si añades una página `.html` nueva**, va en la lista `PAGINAS` de `sw.js`,
+> no en `ARCHIVOS`, y además en el apartado de navegación del `fetch`, donde se
+> decide qué copia guardada se sirve. Y en los enlaces escribe siempre el nombre
+> completo del archivo (`pagina.html`, no `pagina`): la dirección corta solo la
+> entienden algunos servidores, y al probar en el ordenador da un error.
 
 ## 4. Qué ve el cliente cuando hay una versión nueva
 

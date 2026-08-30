@@ -194,7 +194,6 @@ function pintarFichaSitio(){
 function pintarFichaConexion(){
   const a=leerAjustes();
   $('#fichaRepo').textContent=a.owner&&a.repo?`${a.owner}/${a.repo}`:'Sin configurar';
-  $('#fichaArchivo').textContent=`${a.ruta||'carta.json'} · rama ${a.rama||'main'}`;
 }
 
 /* ---------- Información de la aplicación ---------- */

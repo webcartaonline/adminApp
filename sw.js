@@ -15,15 +15,13 @@
    automáticamente la ventana con lo que ha cambiado.
    ========================================================= */
 
-const VERSION = '4.1';
+const VERSION = '4.2';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
-   Si añades un archivo css, js o una página html, apúntalo también
-   aquí (y si es una página, en el apartado de navegación de abajo). */
+   Si añades un archivo css o js, apúntalo también aquí.
+   Las páginas html NO van en esta lista: van en PAGINAS, más abajo. */
 const ARCHIVOS = [
-  './',
-  './ajustes',
   './manifest.json',
   './css/base.css',
   './css/botones.css',
@@ -64,13 +62,48 @@ const ARCHIVOS = [
   './img/icono-mascara-512.png'
 ];
 
+/* ---------- Las dos páginas ----------
+   Van aparte del resto de archivos porque su dirección no es la misma
+   en todos los sitios donde se puede abrir la aplicación:
+
+     · Al probar en el ordenador (Live Server y compañía) solo existe
+       el nombre real del archivo: '/index.html' y '/ajustes.html'.
+     · GitHub Pages entiende los dos, el largo y el corto.
+     · Cloudflare quita el '.html' y manda a la dirección corta.
+
+   Además, una copia guardada que venga de un desvío no sirve: el
+   navegador se niega a abrirla. Por eso se prueban las formas en
+   orden, se guarda la primera que conteste sin desviar, y siempre
+   bajo el mismo nombre corto, que es el que busca luego el apartado
+   de navegación. Si ninguna contesta, no se guarda y esa página se
+   pedirá a la red: es preferible a que falle la instalación entera y
+   la aplicación se quede sin funcionar sin conexión. */
+const PAGINAS = [
+  { clave:'./',         formas:['./'] },
+  { clave:'./ajustes',  formas:['./ajustes','./ajustes.html'] }
+];
+
+async function guardarPaginas(cache){
+  for(const pagina of PAGINAS){
+    for(const forma of pagina.formas){
+      try{
+        const r=await fetch(forma,{cache:'no-store'});
+        if(r.ok&&!r.redirected){ await cache.put(pagina.clave,r); break; }
+      }catch(e){ /* se prueba la forma siguiente */ }
+    }
+  }
+}
+
 /* ---------- Instalación ----------
    Se descarga la versión nueva entera y se pone en marcha
    sin esperar el visto bueno de nadie. */
 self.addEventListener('install',(ev)=>{
-  ev.waitUntil(
-    caches.open(CACHE).then(c=>c.addAll(ARCHIVOS)).then(()=>self.skipWaiting())
-  );
+  ev.waitUntil((async()=>{
+    const cache=await caches.open(CACHE);
+    await cache.addAll(ARCHIVOS);
+    await guardarPaginas(cache);
+    await self.skipWaiting();
+  })());
 });
 
 /* ---------- Activación ----------
@@ -101,15 +134,11 @@ self.addEventListener('fetch',(ev)=>{
     return;
   }
 
-  // Al abrir la aplicación se sirve la copia guardada de la página
-  // que toca. Ojo con las direcciones: Cloudflare quita el '.html' del
-  // final y manda a la dirección corta ('/index.html' va a '/', y
-  // '/ajustes.html' va a '/ajustes'). Una copia guardada que venga de
-  // ese desvío hace que el navegador se niegue a abrirla, así que aquí
-  // se piden y se guardan SIEMPRE las direcciones cortas: './' y
-  // './ajustes'.
-  // Aun así se atiende la forma larga por si queda algún enlace o
-  // acceso directo viejo apuntando a '/ajustes.html'.
+  // Al abrir una página se sirve la copia guardada de la que toca.
+  // Se atienden las dos formas de escribir la dirección de los
+  // ajustes, la corta y la larga, porque según el servidor vale una u
+  // otra (y puede quedar por ahí algún acceso directo con la otra).
+  // Las copias están guardadas con el nombre corto: ver PAGINAS.
   if(pet.mode==='navigate'){
     ev.respondWith((async()=>{
       const ruta=url.pathname;
@@ -118,7 +147,7 @@ self.addEventListener('fetch',(ev)=>{
       const guardada=await caches.match(destino);
       if(guardada)return guardada;
       try{return await fetch(pet);}
-      catch(e){return (await caches.match('./'))||new Response('Sin conexión',{status:503});}
+      catch(e){return new Response('Sin conexión',{status:503,statusText:'Sin conexión'});}
     })());
     return;
   }

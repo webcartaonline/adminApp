@@ -1,8 +1,9 @@
 {
-  "version": "4.1",
+  "version": "4.2",
   "fecha": "2026-08-31",
   "titulo": "Arreglado el botón «Ajustes»",
   "cambios": [
-    "El botón «Ajustes» vuelve a abrir su página: antes daba un error de «no se puede obtener acceso a esta página»."
+    "El botón «Ajustes» vuelve a abrir su página: antes daba un error de «no se puede obtener acceso a esta página».",
+    "La copia que la aplicación guarda para funcionar sin conexión ya no falla al instalarse: se adapta a cómo escriba la dirección cada servidor."
   ]
 }
