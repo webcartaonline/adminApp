@@ -1,10 +1,11 @@
 {
-  "version": "3.6.0",
+  "version": "3.8.0",
   "fecha": "2026-08-30",
-  "titulo": "Imágenes también en los grupos",
+  "titulo": "Panel de secciones siempre a mano",
   "cambios": [
-    "Los grupos ya pueden llevar imagen de fondo detrás de su título, igual que las secciones.",
-    "Nuevo ajuste «Zona importante de la foto»: elige si se conserva la parte de arriba, la del medio o la de abajo.",
-    "Las franjas de las secciones son ahora más bajas y llegan de lado a lado de la pantalla, así que el encuadre cambia: conviene revisar las fotos de sección que ya estaban publicadas."
+    "El grupo elegido en el panel lateral ya no se ve con un resplandor tan fuerte: ahora es un verde suave, a juego con el resto de colores.",
+    "En pantallas grandes, el panel de secciones y grupos se queda a la vista aunque bajes del todo por la lista de ítems.",
+    "En el móvil aparece una barrita arriba con la sección y el grupo en el que estás: al pulsarla vuelves a la lista para cambiar.",
+    "La barra de desplazamiento del panel es ahora más fina y discreta, y se adapta al modo claro u oscuro."
   ]
 }

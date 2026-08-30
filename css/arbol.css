@@ -14,9 +14,33 @@
   flex:1 0 auto}
 .taller--ancho{grid-template-columns:minmax(0,1fr)}
 @media(max-width:840px){.taller{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr}}
-.panel{padding:22px 16px;background:var(--marfil-alto);border-right:1px solid var(--linea);
+.panel{background:var(--marfil-alto);border-right:1px solid var(--linea);
   -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur))}
-@media(max-width:840px){.panel{border-right:none;border-bottom:1px solid var(--linea)}}
+/* El contenido del panel se queda pegado justo debajo de la barra superior:
+   aunque se baje hasta el final de una lista larga de ítems, las secciones y
+   los grupos siguen a la vista. Si la propia lista de secciones no cabe en la
+   pantalla, es ella la que se desplaza por dentro. */
+.panel__interior{position:sticky;top:var(--alto-barra,0px);padding:22px 16px;
+  max-height:calc(100vh - var(--alto-barra,0px));
+  max-height:calc(100dvh - var(--alto-barra,0px));
+  overflow:auto;overscroll-behavior:contain;
+  /* Barra de desplazamiento fina y sin carril, del color del texto:
+     negra en claro y blanca en oscuro. Esta es la forma moderna; abajo
+     está la de siempre para los navegadores que aún no la entienden. */
+  scrollbar-width:thin;scrollbar-color:var(--desliz) transparent}
+.panel__interior::-webkit-scrollbar{width:10px}
+.panel__interior::-webkit-scrollbar-track{background:transparent}
+/* El borde transparente con background-clip deja aire a los lados: así la
+   pastilla se ve más fina y despegada del borde del panel. */
+.panel__interior::-webkit-scrollbar-thumb{background-color:var(--desliz);
+  border:3px solid transparent;background-clip:content-box;border-radius:100px}
+.panel__interior::-webkit-scrollbar-thumb:hover{background-color:var(--desliz-fuerte)}
+@media(max-width:840px){
+  .panel{border-right:none;border-bottom:1px solid var(--linea)}
+  /* En móvil el panel va arriba del todo y baja con la página: para volver
+     a él está la barrita fija de «dónde estoy». */
+  .panel__interior{position:static;max-height:none;overflow:visible}
+}
 .zona{padding:24px 24px 72px}
 .panel__titulo{margin:2px 6px 14px;font-family:var(--texto);font-weight:700;font-size:.68rem;
   letter-spacing:.13em;text-transform:uppercase;color:var(--tinta-suave)}
@@ -67,11 +91,16 @@
 .nodo--grupo .nodo__nombre{font-size:.8rem;font-weight:500}
 .nodo--grupo .nodo__icono{color:var(--verde)}
 .nodo--grupo .nodo__icono svg{width:15px;height:15px}
-.nodo--grupo[aria-current=true]{background:linear-gradient(135deg,var(--verde),var(--verde-hondo));
-  color:#04170F;box-shadow:0 8px 24px rgba(16,185,129,.36)}
-.nodo--grupo[aria-current=true]:hover{filter:brightness(1.03)}
-.nodo--grupo[aria-current=true] .nodo__icono{color:#04170F}
-.nodo--grupo[aria-current=true] .nodo__cuenta{background:rgba(0,0,0,.18);color:#04170F}
+/* Grupo elegido: el mismo lenguaje que el hover (un velo de color plano,
+   sin degradado ni resplandor), solo que en verde y un punto más marcado,
+   para que el árbol se lea tranquilo. */
+.nodo--grupo[aria-current=true]{background:var(--verde-tenue);color:var(--verde-texto);
+  box-shadow:none}
+.nodo--grupo[aria-current=true]:hover{background:var(--verde-tenue-mas);filter:none}
+.nodo--grupo[aria-current=true] .nodo__nombre{font-weight:600}
+.nodo--grupo[aria-current=true] .nodo__icono{color:var(--verde-texto)}
+.nodo--grupo[aria-current=true] .nodo__cuenta{background:var(--verde-tenue-mas);
+  color:var(--verde-texto)}
 
 /* Guías del árbol: una vertical por sección abierta y una L por cada hijo. */
 .subarbol{position:relative;list-style:none;margin:1px 0 8px;padding:0 0 0 27px}
@@ -89,9 +118,47 @@
 @media(min-width:1500px){.taller{--panel-defecto:340px}}
 /* Móvil: menos margen lateral, que cada píxel cuenta. */
 @media(max-width:600px){
-  .panel{padding:16px 12px}
+  .panel__interior{padding:16px 12px}
   .zona{padding:16px 14px 60px}
 }
+
+/* =========================================================
+   BARRITA DE «DÓNDE ESTOY» (SOLO MÓVIL)
+   En el móvil el panel de secciones va arriba del todo, así
+   que al bajar por una lista larga se pierde de vista. Esta
+   barrita aparece entonces pegada bajo la barra superior,
+   dice en qué sección y grupo estás y, al pulsarla, sube a
+   la lista para cambiar de sitio.
+   Va fija (no "pegajosa") a propósito: así no ocupa hueco en
+   la página y al aparecer no empuja el contenido.
+   ========================================================= */
+.migas{position:fixed;left:0;right:0;top:var(--alto-barra,0px);z-index:18;
+  display:none;align-items:center;gap:10px;width:100%;
+  padding:9px 14px;border:none;border-bottom:1px solid var(--linea);
+  background:var(--marfil-alto);
+  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
+  box-shadow:0 8px 22px rgba(20,26,50,.12);
+  font-family:inherit;color:var(--tinta);text-align:left;cursor:pointer;
+  transition:opacity .18s ease,transform .18s ease}
+@media(max-width:840px){.migas{display:flex}}
+/* Mientras el panel se ve, la barrita se aparta sin dejar rastro. */
+.migas[data-fuera]{opacity:0;transform:translateY(-10px);visibility:hidden;pointer-events:none}
+.migas:active{background:var(--solido)}
+.migas__icono{flex:none;display:grid;place-items:center;color:var(--acento-texto)}
+.migas__icono svg{width:17px;height:17px;display:block}
+.migas__texto{flex:1;min-width:0;display:flex;align-items:baseline}
+.migas__seccion{flex:none;max-width:56%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:.82rem;font-weight:700;letter-spacing:-.01em}
+.migas__grupo{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:.78rem;font-weight:500;color:var(--tinta-suave)}
+.migas__grupo::before{content:'›';margin:0 6px;opacity:.5}
+.migas__accion{flex:none;display:flex;align-items:center;gap:5px;
+  padding:4px 9px;border-radius:100px;background:var(--acento-tenue);
+  font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--acento-texto)}
+.migas__accion svg{width:13px;height:13px;display:block}
+/* En pantallas muy estrechas la palabra sobra: basta con la flecha. */
+@media(max-width:380px){.migas__accion span{display:none}}
 
 /* =========================================================
    DIVISOR ENTRE EL PANEL Y LA ZONA

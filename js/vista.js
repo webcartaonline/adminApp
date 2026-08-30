@@ -9,7 +9,10 @@ function pintarTodo(){
   $('#panelLateral').hidden=enEstadisticas;
   document.querySelector('.taller').classList.toggle('taller--ancho',enEstadisticas);
   $('#btnEstadisticas').textContent=enEstadisticas?'Volver al editor':'Estadísticas';
-  if(enEstadisticas){pintarEstadisticas();}
+  // En estadísticas no hay panel de secciones, así que la barrita del
+  // móvil también sobra: refrescarMigas() la apaga sola al ver el panel
+  // escondido. En el editor ya se encarga pintarArbol().
+  if(enEstadisticas){pintarEstadisticas();refrescarMigas();}
   else{pintarArbol();pintarZona();}
 }
 

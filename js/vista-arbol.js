@@ -66,4 +66,8 @@ function pintarArbol(){
         </ul>`:''}
     </li>`;
   }).join('');
+  // La barrita del móvil dice en qué sección y grupo estamos: se refresca
+  // aquí, que es por donde pasan tanto los cambios de selección como los
+  // cambios de nombre.
+  refrescarMigas();
 }

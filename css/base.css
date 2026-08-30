@@ -46,6 +46,11 @@
   /* Acentos secundarios */
   --naranja:#F97316; --naranja-hondo:#EA6A0C;   /* cálido, uso puntual */
   --verde:#10B981;   --verde-hondo:#0EA372;     /* esmeralda: acciones positivas */
+  /* Veladuras verdes: el mismo papel que --acento-tenue pero en esmeralda.
+     Se usan para marcar el grupo elegido en el árbol sin recargar la vista. */
+  --verde-tenue:rgba(16,185,129,.13);
+  --verde-tenue-mas:rgba(16,185,129,.20);
+  --verde-texto:#0A6E4E;                        /* verde legible sobre fondo claro */
   /* Texto */
   --tinta:#1B2233; --tinta-suave:#5B6478;
   /* Estados y líneas */
@@ -53,6 +58,11 @@
   --linea:rgba(23,29,45,.10);
   --linea-fuerte:rgba(23,29,45,.17);
   --guia:rgba(23,29,45,.14);
+  /* Barra de desplazamiento del panel: negra en el tema claro, muy
+     transparente para que casi no se note, y algo más marcada al pasar
+     el ratón por encima. */
+  --desliz:rgba(23,29,45,.20);
+  --desliz-fuerte:rgba(23,29,45,.38);
   --pastilla:rgba(23,29,45,.06);
   /* Elevación, curvatura y desenfoque */
   --sombra:0 2px 8px rgba(20,26,50,.06),0 14px 34px rgba(20,26,50,.10);
@@ -88,11 +98,16 @@
   --acento-borde:transparent;
   --naranja:#FB923C; --naranja-hondo:#F97316;
   --verde:#34D399;   --verde-hondo:#10B981;
+  --verde-tenue:rgba(52,211,153,.15);
+  --verde-tenue-mas:rgba(52,211,153,.22);
+  --verde-texto:#6EE7B7;
   --tinta:#E7EAF3; --tinta-suave:#98A2B8;
   --aviso:#F87171; --bien:#34D399;
   --linea:rgba(255,255,255,.09);
   --linea-fuerte:rgba(255,255,255,.15);
   --guia:rgba(255,255,255,.12);
+  --desliz:rgba(255,255,255,.22);
+  --desliz-fuerte:rgba(255,255,255,.42);
   --pastilla:rgba(255,255,255,.06);
   --sombra:0 2px 10px rgba(0,0,0,.35),0 18px 42px rgba(0,0,0,.5);
   --sombra-alta:0 30px 80px rgba(0,0,0,.62);

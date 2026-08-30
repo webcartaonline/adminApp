@@ -1,4 +1,18 @@
 /* =========================================================
+   PANEL LATERAL
+   Aquí vive todo lo que tiene que ver con tener el panel de
+   secciones siempre a mano:
+
+   1. El ancho (la rayita que se arrastra), solo en pantalla
+      ancha.
+   2. Que el panel se quede pegado bajo la barra superior en
+      pantalla ancha, para no tener que subir del todo para
+      cambiar de grupo.
+   3. En el móvil, donde el panel va arriba de la página, una
+      barrita fija que dice en qué sección y grupo estás y que
+      sube a la lista al pulsarla.
+
+   ---------------------------------------------------------
    ANCHO DEL PANEL LATERAL
    La rayita que separa el panel de la zona de trabajo se
    puede arrastrar para darle más o menos sitio a la lista
@@ -130,4 +144,106 @@ function arrancarAnchoPanel(){
   const guardado=leerAnchoPanelGuardado();
   if(guardado!=null)aplicarAnchoPanel(guardado);
   sincronizarSeparador(anchoActualDelPanel());
+}
+
+/* =========================================================
+   ALTO DE LA BARRA SUPERIOR
+   La barra de arriba va pegada y su alto cambia solo: en el
+   móvil los botones se reparten en varias filas y, cuando hay
+   cuenta atrás, crece un poco más. Lo medimos y lo dejamos en
+   una variable de CSS, que es lo que usan el panel pegado y la
+   barrita de «dónde estoy» para colocarse justo debajo.
+   ========================================================= */
+let altoBarra=0;
+
+function medirBarra(){
+  const barra=document.querySelector('.barra');
+  if(!barra)return;
+  altoBarra=Math.round(barra.getBoundingClientRect().height);
+  document.documentElement.style.setProperty('--alto-barra',altoBarra+'px');
+}
+
+medirBarra();
+if(window.ResizeObserver){
+  new ResizeObserver(()=>{medirBarra();repasarMigas();})
+    .observe(document.querySelector('.barra'));
+}
+
+/* =========================================================
+   BARRITA DE «DÓNDE ESTOY» (SOLO MÓVIL)
+   Aparece cuando el panel de secciones se queda por encima de
+   la pantalla y desaparece en cuanto se vuelve a ver.
+
+   Se ha elegido «subir a la lista» en vez de desplegar la lista
+   encima del contenido: al desplegarla haría falta sacarla del
+   sitio, tapar el editor y controlar cuándo se cierra, y en el
+   móvil eso da problemas (saltos de la página, listas que se
+   desplazan dentro de otra lista, la barra del navegador que
+   aparece y desaparece). Subir a la lista son los mismos dos
+   toques y no puede fallar. Para compensar, al elegir sección o
+   grupo se baja solo al editor: así no hay que pasar cada vez
+   por encima de toda la lista.
+   ========================================================= */
+const MOV_SUAVE = (window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)
+  ? 'auto' : 'smooth';
+
+/* Escribe los nombres de la sección y el grupo en la barrita. Se llama
+   cada vez que se repinta el árbol (también al cambiar un nombre). */
+function refrescarMigas(){
+  const barrita=$('#migas');
+  if(!barrita)return;
+  const nombreDe=(o)=>valorTexto(o.nombre,estado.idiomas[0])||'(sin nombre)';
+  const sec=seccionActual(), gru=grupoActual();
+  $('#migasSeccion').textContent = sec?nombreDe(sec):'';
+  const eGrupo=$('#migasGrupo');
+  eGrupo.textContent = gru?nombreDe(gru):'';
+  eGrupo.hidden = !gru;
+  repasarMigas();
+}
+
+/* Decide si la barrita se ve o no. Se mira dónde acaba el panel: si su
+   final ha quedado por encima de la barra superior, es que ya no se ve. */
+function repasarMigas(){
+  const barrita=$('#migas');
+  if(!barrita)return;
+  const panel=$('#panelLateral');
+  let fuera=true;
+  if(!hayPanelLateral() && !panel.hidden && estado.seccionActiva){
+    fuera = panel.getBoundingClientRect().bottom > altoBarra+4;
+  }
+  barrita.toggleAttribute('data-fuera',fuera);
+  barrita.setAttribute('aria-hidden',String(fuera));
+  barrita.tabIndex = fuera?-1:0;
+}
+
+/* Al desplazar la página se repasa una sola vez por fotograma: así no se
+   nota ni en móviles justitos. */
+let repasoPedido=false;
+window.addEventListener('scroll',()=>{
+  if(repasoPedido)return;
+  repasoPedido=true;
+  requestAnimationFrame(()=>{repasoPedido=false;repasarMigas();});
+},{passive:true});
+
+window.addEventListener('resize',()=>{medirBarra();repasarMigas();});
+
+/* Pulsar la barrita: arriba del todo, donde está la lista. */
+$('#migas').addEventListener('click',()=>{
+  window.scrollTo({top:0,behavior:MOV_SUAVE});
+});
+
+/* Y al elegir sección o grupo en el móvil, se baja al editor.
+   Se espera a que la pantalla esté repintada para medir bien. */
+document.addEventListener('click',(ev)=>{
+  if(hayPanelLateral())return;
+  if(!ev.target.closest('.nodo'))return;
+  requestAnimationFrame(()=>requestAnimationFrame(bajarAlEditor));
+});
+
+function bajarAlEditor(){
+  const zona=$('#zona');
+  if(!zona)return;
+  const altoBarrita=$('#migas').offsetHeight||0;
+  const destino=zona.getBoundingClientRect().top+window.scrollY-(altoBarra+altoBarrita+10);
+  window.scrollTo({top:Math.max(0,destino),behavior:MOV_SUAVE});
 }
