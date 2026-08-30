@@ -32,6 +32,16 @@ function rutaImagenRepo(tipo,id){
   return `${carpetaDeLaCarta(a.ruta)}${rutaImagenCarta(tipo,id)}`;
 }
 
+/* El campo "foco" puede venir de un JSON antiguo con valores como
+   "arriba-izquierda" o "derecha". Aquí se reduce a las tres opciones que
+   de verdad importan (la franja solo se recorta por arriba y por abajo). */
+function normalizarFoco(valor){
+  const v=String(valor||'').trim().toLowerCase();
+  if(v.startsWith('arriba'))return 'arriba';
+  if(v.startsWith('abajo'))return 'abajo';
+  return 'centro';
+}
+
 /* Quita el ?v=… que usamos para forzar que el navegador recargue la foto. */
 function sinVersion(ruta){ return String(ruta||'').split('?')[0]; }
 
@@ -83,14 +93,17 @@ function rescatarDeLaPapelera(ruta){
 /* Al borrar una sección o un grupo, también sobran las fotos de sus platos. */
 function tirarImagenesDe(seccionOGrupo,esSeccion){
   const grupos=esSeccion?(seccionOGrupo.grupos??[]):[seccionOGrupo];
-  grupos.forEach(g=>(g.items??[]).forEach(it=>marcarImagenParaBorrar('item',it.id,it)));
+  grupos.forEach(g=>{
+    (g.items??[]).forEach(it=>marcarImagenParaBorrar('item',it.id,it));
+    marcarImagenParaBorrar('grupo',g.id,g);
+  });
   if(esSeccion)marcarImagenParaBorrar('seccion',seccionOGrupo.id,seccionOGrupo);
 }
 
 /* Cuenta cuántas fotos se llevará por delante borrar esto, para avisar. */
 function contarImagenesDe(seccionOGrupo,esSeccion){
   const grupos=esSeccion?(seccionOGrupo.grupos??[]):[seccionOGrupo];
-  let n=grupos.reduce((s,g)=>s+(g.items??[]).filter(it=>it.imagen).length,0);
+  let n=grupos.reduce((s,g)=>s+(g.items??[]).filter(it=>it.imagen).length+(g.imagen?1:0),0);
   if(esSeccion&&seccionOGrupo.imagen)n++;
   return n;
 }
@@ -111,10 +124,18 @@ function urlImagenExistente(rutaEnCarta){
   return `https://raw.githubusercontent.com/${a.owner}/${a.repo}/${a.rama||'main'}/${carpetaDeLaCarta(a.ruta)}${sinVersion(rutaEnCarta)}`;
 }
 
-/* Busca el objeto (sección o ítem) al que pertenece una imagen. */
+/* Busca el objeto (sección, grupo o ítem) al que pertenece una imagen. */
 function objetoDeImagen(tipo,id){
-  if(tipo==='seccion')return (estado.datos?.secciones??[]).find(s=>s.id===id);
-  for(const s of (estado.datos?.secciones??[]))
+  const secciones=estado.datos?.secciones??[];
+  if(tipo==='seccion')return secciones.find(s=>s.id===id);
+  if(tipo==='grupo'){
+    for(const s of secciones){
+      const g=(s.grupos??[]).find(x=>x.id===id);
+      if(g)return g;
+    }
+    return null;
+  }
+  for(const s of secciones)
     for(const g of (s.grupos??[])){
       const it=(g.items??[]).find(x=>x.id===id);
       if(it)return it;

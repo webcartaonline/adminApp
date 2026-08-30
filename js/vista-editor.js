@@ -17,6 +17,45 @@ function camposTexto(attr,valor,etiquetaBase,textarea=false){
   }).join('');
 }
 
+/* Miniatura de la foto guardada o preparada. Sirve igual para secciones,
+   grupos y platos: lo único que cambia es la forma del marco (que sale de
+   la clase miniatura--<tipo>) y si lleva o no selector de zona. */
+function bloqueImagen(tipo,obj,{vacio='',foco=false}={}){
+  const pendiente=estado.imagenesPendientes[rutaImagenRepo(tipo,obj.id)];
+  const url=pendiente?.previa||urlImagenExistente(obj.imagen);
+  if(!url)return vacio?`<p class="campo__pista" style="margin-top:10px">${vacio}</p>`:'';
+
+  const datos=pendiente
+    ? `<b>Preparada, sin publicar</b><br>${pendiente.ancho}×${pendiente.alto} px · ${Math.round(pendiente.bytes/1024)} KB<br>${escapar(rutaImagenCarta(tipo,obj.id))}`
+    : `<b>Publicada</b><br>${escapar(sinVersion(obj.imagen))}`;
+
+  return `
+    <div class="miniatura miniatura--${tipo}">
+      <div class="miniatura__marco">
+        <img class="miniatura__img" src="${escapar(url)}" alt=""
+             onerror="this.closest('.miniatura').remove()">
+      </div>
+      <div class="miniatura__datos">${datos}</div>
+    </div>
+    ${foco?selectorFoco(tipo,obj):''}`;
+}
+
+/* Tres botones: qué parte de la foto interesa conservar. */
+function selectorFoco(tipo,obj){
+  const actual=normalizarFoco(obj.foco);
+  return `
+    <div class="foco" data-foco-tipo="${tipo}">
+      <span class="campo__etiqueta">Zona importante de la foto</span>
+      <div class="chips">
+        ${FOCOS.map(f=>`<button class="chip" type="button" data-foco="${f.clave}"
+           aria-pressed="${actual===f.clave}">${f.rotulo}</button>`).join('')}
+      </div>
+      <span class="campo__pista">En pantallas anchas la franja queda más baja de lo que
+        has encuadrado y la foto se recorta un poco por arriba y por abajo. Aquí eliges
+        qué parte no se pierde nunca.</span>
+    </div>`;
+}
+
 function pintarZona(){
   const zona=$('#zona');
   if(!estado.datos){zona.innerHTML='<p class="vacio">Trae la carta de GitHub o abre un archivo para empezar.</p>';return;}
@@ -24,22 +63,14 @@ function pintarZona(){
   if(!sec){zona.innerHTML='<p class="vacio">Elige una sección en la izquierda, o añade una nueva.</p>';return;}
   const gru=grupoActual();
 
-  const pendiente=estado.imagenesPendientes[rutaImagenRepo('seccion',sec.id)];
-  const urlPrevia=pendiente?.previa||urlImagenExistente(sec.imagen);
-  const datosImagen=pendiente
-    ? `<b>Preparada, sin publicar</b><br>${pendiente.ancho}×${pendiente.alto} px · ${Math.round(pendiente.bytes/1024)} KB<br>${escapar(rutaImagenCarta('seccion',sec.id))}`
-    : sec.imagen
-      ? `<b>Publicada</b><br>${escapar(sinVersion(sec.imagen))}`
-      : '';
-  const miniatura=urlPrevia
-    ? `<div class="miniatura">
-         <div class="miniatura__marco">
-           <img class="miniatura__img" src="${escapar(urlPrevia)}" alt=""
-                onerror="this.closest('.miniatura').remove()">
-         </div>
-         <div class="miniatura__datos">${datosImagen}</div>
-       </div>`
-    : '<p class="campo__pista" style="margin-top:10px">Esta sección no tiene imagen. La carta se verá igual que siempre, solo con el título.</p>';
+  const imagenSeccion=bloqueImagen('seccion',sec,{
+    foco:true,
+    vacio:'Esta sección no tiene imagen. La carta se verá igual que siempre, solo con el título.'
+  });
+  const imagenGrupo=gru?bloqueImagen('grupo',gru,{
+    foco:true,
+    vacio:'Este grupo no tiene imagen. En la carta se verá el título en cursiva de siempre.'
+  }):'';
 
   zona.innerHTML=`
     <div class="bloque">
@@ -49,7 +80,7 @@ function pintarZona(){
         </span>
       </h2>
       <div class="par-idiomas">${camposTexto('sec-nombre',sec.nombre,'Nombre')}</div>
-      ${miniatura}
+      ${imagenSeccion}
       <div class="acc">
         <button class="btn btn--peligro" data-borrar-seccion="1" type="button">Eliminar sección</button>
       </div>
@@ -57,8 +88,13 @@ function pintarZona(){
 
     ${gru?`
     <div class="bloque">
-      <h2 class="bloque__titulo"><span class="etq etq--grupo">Grupo</span></h2>
+      <h2 class="bloque__titulo"><span class="etq etq--grupo">Grupo</span>
+        <span class="bloque__acciones">
+          <button class="btn btn--suave" data-imagen-grupo="1" type="button">Imagen</button>
+        </span>
+      </h2>
       <div class="par-idiomas">${camposTexto('gru-nombre',gru.nombre,'Nombre')}</div>
+      ${imagenGrupo}
       <div class="acc">
         <button class="btn btn--suave" data-nuevo-item="1" type="button">Añadir ítem</button>
         <button class="btn btn--suave" data-pegar-item="1" type="button"
@@ -82,18 +118,7 @@ function pintarZona(){
 
 function pintarItem(item,indice,total){
   const puestos=new Set(item.alergenos??[]);
-  const pendiente=estado.imagenesPendientes[rutaImagenRepo('item',item.id)];
-  const urlPrevia=pendiente?.previa||urlImagenExistente(item.imagen);
-  const miniatura=urlPrevia
-    ? `<div class="miniatura miniatura--cuadrada">
-         <div class="miniatura__marco"><img class="miniatura__img" src="${escapar(urlPrevia)}" alt=""
-              onerror="this.closest('.miniatura').remove()"></div>
-         <div class="miniatura__datos">${
-           pendiente
-             ? `<b>Preparada, sin publicar</b><br>${pendiente.ancho}×${pendiente.alto} px · ${Math.round(pendiente.bytes/1024)} KB`
-             : '<b>Foto publicada</b>'}</div>
-       </div>`
-    : '';
+  const miniatura=bloqueImagen('item',item);
   return `
   <article class="ficha-item" data-indice="${indice}">
     <div class="ficha-item__cabecera">

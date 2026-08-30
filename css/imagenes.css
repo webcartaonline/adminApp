@@ -4,17 +4,23 @@
    de encuadre.
    Las proporciones deben coincidir con las de la carta
    (estilos.css del repositorio del cliente):
-     sección -> 5/2 (franja ancha)
+     sección -> 3/1 (franja ancha)
+     grupo   -> 4/1 (banda más baja)
      plato   -> 1/1 (cuadrado)
    ========================================================= */
 
 .miniatura{margin-top:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.miniatura__marco{width:180px;aspect-ratio:5/2;border-radius:var(--radio-s);overflow:hidden;
+.miniatura__marco{width:180px;aspect-ratio:3/1;border-radius:var(--radio-s);overflow:hidden;
   border:1px solid var(--linea);background:var(--velo);flex-shrink:0}
-.miniatura--cuadrada .miniatura__marco{width:76px;aspect-ratio:1/1}
+.miniatura--grupo .miniatura__marco{aspect-ratio:4/1}
+.miniatura--item .miniatura__marco{width:76px;aspect-ratio:1/1}
 .miniatura__img{width:100%;height:100%;object-fit:cover;display:block}
 .miniatura__datos{font-size:.75rem;color:var(--tinta-suave);line-height:1.4}
 .miniatura__datos b{color:var(--tinta);font-weight:700}
+
+/* Zona importante de la foto: solo sale si hay imagen. */
+.foco{margin-top:14px}
+.foco .campo__pista{display:block;margin-top:8px}
 
 /* ---------- Ventana emergente (la usan la foto y la actualización) ---------- */
 .modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;
@@ -32,7 +38,7 @@
 
 /* ---------- Marco de encuadre ---------- */
 .recorte{margin-top:14px}
-.recorte__lienzo{width:100%;aspect-ratio:5/2;display:block;border-radius:var(--radio-s);
+.recorte__lienzo{width:100%;aspect-ratio:3/1;display:block;border-radius:var(--radio-s);
   border:1px solid var(--linea);background:var(--velo);
   cursor:grab;touch-action:none}
 .recorte__lienzo:active{cursor:grabbing}

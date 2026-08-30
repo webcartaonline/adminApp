@@ -32,7 +32,8 @@ function abrirModalImagen(tipo,id){
   recorte.mapa=null; recorte.zoom=1; recorte.tx=0; recorte.ty=0;
   recorte.tipo=tipo; recorte.id=id;
 
-  // El lienzo adopta la forma del tipo: franja para secciones, cuadrado para platos.
+  // El lienzo adopta la forma del tipo: franjas para secciones y grupos,
+  // cuadrado para platos.
   const lienzo=$('#imgLienzo');
   lienzo.width=PREVIA_ANCHO; lienzo.height=previaAlto();
   lienzo.style.aspectRatio=`${conf.relA}/${conf.relB}`;
@@ -46,13 +47,13 @@ function abrirModalImagen(tipo,id){
 
   const pendiente=estado.imagenesPendientes[rutaImagenRepo(tipo,id)];
   const nombre=valorTexto(obj.nombre,estado.idiomas[0])||'(sin nombre)';
-  $('#modalImagenTitulo').textContent=tipo==='seccion'?'Imagen de la sección':'Foto del plato';
+  $('#modalImagenTitulo').textContent=conf.titulo;
   $('#modalImagenPista').textContent=
     pendiente
-      ? `${conf.etiqueta==='sección'?'Sección':'Plato'} "${nombre}". Hay una imagen preparada sin publicar; si eliges otra foto, la sustituirá.`
+      ? `${conf.rotulo} "${nombre}". Hay una imagen preparada sin publicar; si eliges otra foto, la sustituirá.`
       : obj.imagen
-        ? `${conf.etiqueta==='sección'?'Sección':'Plato'} "${nombre}". Ya tiene imagen publicada; si eliges otra foto, la sustituirá.`
-        : `${conf.etiqueta==='sección'?'Sección':'Plato'} "${nombre}". Se guardará como ${rutaImagenCarta(tipo,id)}.`;
+        ? `${conf.rotulo} "${nombre}". Ya tiene imagen publicada; si eliges otra foto, la sustituirá.`
+        : `${conf.rotulo} "${nombre}". Se guardará como ${rutaImagenCarta(tipo,id)}.`;
 
   $('#btnQuitarImagen').hidden=!(obj.imagen||pendiente);
   $('#btnRecuperarImagen').hidden=true;
@@ -228,7 +229,7 @@ async function guardarImagenRecortada(){
 function quitarImagen(){
   const obj=objetoDeImagen(recorte.tipo,recorte.id);
   if(!obj)return;
-  const que=recorte.tipo==='seccion'?'esta sección':'este plato';
+  const que=IMG_TIPOS[recorte.tipo].demostrativo;
   if(!confirm(`¿Quitar la imagen de ${que}? La carta dejará de mostrarla, pero el archivo se queda en el repositorio: podrás recuperarlo desde esta misma ventana con el botón «Recuperar la guardada», sin volver a subirlo.`))return;
   olvidarPendiente(recorte.tipo,recorte.id);
   if(obj.imagen)apuntarHuerfana(recorte.tipo,recorte.id);   // el archivo se queda, y lo sabemos

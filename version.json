@@ -1,9 +1,10 @@
 {
-  "version": "3.5.2",
-  "fecha": "2026-08-28",
-  "titulo": "Elige el color de tu editor",
+  "version": "3.6.0",
+  "fecha": "2026-08-30",
+  "titulo": "Imágenes también en los grupos",
   "cambios": [
-    "Corrección de colores en votones cuando el fondo es claro.",
-    "La combinación de colores ahora si funciona."
+    "Los grupos ya pueden llevar imagen de fondo detrás de su título, igual que las secciones.",
+    "Nuevo ajuste «Zona importante de la foto»: elige si se conserva la parte de arriba, la del medio o la de abajo.",
+    "Las franjas de las secciones son ahora más bajas y llegan de lado a lado de la pantalla, así que el encuadre cambia: conviene revisar las fotos de sección que ya estaban publicadas."
   ]
 }
