@@ -1,0 +1,119 @@
+/* =========================================================
+   AJUSTES DE LA PÁGINA
+   El apartado donde el negocio personaliza su carta pública:
+   colores, título, eslogan, logotipo y fuentes.
+   Incluye una portada en miniatura que enseña en vivo cómo
+   quedará, pintada con los mismos colores que calculará la
+   propia carta.
+   ========================================================= */
+
+/* ---------- Portada en miniatura ----------
+   Sus colores llegan como variables --pc-* que pone el programa
+   (pagina-apariencia.js) con la misma receta que usa la carta. */
+.previa-carta{
+  position:relative; overflow:hidden;
+  margin:14px 0 6px;
+  padding:30px 18px 34px;
+  border:1px solid var(--linea-fuerte);
+  border-radius:var(--radio-m);
+  background:var(--pc-fondo,#12100E);
+  color:var(--pc-texto,#F4EFE7);
+  text-align:center;
+}
+.previa-carta__halo{
+  position:absolute; inset:-60% 0 auto 0; height:200%;
+  background:radial-gradient(58% 46% at 50% 30%, var(--pc-halo,rgba(233,180,76,.16)), transparent 68%);
+  pointer-events:none;
+}
+.previa-carta__lema{
+  position:relative;
+  margin:0 0 10px;
+  font-size:.6rem; font-weight:500;
+  letter-spacing:.3em; text-transform:uppercase;
+  color:var(--pc-acento,#E9B44C);
+  overflow-wrap:anywhere;
+}
+.previa-carta__marca{
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+  flex-wrap:wrap; gap:8px 16px;
+}
+.previa-carta__logo{
+  display:block; width:auto; height:auto;
+  max-height:56px; max-width:min(60%,240px);
+  object-fit:contain;
+}
+.previa-carta--solo-logo .previa-carta__logo{ max-height:84px; max-width:min(80%,320px); }
+.previa-carta__nombre{
+  margin:0;
+  font-family:var(--pc-fuente-titulo,Georgia,serif);
+  font-weight:600; font-size:clamp(1.5rem,6vw,2.2rem);
+  line-height:1; letter-spacing:-.02em;
+  overflow-wrap:anywhere;
+}
+.previa-carta__pie{
+  position:relative;
+  margin:22px auto 0; padding-top:12px;
+  max-width:340px;
+  border-top:1px solid var(--pc-borde,#2C2620);
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  font-family:var(--pc-fuente-texto,system-ui,sans-serif);
+  font-size:.72rem;
+}
+.previa-carta__plato{ color:var(--pc-texto,#F4EFE7); }
+.previa-carta__precio{ color:var(--pc-acento,#E9B44C); font-weight:700; }
+.previa-carta__nota{
+  position:relative;
+  margin:8px auto 0; max-width:340px;
+  font-family:var(--pc-fuente-texto,system-ui,sans-serif);
+  font-size:.62rem; text-align:left;
+  color:var(--pc-texto-suave,#8E8578);
+}
+
+/* ---------- Elegir el color del texto ---------- */
+.apariencia__texto-modos{ display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 12px; }
+
+/* ---------- Logotipo ---------- */
+.apariencia__logo-fila{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  margin:10px 0 14px;
+}
+.apariencia__logo-marco{
+  flex:none; width:120px; height:84px;
+  display:grid; place-items:center;
+  padding:8px;
+  border:1px dashed var(--linea-fuerte); border-radius:var(--radio-s);
+  background:
+    conic-gradient(var(--velo) 25%, transparent 0 50%, var(--velo) 0 75%, transparent 0)
+    0 0/16px 16px;              /* cuadritos suaves: se aprecia la transparencia */
+}
+.apariencia__logo-marco img{
+  max-width:100%; max-height:100%;
+  width:auto; height:auto; object-fit:contain; display:block;
+}
+.apariencia__logo-vacio{ font-size:.72rem; color:var(--tinta-suave); text-align:center; }
+.apariencia__logo-datos{ flex:1 1 220px; min-width:0; }
+
+/* ---------- Fuentes ---------- */
+.apariencia__fuente-estado{
+  margin:6px 0 0; font-size:.74rem; color:var(--tinta-suave);
+  overflow-wrap:anywhere;
+}
+.apariencia__fuente-estado b{ color:var(--tinta); }
+
+/* ---------- Publicar ---------- */
+.apariencia__publicar{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  padding-top:16px; border-top:1px solid var(--linea);
+}
+.apariencia__espera{
+  padding:5px 12px; border-radius:100px;
+  background:var(--pastilla); color:var(--tinta-suave);
+  font-size:.74rem; font-weight:700; font-variant-numeric:tabular-nums;
+}
+
+/* En un móvil estrecho, botones a lo ancho para que no se aprieten. */
+@media(max-width:460px){
+  .apariencia__publicar .btn{ flex:1 1 auto; }
+  .apariencia__logo-fila{ align-items:flex-start; }
+}

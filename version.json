@@ -1,9 +1,11 @@
 {
-  "version": "3.5.0",
-  "fecha": "2026-08-30",
-  "titulo": "Parte importante de la foto mejorada",
+  "version": "4.0",
+  "fecha": "2026-09-01",
+  "titulo": "Ajustes de la página",
   "cambios": [
-    "Dentro del editor de foto hay una cuadrícula de nueve casillas sobre la propia imagen: marca dónde está lo que no se puede perder cuando la carta cambie de tamaño según la pantalla.",
-    "En la ficha de la sección y del grupo se ve de un vistazo de qué casilla está elegida."
+    "Nuevo apartado «Ajustes de la página» en Ajustes: elige los colores de tu carta (principal, fondo y texto) y mírala en una portada en miniatura antes de publicar.",
+    "Pon el nombre, el eslogan y el logotipo de tu negocio en la portada. Con logotipo y título salen los dos; si el logotipo ya lleva el nombre, deja el título vacío y saldrá él solo.",
+    "Sube tus propias letras (fuentes): una para el título y otra para el resto del texto.",
+    "Todo se publica con su propio botón y comparte la espera de dos minutos con «Publicar cambios» del editor: mientras uno se despliega, el otro también espera."
   ]
 }

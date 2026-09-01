@@ -3,27 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Editor de la carta</title>
+<title>Ajustes del editor</title>
 
 <script>
-/* Fija el tema antes de pintar, para que no haya parpadeo de color.
-   Va aquí y no en un archivo aparte a propósito: tiene que ejecutarse
-   antes de que el navegador dibuje nada. */
+/* Los mismos arranques que en index.html: el tema y el color, antes
+   de pintar nada, para que no haya parpadeo de color al
+   pasar de una página a la otra. */
 (function(){try{var t=localStorage.getItem('editorCartaUniversal.tema');
 if(t!=='claro'&&t!=='oscuro'){t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'oscuro':'claro';}
 document.documentElement.setAttribute('data-tema',t);}catch(e){document.documentElement.setAttribute('data-tema','claro');}})();
 
-/* Aplica el color principal elegido antes de pintar, para que no
-   haya un fogonazo con el color de fábrica. Usa las variables ya
-   calculadas que dejó guardadas el selector de color. */
 (function(){try{var g=JSON.parse(localStorage.getItem("editorCartaUniversal.color")||"null");
 if(!g||!g.vars)return;var t=document.documentElement.getAttribute("data-tema")==="oscuro"?"oscuro":"claro";
 var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setProperty(k,v[k]);}catch(e){}})();
-
-/* Y el ancho del panel lateral que dejó puesto el usuario, para
-   que no se vea saltar de un ancho a otro al abrir. */
-(function(){try{var a=parseInt(localStorage.getItem("editorCartaUniversal.panelAncho"),10);
-if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}catch(e){}})();
 </script>
 
 <!-- Aplicación instalable -->
@@ -42,183 +34,490 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <link rel="stylesheet" href="css/botones.css">
 <link rel="stylesheet" href="css/formularios.css">
 <link rel="stylesheet" href="css/barra.css">
-<link rel="stylesheet" href="css/arbol.css">
-<link rel="stylesheet" href="css/editor.css">
-<link rel="stylesheet" href="css/estadisticas.css">
-<link rel="stylesheet" href="css/imagenes.css">
+<link rel="stylesheet" href="css/ajustes.css">
+<link rel="stylesheet" href="css/color.css">
 <link rel="stylesheet" href="css/version.css">
+<link rel="stylesheet" href="css/apariencia.css">
 </head>
-<body>
+<body data-pagina="ajustes">
 
 <div class="barra">
   <div class="barra__cabecera">
-    <div class="barra__marca">
-      <div class="barra__titulo">Editor de <span id="marcaNombre" data-nombre-editor>la carta</span></div>
-      <div class="barra__sub">Panel del local</div>
+    <a class="btn btn--claro btn--volver" href="./">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg>
+      Volver al editor
+    </a>
+    <div class="barra__marca barra__marca--centro">
+      <div class="barra__titulo">Ajustes</div>
+      <div class="barra__sub">Editor de <span data-nombre-editor>la carta</span></div>
     </div>
     <button class="btn btn--tema" id="btnTema" type="button" aria-pressed="false">Modo oscuro</button>
-  </div>
-  <div class="barra__acciones">
-    <!-- Los ajustes son una página aparte: así caben todos juntos y
-         el editor se queda solo con lo de editar.
-         El enlace lleva el '.html' a propósito: es el nombre real del
-         archivo y funciona en todas partes (al probar en el ordenador,
-         en GitHub Pages y en Cloudflare). La dirección corta '/ajustes'
-         solo la entienden algunos servidores, y al probar en local da
-         un «Cannot GET /ajustes». -->
-    <a class="btn btn--claro" id="btnAjustes" href="ajustes.html">Ajustes</a>
-    <button class="btn btn--claro" id="btnCargar" type="button">Traer de GitHub</button>
-    <button class="btn btn--claro" id="btnEstadisticas" type="button" hidden>Estadísticas</button>
-    <button class="btn btn--principal" id="btnPublicar" type="button" disabled>Publicar cambios</button>
-
-    <div class="espera" id="espera" hidden>
-      <span class="espera__reloj" id="esperaReloj" aria-live="polite">2:00</span>
-      <button class="espera__ayuda" id="btnEsperaAyuda" type="button"
-              aria-expanded="false" aria-label="¿Por qué no puedo publicar ahora?">?</button>
-      <div class="espera__globo" id="esperaGlobo" hidden role="dialog"
-           aria-label="Por qué se bloquea el botón de publicar">
-        <b>¿Por qué hay que esperar?</b>
-        <p>Cuando publicas, GitHub tarda un par de minutos en montar y subir la web
-           con los cambios nuevos. Si publicas otra vez antes de que termine, los dos
-           despliegues se pisan: el primero se queda a medias y el segundo puede
-           salir incompleto o con las fotos antiguas.</p>
-        <p>Por eso el botón se bloquea 2 minutos. Mientras tanto puedes seguir
-           editando con tranquilidad: los cambios se guardan y se publicarán todos
-           juntos en cuanto acabe la cuenta atrás.</p>
-        <button class="btn btn--suave btn--mini" id="btnEsperaCerrar" type="button">Entendido</button>
-      </div>
-    </div>
   </div>
 </div>
 
 <p class="mensaje" id="mensaje" hidden></p>
 
-<!-- Barrita de «dónde estoy»: solo se ve en el móvil y solo cuando el panel
-     de secciones se ha quedado por encima de la pantalla. Al pulsarla se
-     vuelve a la lista. -->
-<button class="migas" id="migas" type="button" data-fuera aria-hidden="true" tabindex="-1"
-        aria-label="Ir a la lista de secciones y grupos">
-  <span class="migas__icono" aria-hidden="true">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-         stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M4.5 12h15M4.5 17h9.5"/></svg>
-  </span>
-  <span class="migas__texto">
-    <span class="migas__seccion" id="migasSeccion"></span>
-    <span class="migas__grupo" id="migasGrupo" hidden></span>
-  </span>
-  <span class="migas__accion" aria-hidden="true">
-    <span>Cambiar</span>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-         stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
-  </span>
-</button>
+<main class="ajustes">
 
-<div class="taller">
-  <aside class="panel" id="panelLateral">
-    <!-- Este envoltorio es el que se queda pegado bajo la barra superior
-         mientras el panel de fuera sigue llenando la columna de color. -->
-    <div class="panel__interior">
-      <h2 class="panel__titulo">Secciones y grupos</h2>
-      <ul class="arbol" id="arbol"></ul>
-      <button class="btn btn--suave" id="btnNuevaSeccion" type="button" style="width:100%">
-        Añadir sección
-      </button>
-    </div>
-  </aside>
+  <!-- ============ 1. Conexión con la página (la API KEY) ============ -->
+  <article class="apartado" id="apConexion">
+    <button class="apartado__cabecera" type="button" aria-expanded="false" aria-controls="cuerpoConexion">
+      <span class="apartado__icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.5 13.5a4 4 0 0 0 5.7 0l2.6-2.6a4 4 0 0 0-5.7-5.7l-1.3 1.3"/>
+          <path d="M13.5 10.5a4 4 0 0 0-5.7 0l-2.6 2.6a4 4 0 0 0 5.7 5.7l1.3-1.3"/>
+        </svg>
+      </span>
+      <span class="apartado__texto">
+        <span class="apartado__titulo">Conexión con la página</span>
+        <span class="apartado__pista">La clave de acceso y el archivo de la carta que se publica.</span>
+      </span>
+      <span class="apartado__estado" id="estadoConexion">—</span>
+      <span class="apartado__flecha" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </span>
+    </button>
 
-  <div class="separador" id="separador" role="separator" aria-orientation="vertical"
-       tabindex="0" aria-label="Ajustar el ancho del panel lateral"
-       title="Arrastra para ajustar el ancho del panel"></div>
+    <div class="apartado__cuerpo" id="cuerpoConexion" hidden>
+      <p class="apartado__nota">Estos datos se guardan solo en este navegador, nunca en la
+        aplicación. Por eso varios locales pueden usar la misma dirección web sin mezclarse.</p>
 
-  <section class="zona" id="zona">
-    <p class="vacio">Trae la carta de GitHub o abre un archivo para empezar.</p>
-  </section>
-</div>
+      <label class="campo campo--clave">
+        <span class="campo__etiqueta">Token de acceso (API key)</span>
+        <span class="campo__conboton">
+          <input type="password" id="cfgToken" autocomplete="off" spellcheck="false">
+          <button class="btn btn--suave btn--mini" id="btnVerToken" type="button" aria-pressed="false">Ver</button>
+        </span>
+        <span class="campo__pista">Token de permisos limitados (Contents: Read and write) solo para este
+          repositorio. Se guarda en este navegador y no viaja a ningún otro sitio.</span>
+      </label>
 
-<!-- ===== Ventana para subir y encuadrar una imagen ===== -->
-<div class="modal" id="modalImagen" hidden role="dialog" aria-modal="true" aria-labelledby="modalImagenTitulo">
-  <div class="modal__caja">
-    <h2 class="modal__titulo" id="modalImagenTitulo">Imagen de la sección</h2>
-    <p class="modal__pista" id="modalImagenPista"></p>
-
-    <label class="campo">
-      <span class="campo__etiqueta">Elegir una foto</span>
-      <input type="file" id="imgArchivo" accept="image/jpeg,image/png,image/webp">
-      <span class="campo__pista">Formatos aceptados: JPG, PNG o WEBP. Máximo 25 MB.</span>
-    </label>
-
-    <div class="recorte" id="recorte" hidden>
-      <span class="campo__etiqueta">Encuadre</span>
-      <canvas class="recorte__lienzo" id="imgLienzo" width="700" height="280"
-              aria-label="Vista previa del recorte. Arrastra para mover la foto."></canvas>
-      <div class="recorte__zoom">
-        <span>Zoom</span>
-        <input type="range" id="imgZoom" min="1" max="3" step="0.01" value="1">
+      <div class="ajustes__rejilla">
+        <label class="campo"><span class="campo__etiqueta">Servicio</span>
+          <input type="text" id="cfgOwner" autocomplete="off" spellcheck="false"></label>
+        <label class="campo"><span class="campo__etiqueta">Cliente</span>
+          <input type="text" id="cfgRepo" autocomplete="off" spellcheck="false"></label>
+        <label class="campo"><span class="campo__etiqueta">Rama</span>
+          <input type="text" id="cfgRama" autocomplete="off" spellcheck="false"></label>
+        <label class="campo"><span class="campo__etiqueta">Ruta del archivo</span>
+          <input type="text" id="cfgRuta" value="carta.json" autocomplete="off" spellcheck="false"></label>
       </div>
-      <p class="recorte__nota">Arrastra la foto dentro del marco para elegir qué parte se ve.
-        Lo que quede fuera del marco no aparecerá en la carta.</p>
+
+      <div class="ajustes__acciones">
+        <button class="btn btn--principal" id="btnGuardarCfg" type="button">Guardar conexión</button>
+        <button class="btn btn--peligro" id="btnOlvidarToken" type="button">Olvidar el token</button>
+      </div>
     </div>
+  </article>
 
-    <div class="foco-zona" id="focoZona" hidden>
-      <span class="campo__etiqueta">Zona importante de la foto</span>
-      <div class="foco-rejilla" id="focoRejilla" role="group"
-           aria-label="Zona importante de la foto"></div>
-      <p class="campo__pista">Según el ancho de la pantalla, la franja de la carta queda
-        más baja o más estrecha de lo que has encuadrado y la foto se recorta un poco.
-        Marca la casilla donde está lo que no se puede perder.
-        Ahora mismo: <b id="focoNombre">Centro</b>.</p>
+  <!-- ============ 2. Personalización ============ -->
+  <article class="apartado" id="apPersonalizacion">
+    <button class="apartado__cabecera" type="button" aria-expanded="false" aria-controls="cuerpoPersonalizacion">
+      <span class="apartado__icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a9 9 0 1 0 0 18 2.2 2.2 0 0 0 1.7-3.6 2.2 2.2 0 0 1 1.7-3.6H18a3 3 0 0 0 3-3 9 9 0 0 0-9-7.8Z"/>
+          <circle cx="7.6" cy="11.4" r="1"/><circle cx="10.4" cy="7.4" r="1"/><circle cx="15.4" cy="8.4" r="1"/>
+        </svg>
+      </span>
+      <span class="apartado__texto">
+        <span class="apartado__titulo">Personalización</span>
+        <span class="apartado__pista">El nombre que aparece arriba y el color principal de la aplicación.</span>
+      </span>
+      <span class="apartado__flecha" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </span>
+    </button>
+
+    <div class="apartado__cuerpo" id="cuerpoPersonalizacion" hidden>
+
+      <section class="bloque">
+        <h3 class="bloque__titulo">Nombre del editor</h3>
+        <label class="campo">
+          <span class="campo__etiqueta">Nombre</span>
+          <input type="text" id="cfgNombre" autocomplete="off">
+          <span class="campo__pista">Aparece en el título como «Editor de …». Útil para reconocer de un
+            vistazo en qué local estás si gestionas varios.</span>
+        </label>
+        <p class="bloque__ejemplo">Se verá así: <b id="nombreEjemplo">Editor de la carta</b></p>
+        <div class="ajustes__acciones">
+          <button class="btn btn--principal" id="btnGuardarNombre" type="button">Guardar nombre</button>
+        </div>
+      </section>
+
+      <section class="bloque">
+        <h3 class="bloque__titulo">Color principal</h3>
+        <p class="bloque__nota">Es el color de la barra de arriba, de los botones de acción y de la
+          sección marcada. Se guarda en este navegador.</p>
+
+        <div class="color__modos">
+          <button class="chip" id="colorModoDegradado" type="button" aria-pressed="true">Degradado</button>
+          <button class="chip" id="colorModoSolido" type="button" aria-pressed="false">Un color</button>
+        </div>
+
+        <div class="color__previa" id="colorPrevia">
+          <span class="color__previa-titulo">Editor de la carta</span>
+          <span class="color__previa-boton" id="colorPreviaBoton">Publicar cambios</span>
+        </div>
+
+        <div class="color__ruedas">
+          <label class="color__rueda"><span class="campo__etiqueta">Color</span>
+            <input type="color" id="colorC1" value="#7A5CFB"></label>
+          <label class="color__rueda" id="colorSegundo"><span class="campo__etiqueta">Segundo color</span>
+            <input type="color" id="colorC2" value="#4C86FF"></label>
+        </div>
+
+        <span class="campo__etiqueta">Combinaciones hechas</span>
+        <div class="color__sugerencias" id="colorSugerencias">
+          <button class="color__sugerencia" type="button" title="Violeta y azul (original)"
+                  data-color-1="#7A5CFB" data-color-2="#4C86FF"
+                  style="background:linear-gradient(135deg,#7A5CFB,#4C86FF)"></button>
+          <button class="color__sugerencia" type="button" title="Esmeralda"
+                  data-color-1="#0EA372" data-color-2="#34D399"
+                  style="background:linear-gradient(135deg,#0EA372,#34D399)"></button>
+          <button class="color__sugerencia" type="button" title="Atardecer"
+                  data-color-1="#F97316" data-color-2="#EF4444"
+                  style="background:linear-gradient(135deg,#F97316,#EF4444)"></button>
+          <button class="color__sugerencia" type="button" title="Océano"
+                  data-color-1="#0EA5E9" data-color-2="#14B8A6"
+                  style="background:linear-gradient(135deg,#0EA5E9,#14B8A6)"></button>
+          <button class="color__sugerencia" type="button" title="Frambuesa"
+                  data-color-1="#DB2777" data-color-2="#8B5CF6"
+                  style="background:linear-gradient(135deg,#DB2777,#8B5CF6)"></button>
+          <button class="color__sugerencia" type="button" title="Azul marino"
+                  data-color-1="#1E3A8A" style="background:#1E3A8A"></button>
+          <button class="color__sugerencia" type="button" title="Grafito"
+                  data-color-1="#334155" style="background:#334155"></button>
+        </div>
+
+        <div class="ajustes__acciones">
+          <button class="btn btn--principal" id="btnColorGuardar" type="button">Guardar color</button>
+          <button class="btn btn--peligro" id="btnColorRestaurar" type="button">Restaurar original</button>
+        </div>
+      </section>
     </div>
+  </article>
 
-    <p class="mensaje mensaje--error" id="imgError" hidden></p>
+  <!-- ============ 3. Ajustes de la página ============
+       La personalización de la carta que ven los clientes del negocio.
+       A diferencia del resto de apartados, esto NO se guarda en el
+       navegador: se publica en la página, igual que la carta.
+       La lógica vive en js/pagina-apariencia.js. -->
+  <article class="apartado" id="apPagina">
+    <button class="apartado__cabecera" type="button" aria-expanded="false" aria-controls="cuerpoPagina">
+      <span class="apartado__icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5Z"/>
+          <path d="M4 9.5h16"/><path d="M8 13.5h8"/><path d="M8 16.5h5"/>
+        </svg>
+      </span>
+      <span class="apartado__texto">
+        <span class="apartado__titulo">Ajustes de la página</span>
+        <span class="apartado__pista">Los colores, el nombre, el logotipo y las letras de la carta que ven tus clientes.</span>
+      </span>
+      <span class="apartado__estado" id="estadoPagina">—</span>
+      <span class="apartado__flecha" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </span>
+    </button>
 
-    <div class="modal__acc">
-      <button class="btn btn--peligro" id="btnQuitarImagen" type="button" hidden>Quitar imagen</button>
-      <button class="btn btn--suave" id="btnRecuperarImagen" type="button" hidden>Recuperar la guardada</button>
-      <button class="btn btn--suave" id="btnCerrarImagen" type="button">Cancelar</button>
-      <button class="btn btn--principal" id="btnGuardarImagen" type="button" disabled>Guardar imagen</button>
+    <div class="apartado__cuerpo" id="cuerpoPagina" hidden>
+      <p class="apartado__nota">Estos ajustes no se quedan en este navegador: al pulsar
+        «Publicar en la página» se suben a tu carta, igual que cuando publicas un precio nuevo.
+        La miniatura de aquí abajo enseña cómo quedará la portada.</p>
+
+      <!-- Portada en miniatura: refleja en vivo todo lo de este apartado. -->
+      <div class="previa-carta" id="previaCarta" aria-hidden="true">
+        <div class="previa-carta__halo"></div>
+        <p class="previa-carta__lema" id="previaLema" hidden></p>
+        <div class="previa-carta__marca">
+          <img class="previa-carta__logo" id="previaLogo" alt="" hidden>
+          <h3 class="previa-carta__nombre" id="previaNombre">Nombre del negocio</h3>
+        </div>
+        <div class="previa-carta__pie">
+          <span class="previa-carta__plato">Tosta de aguacate</span>
+          <span class="previa-carta__precio">7,90 €</span>
+        </div>
+        <p class="previa-carta__nota">Así se verán los platos, los precios y el texto de tu carta.</p>
+      </div>
+      <div class="ajustes__acciones">
+        <button class="btn btn--suave btn--mini" id="btnAparRecargar" type="button">Volver a traer lo publicado</button>
+      </div>
+
+      <!-- ===== Colores ===== -->
+      <section class="bloque">
+        <h3 class="bloque__titulo">Colores</h3>
+        <p class="bloque__nota">El color <b>principal</b> tiñe los títulos, las líneas, los degradados
+          y los detalles de la carta. El color de <b>fondo</b> es el de toda la página. El resto de
+          tonos (bordes, textos apagados…) se calculan solos para que siempre queden a juego.</p>
+
+        <div class="color__ruedas">
+          <label class="color__rueda"><span class="campo__etiqueta">Color principal</span>
+            <input type="color" id="aparColorPrincipal" value="#E9B44C"></label>
+          <label class="color__rueda"><span class="campo__etiqueta">Color de fondo</span>
+            <input type="color" id="aparColorFondo" value="#12100E"></label>
+        </div>
+
+        <span class="campo__etiqueta">Color del texto</span>
+        <div class="apariencia__texto-modos">
+          <button class="chip" id="aparTextoAuto" type="button" aria-pressed="true">Automático (blanco o negro, el que mejor se lea)</button>
+          <button class="chip" id="aparTextoManual" type="button" aria-pressed="false">Elegirlo yo</button>
+        </div>
+        <div class="color__ruedas" id="aparTextoRueda" hidden>
+          <label class="color__rueda"><span class="campo__etiqueta">Color del texto</span>
+            <input type="color" id="aparColorTexto" value="#F4EFE7"></label>
+        </div>
+
+        <div class="ajustes__acciones">
+          <button class="btn btn--peligro" id="btnAparColoresOriginales" type="button">Restaurar los colores originales</button>
+        </div>
+      </section>
+
+      <!-- ===== Nombre y eslogan ===== -->
+      <section class="bloque">
+        <h3 class="bloque__titulo">Nombre y eslogan</h3>
+        <label class="campo">
+          <span class="campo__etiqueta">Título de la página</span>
+          <input type="text" id="aparTitulo" autocomplete="off">
+          <span class="campo__pista">Es el nombre grande de la portada. Si tu logotipo ya lleva el
+            nombre dentro, deja este campo vacío y en la portada saldrá solo el logotipo.</span>
+        </label>
+        <div class="ajustes__rejilla">
+          <label class="campo"><span class="campo__etiqueta">Eslogan (español)</span>
+            <input type="text" id="aparEsloganEs" autocomplete="off"></label>
+          <label class="campo"><span class="campo__etiqueta">Eslogan (inglés, opcional)</span>
+            <input type="text" id="aparEsloganEn" autocomplete="off"></label>
+        </div>
+        <p class="bloque__nota">El eslogan es la frase pequeña que aparece encima del título.
+          Déjalo vacío si no quieres que salga.</p>
+      </section>
+
+      <!-- ===== Logotipo ===== -->
+      <section class="bloque">
+        <h3 class="bloque__titulo">Logotipo</h3>
+        <p class="bloque__nota">Vale cualquier forma: apaisado, cuadrado o redondo. La carta lo
+          encaja en la portada sin recortarlo ni deformarlo. Con título y logotipo salen los dos
+          juntos; sin título, el logotipo ocupa la portada él solo; y sin logotipo, sale solo el título.</p>
+
+        <div class="apariencia__logo-fila">
+          <div class="apariencia__logo-marco">
+            <img id="aparLogoImg" alt="Logotipo actual" hidden>
+            <span class="apariencia__logo-vacio" id="aparLogoVacio">Sin logotipo</span>
+          </div>
+          <div class="apariencia__logo-datos">
+            <label class="campo">
+              <span class="campo__etiqueta">Imagen del logotipo</span>
+              <input type="file" id="aparLogoArchivo" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif">
+              <span class="campo__pista">Mejor un PNG o un SVG con fondo transparente. Si la imagen
+                es enorme se encoge sola antes de subirla.</span>
+            </label>
+            <div class="ajustes__acciones">
+              <button class="btn btn--peligro btn--mini" id="btnAparLogoQuitar" type="button" hidden>Quitar el logotipo</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Fuentes ===== -->
+      <section class="bloque">
+        <h3 class="bloque__titulo">Fuentes (las letras)</h3>
+        <p class="bloque__nota">Si el negocio tiene su propia letra, súbela aquí y la carta la usará.
+          Una para el título grande y otra para el resto del texto; puedes cambiar solo una de las
+          dos. Valen los archivos WOFF2, WOFF, TTF y OTF.</p>
+
+        <div class="ajustes__rejilla">
+          <div>
+            <label class="campo">
+              <span class="campo__etiqueta">Fuente del título</span>
+              <input type="file" id="aparFuenteTitulo" accept=".woff2,.woff,.ttf,.otf">
+            </label>
+            <p class="apariencia__fuente-estado" id="aparFuenteTituloEstado">Ahora mismo se usa la letra de serie de la carta.</p>
+            <div class="ajustes__acciones">
+              <button class="btn btn--peligro btn--mini" id="btnAparFuenteTituloQuitar" type="button" hidden>Volver a la letra de serie</button>
+            </div>
+          </div>
+          <div>
+            <label class="campo">
+              <span class="campo__etiqueta">Fuente del resto del texto</span>
+              <input type="file" id="aparFuenteTexto" accept=".woff2,.woff,.ttf,.otf">
+            </label>
+            <p class="apariencia__fuente-estado" id="aparFuenteTextoEstado">Ahora mismo se usa la letra de serie de la carta.</p>
+            <div class="ajustes__acciones">
+              <button class="btn btn--peligro btn--mini" id="btnAparFuenteTextoQuitar" type="button" hidden>Volver a la letra de serie</button>
+            </div>
+          </div>
+        </div>
+        <p class="bloque__nota">Para leer bien en el móvil, la del texto conviene que sea una letra
+          sencilla; las muy decorativas lucen más solo en el título.</p>
+      </section>
+
+      <!-- ===== Publicar ===== -->
+      <div class="apariencia__publicar">
+        <button class="btn btn--principal" id="btnPublicarPagina" type="button" disabled>Publicar en la página</button>
+        <span class="apariencia__espera" id="aparEspera" hidden>Desplegando… 2:00</span>
+      </div>
+      <p class="apartado__nota">Mientras la página se despliega (unos dos minutos), este botón y el de
+        «Publicar cambios» del editor quedan bloqueados a la vez: es la misma espera para los dos.</p>
     </div>
-  </div>
-</div>
+  </article>
 
-<!-- ===== Ventana de novedades ===== -->
-<div class="modal" id="modalActualizacion" hidden role="dialog" aria-modal="true" aria-labelledby="actTitulo">
-  <div class="modal__caja">
-    <h2 class="modal__titulo" id="actTitulo">Novedades del editor</h2>
-    <p class="modal__pista">Esto es lo que ha cambiado desde la última vez que abriste el editor.
-      Pulsa «Actualizar» para empezar a usar la versión nueva.</p>
+  <!-- ============ 4. Exportar e importar ============ -->
+  <article class="apartado" id="apCopia">
+    <button class="apartado__cabecera" type="button" aria-expanded="false" aria-controls="cuerpoCopia">
+      <span class="apartado__icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>
+          <path d="M8 8.5 12 4.5l4 4"/><path d="M12 4.5V15"/>
+        </svg>
+      </span>
+      <span class="apartado__texto">
+        <span class="apartado__titulo">Exportar e importar</span>
+        <span class="apartado__pista">Guardar los ajustes en un archivo y volver a ponerlos en otro navegador.</span>
+      </span>
+      <span class="apartado__flecha" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </span>
+    </button>
 
-    <p class="version-salto" id="actSalto" hidden></p>
+    <div class="apartado__cuerpo" id="cuerpoCopia" hidden>
+      <p class="apartado__nota">Los ajustes se guardan solo en este navegador, así que se pierden al
+        cambiar de dispositivo, al borrar los datos del navegador o al reinstalar. Aquí puedes meterlos
+        todos en un archivo y volver a soltarlos donde haga falta. <b>La carta no va dentro</b>: esa
+        está en el repositorio y se trae desde el editor.</p>
 
-    <ul class="novedades" id="actNovedades"></ul>
+      <section class="bloque">
+        <h3 class="bloque__titulo">Exportar</h3>
+        <p class="bloque__nota">Se descarga un archivo <code>.json</code> con los datos de conexión
+          (servicio, cliente, rama y ruta), la web conectada, el nombre del editor, el color principal
+          y el modo claro u oscuro.</p>
 
-    <div class="modal__acc">
-      <button class="btn btn--principal" id="btnActualizarAhora" type="button">Actualizar</button>
+        <span class="campo__etiqueta">Qué más incluir</span>
+        <div class="chips">
+          <button class="chip" id="btnIncluirToken" type="button" aria-pressed="false">Incluir el token de acceso</button>
+        </div>
+        <p class="bloque__aviso" id="copiaAvisoToken" hidden>
+          Con el token dentro, quien abra el archivo puede publicar cambios en la página. Guárdalo
+          donde nadie más lo vea y no lo mandes por correo ni por mensajería. Sin él, el archivo es
+          inofensivo, pero al importarlo habrá que volver a pegar el token a mano.</p>
+
+        <div class="ajustes__acciones">
+          <button class="btn btn--principal" id="btnExportar" type="button">Descargar archivo de ajustes</button>
+        </div>
+      </section>
+
+      <section class="bloque">
+        <h3 class="bloque__titulo">Importar</h3>
+        <p class="bloque__nota">Elige un archivo exportado desde aquí. Antes de cambiar nada se te
+          enseña lo que trae dentro; solo se aplica cuando lo confirmas.</p>
+
+        <label class="campo">
+          <span class="campo__etiqueta">Archivo de ajustes</span>
+          <input type="file" id="importArchivo" accept="application/json,.json">
+          <span class="campo__pista">Lo que traiga el archivo sustituye a lo que haya ahora; lo que no
+            traiga se queda como está.</span>
+        </label>
+
+        <dl class="ficha" id="importFicha" hidden></dl>
+
+        <p class="bloque__aviso" id="importFuturo" hidden>
+          Este archivo se hizo con una versión más nueva del editor. Se importará lo que se entienda;
+          si algo no aparece, actualiza la aplicación y vuelve a probar.</p>
+
+        <div class="ajustes__acciones">
+          <button class="btn btn--principal" id="btnImportar" type="button" disabled>Importar estos ajustes</button>
+          <button class="btn btn--suave" id="btnImportarCancelar" type="button">Cancelar</button>
+        </div>
+      </section>
     </div>
-  </div>
-</div>
+  </article>
+
+  <!-- ============ 5. Información de la aplicación ============ -->
+  <article class="apartado" id="apInformacion">
+    <button class="apartado__cabecera" type="button" aria-expanded="false" aria-controls="cuerpoInformacion">
+      <span class="apartado__icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.8h.01"/>
+        </svg>
+      </span>
+      <span class="apartado__texto">
+        <span class="apartado__titulo">Información de la aplicación</span>
+        <span class="apartado__pista">Versión instalada, novedades y web con la que conecta.</span>
+      </span>
+      <span class="apartado__estado" id="estadoVersion">—</span>
+      <span class="apartado__flecha" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </span>
+    </button>
+
+    <div class="apartado__cuerpo" id="cuerpoInformacion" hidden>
+
+      <section class="bloque">
+        <h3 class="bloque__titulo">Versión instalada</h3>
+        <p class="version-salto"><b id="infoVersion">Versión —</b>
+          <span id="infoFecha">Fecha de publicación desconocida</span></p>
+        <p class="bloque__nota" id="infoTitulo">Novedades del editor</p>
+        <ul class="novedades" id="infoCambios"></ul>
+      </section>
+
+      <section class="bloque">
+        <h3 class="bloque__titulo">Web con la que conecta</h3>
+        <p class="bloque__nota">Es la página que se actualiza al pulsar «Publicar cambios».
+          Se intenta averiguar sola a partir de GitHub; si no acierta, escríbela a mano.</p>
+
+        <dl class="ficha">
+          <div class="ficha__fila">
+            <dt>Nombre</dt><dd id="fichaSitioNombre">Sin nombre</dd>
+          </div>
+          <div class="ficha__fila">
+            <dt>Dirección</dt>
+            <dd><a class="ficha__enlace" id="fichaSitioUrl" target="_blank" rel="noopener noreferrer"
+                   aria-disabled="true">Sin averiguar todavía</a></dd>
+          </div>
+          <div class="ficha__fila">
+            <dt>Repositorio</dt><dd id="fichaRepo">Sin configurar</dd>
+          </div>
+        </dl>
+
+        <div class="ajustes__rejilla">
+          <label class="campo"><span class="campo__etiqueta">Nombre de la web</span>
+            <input type="text" id="sitioNombre" autocomplete="off"></label>
+          <label class="campo"><span class="campo__etiqueta">Dirección web</span>
+            <input type="text" id="sitioUrl" inputmode="url" autocomplete="off" spellcheck="false"
+                   placeholder="https://…"></label>
+        </div>
+
+        <div class="ajustes__acciones">
+          <button class="btn btn--principal" id="btnGuardarSitio" type="button">Guardar</button>
+          <button class="btn btn--suave" id="btnDetectarSitio" type="button">Averiguar desde GitHub</button>
+        </div>
+      </section>
+    </div>
+  </article>
+
+</main>
 
 <!-- ===== Programa =====
      El orden importa: cada archivo usa cosas definidas en los
      anteriores. Si añades uno nuevo, colócalo en su sitio. -->
 <script src="js/config.js"></script>
 <script src="js/utiles.js"></script>
-<script src="js/estado.js"></script>
 <script src="js/tema.js"></script>
-<script src="js/color.js"></script>
-<script src="js/panel.js"></script>
 <script src="js/ajustes.js"></script>
-<script src="js/idiomas.js"></script>
-<script src="js/espera.js"></script>
-<script src="js/imagenes.js"></script>
-<script src="js/imagen-recorte.js"></script>
-<script src="js/github.js"></script>
-<script src="js/vista.js"></script>
-<script src="js/vista-arbol.js"></script>
-<script src="js/vista-editor.js"></script>
-<script src="js/vista-estadisticas.js"></script>
-<script src="js/portapapeles.js"></script>
-<script src="js/sucesos.js"></script>
+<script src="js/color.js"></script>
+<script src="js/color-ui.js"></script>
 <script src="js/version.js"></script>
-<script src="js/app.js"></script>
+<script src="js/pagina-ajustes.js"></script>
+<script src="js/pagina-apariencia.js"></script>
+<script src="js/copia-ajustes.js"></script>
 </body>
 </html>

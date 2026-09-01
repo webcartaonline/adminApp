@@ -15,7 +15,7 @@
    automáticamente la ventana con lo que ha cambiado.
    ========================================================= */
 
-const VERSION = '5.2.0';
+const VERSION = '4.0.0';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
@@ -34,6 +34,7 @@ const ARCHIVOS = [
   './css/imagenes.css',
   './css/color.css',
   './css/version.css',
+  './css/apariencia.css',
   './js/config.js',
   './js/utiles.js',
   './js/estado.js',
@@ -43,6 +44,7 @@ const ARCHIVOS = [
   './js/panel.js',
   './js/ajustes.js',
   './js/pagina-ajustes.js',
+  './js/pagina-apariencia.js',
   './js/copia-ajustes.js',
   './js/idiomas.js',
   './js/espera.js',
