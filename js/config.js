@@ -26,7 +26,6 @@ const CLAVE_ESPERA         = 'editorCartaUniversal.esperaHasta';
 const CLAVE_VERSION_VISTA  = 'editorCartaUniversal.versionVista';
 const CLAVE_COLOR          = 'editorCartaUniversal.color';
 const CLAVE_PANEL_ANCHO    = 'editorCartaUniversal.panelAncho';
-const CLAVE_SITIO          = 'editorCartaUniversal.sitio';
 
 /* ---------- Espera entre publicaciones ---------- */
 const MS_ESPERA = 2*60*1000;   // 2 minutos
@@ -42,6 +41,7 @@ const IMG_TIPOS = {
   seccion:{
     etiqueta:'sección', rotulo:'Sección', demostrativo:'esta sección',
     titulo:'Imagen de la sección', carpeta:'img/secciones',
+    conFoco:true,                   // franja: la carta la recorta según la pantalla
     relA:3, relB:1,                 // franja ancha, de borde a borde de la pantalla
     anchoMax:1600, anchoMin:800,
     peso:400*1024
@@ -49,6 +49,7 @@ const IMG_TIPOS = {
   grupo:{
     etiqueta:'grupo', rotulo:'Grupo', demostrativo:'este grupo',
     titulo:'Imagen del grupo', carpeta:'img/grupos',
+    conFoco:true,
     relA:4, relB:1,                 // banda más baja que la de la sección
     anchoMax:1400, anchoMin:700,
     peso:300*1024
@@ -56,6 +57,7 @@ const IMG_TIPOS = {
   item:{
     etiqueta:'plato', rotulo:'Plato', demostrativo:'este plato',
     titulo:'Foto del plato', carpeta:'img/items',
+    conFoco:false,                  // cuadrado exacto: se ve entera, no hay nada que elegir
     relA:1, relB:1,                 // cuadrado exacto
     anchoMax:600, anchoMin:300,     // se ve a ~104 px: 600 sobra hasta en pantallas muy nítidas
     peso:150*1024
@@ -64,14 +66,22 @@ const IMG_TIPOS = {
 
 /* ---------- Zona importante de la foto ----------
    Las franjas de sección y grupo ocupan todo el ancho de la pantalla,
-   así que en pantallas anchas quedan más bajas de lo que se recortó y
-   la foto se recorta un poco más por arriba y por abajo. Esto decide
-   qué parte se conserva. Se guarda en el campo "foco". */
+   así que según la pantalla quedan más o menos bajas y la foto se
+   recorta. Esto decide qué parte se conserva siempre. Se guarda en el
+   campo "foco" y va en el orden de la cuadrícula de tres por tres que
+   se ve en la ventana de la foto: primera fila, segunda y tercera. */
 const FOCOS = [
-  { clave:'arriba', rotulo:'Arriba' },
-  { clave:'centro', rotulo:'Centro' },
-  { clave:'abajo',  rotulo:'Abajo'  }
+  { clave:'arriba-izquierda', rotulo:'Arriba a la izquierda' },
+  { clave:'arriba',           rotulo:'Arriba' },
+  { clave:'arriba-derecha',   rotulo:'Arriba a la derecha' },
+  { clave:'izquierda',        rotulo:'Izquierda' },
+  { clave:'centro',           rotulo:'Centro' },
+  { clave:'derecha',          rotulo:'Derecha' },
+  { clave:'abajo-izquierda',  rotulo:'Abajo a la izquierda' },
+  { clave:'abajo',            rotulo:'Abajo' },
+  { clave:'abajo-derecha',    rotulo:'Abajo a la derecha' }
 ];
+const FOCO_DEFECTO = 'centro';
 
 const IMG_ENTRADA_MAX     = 25*1024*1024; // 25 MB de archivo original
 const IMG_MEGAPIXELES_MAX = 80;           // fotos enormes revientan el lienzo del navegador

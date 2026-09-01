@@ -19,6 +19,52 @@ function previaAlto(){
   return Math.round(PREVIA_ANCHO*c.relB/c.relA);
 }
 
+/* ---------- Zona importante de la foto ----------
+   Cuadrícula de tres por tres sobre la propia foto. Solo se enseña en los
+   tipos que la carta recorta (sección y grupo) y solo cuando de verdad hay
+   foto: publicada, preparada, o recién elegida en el marco de encuadre.
+   Si el objeto no tiene imagen, esto no aparece, igual que antes. */
+function pintarFoco(){
+  const zona=$('#focoZona');
+  const conf=IMG_TIPOS[recorte.tipo];
+  const obj=objetoDeImagen(recorte.tipo,recorte.id);
+  const pendiente=estado.imagenesPendientes[rutaImagenRepo(recorte.tipo,recorte.id)];
+  const hayFoto=!!(obj?.imagen||pendiente||recorte.mapa);
+
+  if(!conf.conFoco||!obj||!hayFoto){zona.hidden=true;return;}
+
+  const elegida=normalizarFoco(obj.foco);
+  const rejilla=$('#focoRejilla');
+  rejilla.style.aspectRatio=`${conf.relA}/${conf.relB}`;
+
+  // De fondo, la foto que se está tocando: así se ve sobre qué se elige.
+  // Si hay una foto nueva a medio encuadrar, se usa el propio marco de
+  // encuadre, que es exactamente lo que va a acabar en la carta.
+  if(recorte.mapa){
+    refrescarFondoFoco();
+  }else{
+    const fondo=pendiente?.previa||urlImagenExistente(obj.imagen);
+    rejilla.style.backgroundImage=fondo?`url("${fondo}")`:'';
+  }
+
+  rejilla.innerHTML=FOCOS.map(f=>
+    `<button class="foco-celda" type="button" data-foco-celda="${f.clave}"
+             aria-pressed="${f.clave===elegida}" aria-label="${f.rotulo}"
+             title="${f.rotulo}"></button>`).join('');
+  $('#focoNombre').textContent=rotuloFoco(elegida);
+  zona.hidden=false;
+}
+
+/* Copia el marco de encuadre al fondo de la cuadrícula. Se llama solo al
+   soltar el dedo o el zoom, no en cada movimiento: sacar una foto del
+   lienzo es caro y no hace falta hacerlo sesenta veces por segundo. */
+function refrescarFondoFoco(){
+  if(!recorte.mapa||!IMG_TIPOS[recorte.tipo].conFoco)return;
+  try{
+    $('#focoRejilla').style.backgroundImage=`url("${$('#imgLienzo').toDataURL('image/jpeg',0.6)}")`;
+  }catch{ /* si el navegador se queja, la cuadrícula se queda sin fondo y punto */ }
+}
+
 function errorImagen(txt){
   const p=$('#imgError');
   if(!txt){p.hidden=true;p.textContent='';return;}
@@ -26,10 +72,6 @@ function errorImagen(txt){
 }
 
 function abrirModalImagen(tipo,id){
-  // Cerrojo de seguridad: si esta carta no lleva fotos, la ventana no se
-  // abre aunque se llegue aquí por otro camino (un atajo de teclado, un
-  // botón que se quedara pintado…).
-  if(!hayImagenes())return;
   const obj=objetoDeImagen(tipo,id);
   if(!obj)return;
   const conf=IMG_TIPOS[tipo];
@@ -59,6 +101,7 @@ function abrirModalImagen(tipo,id){
         ? `${conf.rotulo} "${nombre}". Ya tiene imagen publicada; si eliges otra foto, la sustituirá.`
         : `${conf.rotulo} "${nombre}". Se guardará como ${rutaImagenCarta(tipo,id)}.`;
 
+  pintarFoco();
   $('#btnQuitarImagen').hidden=!(obj.imagen||pendiente);
   $('#btnRecuperarImagen').hidden=true;
   $('#modalImagen').hidden=false;
@@ -238,6 +281,7 @@ function quitarImagen(){
   olvidarPendiente(recorte.tipo,recorte.id);
   if(obj.imagen)apuntarHuerfana(recorte.tipo,recorte.id);   // el archivo se queda, y lo sabemos
   delete obj.imagen;
+  delete obj.foco;   // sin foto, la zona importante no significa nada
   marcarSucio();
   cerrarModalImagen();
   pintarZona();
@@ -261,6 +305,7 @@ $('#imgArchivo').addEventListener('change',async(ev)=>{
     $('#imgZoom').value=1;
     $('#recorte').hidden=false;
     pintarRecorte();
+    pintarFoco();
     $('#btnGuardarImagen').disabled=false;
   }catch(e){
     recorte.mapa=null;
@@ -268,6 +313,8 @@ $('#imgArchivo').addEventListener('change',async(ev)=>{
     errorImagen(e.message);
   }
 });
+
+$('#imgZoom').addEventListener('change',refrescarFondoFoco);
 
 $('#imgZoom').addEventListener('input',(ev)=>{
   if(!recorte.mapa)return;
@@ -302,11 +349,23 @@ $('#imgZoom').addEventListener('input',(ev)=>{
   const soltar=(ev)=>{
     if(!recorte.arrastrando)return;
     recorte.arrastrando=false;
+    refrescarFondoFoco();
     try{lienzo.releasePointerCapture(ev.pointerId);}catch{}
   };
   lienzo.addEventListener('pointerup',soltar);
   lienzo.addEventListener('pointercancel',soltar);
 })();
+
+$('#focoRejilla').addEventListener('click',(ev)=>{
+  const celda=ev.target.closest('[data-foco-celda]');
+  if(!celda)return;
+  const obj=objetoDeImagen(recorte.tipo,recorte.id);
+  if(!obj)return;
+  obj.foco=celda.dataset.focoCelda;
+  marcarSucio();
+  pintarFoco();
+  pintarZona();   // la marca de la vista general se actualiza al momento
+});
 
 $('#btnGuardarImagen').addEventListener('click',guardarImagenRecortada);
 $('#btnQuitarImagen').addEventListener('click',quitarImagen);

@@ -19,9 +19,9 @@ function camposTexto(attr,valor,etiquetaBase,textarea=false){
 
 /* Miniatura de la foto guardada o preparada. Sirve igual para secciones,
    grupos y platos: lo único que cambia es la forma del marco (que sale de
-   la clase miniatura--<tipo>) y si lleva o no selector de zona. */
-function bloqueImagen(tipo,obj,{vacio='',foco=false}={}){
-  if(!hayImagenes())return '';   // esta carta no lleva fotos: ni miniatura ni aviso
+   la clase miniatura--<tipo>) y si lleva o no marca de zona importante.
+   Si no hay foto, no se enseña ninguna de las dos cosas. */
+function bloqueImagen(tipo,obj,{vacio=''}={}){
   const pendiente=estado.imagenesPendientes[rutaImagenRepo(tipo,obj.id)];
   const url=pendiente?.previa||urlImagenExistente(obj.imagen);
   if(!url)return vacio?`<p class="campo__pista" style="margin-top:10px">${vacio}</p>`:'';
@@ -30,30 +30,20 @@ function bloqueImagen(tipo,obj,{vacio='',foco=false}={}){
     ? `<b>Preparada, sin publicar</b><br>${pendiente.ancho}×${pendiente.alto} px · ${Math.round(pendiente.bytes/1024)} KB<br>${escapar(rutaImagenCarta(tipo,obj.id))}`
     : `<b>Publicada</b><br>${escapar(sinVersion(obj.imagen))}`;
 
+  // La zona importante solo tiene sentido en las franjas, que la carta
+  // recorta según el ancho de la pantalla. Aquí solo se enseña cuál está
+  // elegida; se cambia dentro de la ventana de la foto.
+  const marcaFoco=IMG_TIPOS[tipo].conFoco
+    ? `<span class="foco-marca">${iconoFoco(obj.foco)}<span>Zona importante: ${escapar(rotuloFoco(obj.foco))}</span></span>`
+    : '';
+
   return `
     <div class="miniatura miniatura--${tipo}">
       <div class="miniatura__marco">
         <img class="miniatura__img" src="${escapar(url)}" alt=""
              onerror="this.closest('.miniatura').remove()">
       </div>
-      <div class="miniatura__datos">${datos}</div>
-    </div>
-    ${foco?selectorFoco(tipo,obj):''}`;
-}
-
-/* Tres botones: qué parte de la foto interesa conservar. */
-function selectorFoco(tipo,obj){
-  const actual=normalizarFoco(obj.foco);
-  return `
-    <div class="foco" data-foco-tipo="${tipo}">
-      <span class="campo__etiqueta">Zona importante de la foto</span>
-      <div class="chips">
-        ${FOCOS.map(f=>`<button class="chip" type="button" data-foco="${f.clave}"
-           aria-pressed="${actual===f.clave}">${f.rotulo}</button>`).join('')}
-      </div>
-      <span class="campo__pista">En pantallas anchas la franja queda más baja de lo que
-        has encuadrado y la foto se recorta un poco por arriba y por abajo. Aquí eliges
-        qué parte no se pierde nunca.</span>
+      <div class="miniatura__datos">${datos}${marcaFoco}</div>
     </div>`;
 }
 
@@ -65,30 +55,18 @@ function pintarZona(){
   const gru=grupoActual();
 
   const imagenSeccion=bloqueImagen('seccion',sec,{
-    foco:true,
     vacio:'Esta sección no tiene imagen. La carta se verá igual que siempre, solo con el título.'
   });
   const imagenGrupo=gru?bloqueImagen('grupo',gru,{
-    foco:true,
     vacio:'Este grupo no tiene imagen. En la carta se verá el título en cursiva de siempre.'
   }):'';
-
-  // Los botones de foto solo existen si esta carta lleva fotos.
-  const btnImagenSeccion=hayImagenes()
-    ? `<span class="bloque__acciones">
-         <button class="btn btn--suave" data-imagen-seccion="1" type="button">Imagen</button>
-       </span>`
-    : '';
-  const btnImagenGrupo=hayImagenes()
-    ? `<span class="bloque__acciones">
-         <button class="btn btn--suave" data-imagen-grupo="1" type="button">Imagen</button>
-       </span>`
-    : '';
 
   zona.innerHTML=`
     <div class="bloque">
       <h2 class="bloque__titulo"><span class="etq etq--seccion">Sección</span>
-        ${btnImagenSeccion}
+        <span class="bloque__acciones">
+          <button class="btn btn--suave" data-imagen-seccion="1" type="button">Imagen</button>
+        </span>
       </h2>
       <div class="par-idiomas">${camposTexto('sec-nombre',sec.nombre,'Nombre')}</div>
       ${imagenSeccion}
@@ -100,7 +78,9 @@ function pintarZona(){
     ${gru?`
     <div class="bloque">
       <h2 class="bloque__titulo"><span class="etq etq--grupo">Grupo</span>
-        ${btnImagenGrupo}
+        <span class="bloque__acciones">
+          <button class="btn btn--suave" data-imagen-grupo="1" type="button">Imagen</button>
+        </span>
       </h2>
       <div class="par-idiomas">${camposTexto('gru-nombre',gru.nombre,'Nombre')}</div>
       ${imagenGrupo}
@@ -136,7 +116,7 @@ function pintarItem(item,indice,total){
         <input type="number" step="0.05" min="0" data-item-precio value="${Number(item.precio)||0}">
       </div>
       <div class="ficha-item__botones">
-        ${hayImagenes()?'<button class="btn btn--suave btn--mini" data-item-imagen type="button">Foto</button>':''}
+        <button class="btn btn--suave btn--mini" data-item-imagen type="button">Foto</button>
         <button class="btn btn--suave btn--mini" data-item-copiar type="button"
                 title="Copiar este ítem entero para pegarlo en otro grupo o sección">Copiar</button>
         <button class="mover" data-item-subir ${indice===0?'disabled':''}>▲</button>

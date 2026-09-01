@@ -18,9 +18,27 @@
 .miniatura__datos{font-size:.75rem;color:var(--tinta-suave);line-height:1.4}
 .miniatura__datos b{color:var(--tinta);font-weight:700}
 
-/* Zona importante de la foto: solo sale si hay imagen. */
-.foco{margin-top:14px}
-.foco .campo__pista{display:block;margin-top:8px}
+/* ---------- Zona importante de la foto ----------
+   Cuadrícula de tres por tres sobre la propia foto, dentro de la ventana
+   de la imagen. En la vista general solo se enseña la marca pequeña. */
+.foco-zona{margin-top:18px}
+.foco-rejilla{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);
+  gap:2px;width:100%;max-width:340px;margin-top:8px;padding:2px;
+  border:1px solid var(--linea-fuerte);border-radius:var(--radio-s);
+  background-color:var(--velo);background-size:cover;background-position:center}
+.foco-celda{padding:0;min-height:22px;cursor:pointer;border-radius:3px;
+  border:1px solid rgba(255,255,255,.28);background:rgba(9,12,24,.3);
+  transition:background .12s ease,border-color .12s ease}
+.foco-celda:hover{background:rgba(9,12,24,.08)}
+.foco-celda[aria-pressed="true"]{background:transparent;
+  border:2px solid var(--acento-1);box-shadow:0 0 0 1px rgba(0,0,0,.45)}
+.foco-zona .campo__pista{display:block;margin-top:10px}
+
+/* Marca pequeña de la vista general. */
+.foco-marca{display:flex;align-items:center;gap:6px;margin-top:6px}
+.foco-icono{width:15px;height:15px;flex-shrink:0}
+.foco-icono__off{fill:var(--linea-fuerte)}
+.foco-icono__on{fill:var(--acento-1)}
 
 /* ---------- Ventana emergente (la usan la foto y la actualización) ---------- */
 .modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;

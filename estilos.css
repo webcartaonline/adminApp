@@ -270,7 +270,8 @@ body{
 .panel__cabecera--imagen{
   position:relative;
   aspect-ratio:3/1;
-  max-height:230px;
+  min-height:130px;   /* en móviles estrechos la franja no se queda en una tira */
+  max-height:230px;   /* en pantallas grandes no se convierte en una valla */
   margin:0 0 30px;
   overflow:hidden;
   display:flex;
@@ -306,6 +307,7 @@ body{
    normal: el nombre de la sección nunca desaparece. */
 .panel__cabecera--sin-imagen{
   aspect-ratio:auto;
+  min-height:0;
   max-height:none;
   background:none;
   border-bottom:none;
@@ -344,6 +346,7 @@ body{
 .grupo__cabecera--imagen{
   position:relative;
   aspect-ratio:4/1;
+  min-height:95px;
   max-height:170px;
   margin:0 0 18px;
   overflow:hidden;
@@ -386,6 +389,7 @@ body{
 /* Si la foto del grupo falla, se cae al encabezado de siempre. */
 .grupo__cabecera--sin-imagen{
   aspect-ratio:auto;
+  min-height:0;
   max-height:none;
   background:none;
   border-block:none;

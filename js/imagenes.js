@@ -5,24 +5,6 @@
    cuáles se pueden recuperar y cuáles hay que borrar.
    ========================================================= */
 
-/* ---------- ¿Esta carta tiene imágenes? ----------
-   Es un interruptor general que viene en la propia carta, en
-   negocio.imagenes, igual que los idiomas vienen en negocio.idiomas.
-
-   Apagado significa apagado del todo: ni la carta las enseña, ni el
-   editor ofrece un solo botón de foto. No se borra nada: las fotos
-   que hubiera siguen en su sitio y vuelven solas al encenderlo.
-
-   Si el campo no viene escrito, cuenta como apagado. Las fotos se
-   encienden queriendo, no por descuido. */
-function detectarImagenes(datos){
-  const v=datos?.negocio?.imagenes;
-  return v===true||v===1||/^(true|si|sí|1)$/i.test(String(v??''));
-}
-
-/* Atajo para preguntarlo desde cualquier sitio. */
-function hayImagenes(){ return estado.imagenes===true; }
-
 /* Nombre de archivo a partir del id, saneado por si el JSON viene
    de fuera con ids raros. Siempre .jpg. */
 function nombreArchivoImagen(id){
@@ -50,14 +32,32 @@ function rutaImagenRepo(tipo,id){
   return `${carpetaDeLaCarta(a.ruta)}${rutaImagenCarta(tipo,id)}`;
 }
 
-/* El campo "foco" puede venir de un JSON antiguo con valores como
-   "arriba-izquierda" o "derecha". Aquí se reduce a las tres opciones que
-   de verdad importan (la franja solo se recorta por arriba y por abajo). */
+/* El campo "foco" dice qué casilla de la cuadrícula de tres por tres es
+   la importante. Se tolera cualquier cosa rara que venga de un JSON
+   escrito a mano: si no se reconoce, se toma el centro. */
 function normalizarFoco(valor){
-  const v=String(valor||'').trim().toLowerCase();
-  if(v.startsWith('arriba'))return 'arriba';
-  if(v.startsWith('abajo'))return 'abajo';
-  return 'centro';
+  const v=String(valor||'').trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[\s_]+/g,'-');
+  return FOCOS.some(f=>f.clave===v)?v:FOCO_DEFECTO;
+}
+
+/* Nombre en cristiano de la casilla elegida. */
+function rotuloFoco(valor){
+  const v=normalizarFoco(valor);
+  return FOCOS.find(f=>f.clave===v).rotulo;
+}
+
+/* Cuadrícula diminuta con la casilla elegida encendida, para la vista
+   general: se ve de un vistazo sin tener que abrir la foto. */
+function iconoFoco(valor){
+  const elegida=normalizarFoco(valor);
+  const celdas=FOCOS.map((f,n)=>{
+    const x=1+(n%3)*7, y=1+Math.floor(n/3)*7;
+    const clase=f.clave===elegida?'foco-icono__on':'foco-icono__off';
+    return `<rect x="${x}" y="${y}" width="6" height="6" rx="1.4" class="${clase}"/>`;
+  }).join('');
+  return `<svg class="foco-icono" viewBox="0 0 21 21" aria-hidden="true">${celdas}</svg>`;
 }
 
 /* Quita el ?v=… que usamos para forzar que el navegador recargue la foto. */
@@ -118,12 +118,8 @@ function tirarImagenesDe(seccionOGrupo,esSeccion){
   if(esSeccion)marcarImagenParaBorrar('seccion',seccionOGrupo.id,seccionOGrupo);
 }
 
-/* Cuenta cuántas fotos se llevará por delante borrar esto, para avisar.
-   Con el interruptor apagado se devuelve 0: los archivos sobrantes se
-   siguen limpiando por dentro, pero no se le habla de fotos a quien no
-   tiene fotos. */
+/* Cuenta cuántas fotos se llevará por delante borrar esto, para avisar. */
 function contarImagenesDe(seccionOGrupo,esSeccion){
-  if(!hayImagenes())return 0;
   const grupos=esSeccion?(seccionOGrupo.grupos??[]):[seccionOGrupo];
   let n=grupos.reduce((s,g)=>s+(g.items??[]).filter(it=>it.imagen).length+(g.imagen?1:0),0);
   if(esSeccion&&seccionOGrupo.imagen)n++;

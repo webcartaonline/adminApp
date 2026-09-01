@@ -15,13 +15,13 @@
    automáticamente la ventana con lo que ha cambiado.
    ========================================================= */
 
-const VERSION = '5.1.0';
+const VERSION = '3.5.0';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
-   Si añades un archivo css o js, apúntalo también aquí.
-   Las páginas html NO van en esta lista: van en PAGINAS, más abajo. */
+   Si añades un archivo css o js, apúntalo también aquí. */
 const ARCHIVOS = [
+  './',
   './manifest.json',
   './css/base.css',
   './css/botones.css',
@@ -39,11 +39,8 @@ const ARCHIVOS = [
   './js/estado.js',
   './js/tema.js',
   './js/color.js',
-  './js/color-ui.js',
   './js/panel.js',
   './js/ajustes.js',
-  './js/pagina-ajustes.js',
-  './js/copia-ajustes.js',
   './js/idiomas.js',
   './js/espera.js',
   './js/imagenes.js',
@@ -63,48 +60,13 @@ const ARCHIVOS = [
   './img/icono-mascara-512.png'
 ];
 
-/* ---------- Las dos páginas ----------
-   Van aparte del resto de archivos porque su dirección no es la misma
-   en todos los sitios donde se puede abrir la aplicación:
-
-     · Al probar en el ordenador (Live Server y compañía) solo existe
-       el nombre real del archivo: '/index.html' y '/ajustes.html'.
-     · GitHub Pages entiende los dos, el largo y el corto.
-     · Cloudflare quita el '.html' y manda a la dirección corta.
-
-   Además, una copia guardada que venga de un desvío no sirve: el
-   navegador se niega a abrirla. Por eso se prueban las formas en
-   orden, se guarda la primera que conteste sin desviar, y siempre
-   bajo el mismo nombre corto, que es el que busca luego el apartado
-   de navegación. Si ninguna contesta, no se guarda y esa página se
-   pedirá a la red: es preferible a que falle la instalación entera y
-   la aplicación se quede sin funcionar sin conexión. */
-const PAGINAS = [
-  { clave:'./',         formas:['./'] },
-  { clave:'./ajustes',  formas:['./ajustes','./ajustes.html'] }
-];
-
-async function guardarPaginas(cache){
-  for(const pagina of PAGINAS){
-    for(const forma of pagina.formas){
-      try{
-        const r=await fetch(forma,{cache:'no-store'});
-        if(r.ok&&!r.redirected){ await cache.put(pagina.clave,r); break; }
-      }catch(e){ /* se prueba la forma siguiente */ }
-    }
-  }
-}
-
 /* ---------- Instalación ----------
    Se descarga la versión nueva entera y se pone en marcha
    sin esperar el visto bueno de nadie. */
 self.addEventListener('install',(ev)=>{
-  ev.waitUntil((async()=>{
-    const cache=await caches.open(CACHE);
-    await cache.addAll(ARCHIVOS);
-    await guardarPaginas(cache);
-    await self.skipWaiting();
-  })());
+  ev.waitUntil(
+    caches.open(CACHE).then(c=>c.addAll(ARCHIVOS)).then(()=>self.skipWaiting())
+  );
 });
 
 /* ---------- Activación ----------
@@ -135,21 +97,14 @@ self.addEventListener('fetch',(ev)=>{
     return;
   }
 
-  // Al abrir una página se sirve la copia guardada de la que toca.
-  // Se atienden las dos formas de escribir la dirección de los
-  // ajustes, la corta y la larga, porque según el servidor vale una u
-  // otra (y puede quedar por ahí algún acceso directo con la otra).
-  // Las copias están guardadas con el nombre corto: ver PAGINAS.
+  // Al abrir la aplicación se sirve la copia guardada de la página
+  // principal. Ojo: se pide './' y no './index.html' a propósito —
+  // Cloudflare redirige index.html hacia '/', y una copia guardada que
+  // venga de una redirección hace que el navegador se niegue a abrirla.
   if(pet.mode==='navigate'){
-    ev.respondWith((async()=>{
-      const ruta=url.pathname;
-      const esAjustes=ruta.endsWith('/ajustes')||ruta.endsWith('/ajustes.html');
-      const destino=esAjustes?'./ajustes':'./';
-      const guardada=await caches.match(destino);
-      if(guardada)return guardada;
-      try{return await fetch(pet);}
-      catch(e){return new Response('Sin conexión',{status:503,statusText:'Sin conexión'});}
-    })());
+    ev.respondWith(
+      caches.match('./').then(r=>r||fetch(pet))
+    );
     return;
   }
 

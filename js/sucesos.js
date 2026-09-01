@@ -50,11 +50,7 @@ document.addEventListener('click',(ev)=>{
   }
 
   if(t.id==='btnNuevaSeccion'){
-    if(!estado.datos){
-      estado.datos={negocio:{},secciones:[]};
-      estado.idiomas=detectarIdiomas(estado.datos);
-      estado.imagenes=detectarImagenes(estado.datos);
-    }
+    if(!estado.datos){estado.datos={negocio:{},secciones:[]};estado.idiomas=detectarIdiomas(estado.datos);}
     estado.datos.secciones=estado.datos.secciones??[];
     const s={id:nuevoId('s','seccion'),nombre:crearTexto('NUEVA SECCIÓN'),grupos:[]};
     estado.datos.secciones.push(s);
@@ -74,16 +70,6 @@ document.addEventListener('click',(ev)=>{
   }
   if(t.dataset.imagenSeccion!==undefined){abrirModalImagen('seccion',estado.seccionActiva);return;}
   if(t.dataset.imagenGrupo!==undefined){abrirModalImagen('grupo',estado.grupoActivo);return;}
-
-  // Zona importante de la foto (sección o grupo).
-  const btnFoco=t.closest('[data-foco]');
-  if(btnFoco){
-    const tipo=btnFoco.closest('[data-foco-tipo]')?.dataset.focoTipo;
-    const obj=tipo==='seccion'?seccionActual():tipo==='grupo'?grupoActual():null;
-    if(!obj)return;
-    obj.foco=btnFoco.dataset.foco;
-    marcarSucio();pintarZona();return;
-  }
 
   if(t.dataset.borrarSeccion!==undefined){
     const s=seccionActual();

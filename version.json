@@ -1,9 +1,9 @@
 {
-  "version": "5.1.0",
-  "fecha": "2026-09-01",
-  "titulo": "Mejora de la App",
+  "version": "3.5.0",
+  "fecha": "2026-08-30",
+  "titulo": "Parte importante de la foto mejorada",
   "cambios": [
-    "Se ha mejorado la eficiencia y se han pulido algunos procesos internos.",
-    "Las actualizaciónes nos ayudan a proporcionarte siempre un mejor serviicio"
+    "Dentro del editor de foto hay una cuadrícula de nueve casillas sobre la propia imagen: marca dónde está lo que no se puede perder cuando la carta cambie de tamaño según la pantalla.",
+    "En la ficha de la sección y del grupo se ve de un vistazo de qué casilla está elegida."
   ]
 }
