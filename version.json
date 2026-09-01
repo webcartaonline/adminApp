@@ -1,11 +1,9 @@
 {
-  "version": "5.0.0",
-  "fecha": "2026-08-31",
-  "titulo": "Copia de los ajustes",
+  "version": "5.1.0",
+  "fecha": "2026-09-01",
+  "titulo": "Mejora de la App",
   "cambios": [
-    "Nuevo apartado «Exportar e importar» en los ajustes: guarda toda tu configuración en un archivo y vuelve a ponerla en otro navegador o dispositivo.",
-    "El archivo lleva los datos de conexión, la web conectada, el nombre del editor, el color principal y el modo claro u oscuro.",
-    "El token de acceso solo se incluye si lo pides a propósito, con un aviso de a qué da acceso ese archivo.",
-    "Al importar se enseña antes lo que trae el archivo: nada cambia hasta que lo confirmas."
+    "Se ha mejorado la eficiencia y se han pulido algunos procesos internos.",
+    "Las actualizaciónes nos ayudan a proporcionarte siempre un mejor serviicio"
   ]
 }

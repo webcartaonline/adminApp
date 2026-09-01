@@ -50,7 +50,11 @@ document.addEventListener('click',(ev)=>{
   }
 
   if(t.id==='btnNuevaSeccion'){
-    if(!estado.datos){estado.datos={negocio:{},secciones:[]};estado.idiomas=detectarIdiomas(estado.datos);}
+    if(!estado.datos){
+      estado.datos={negocio:{},secciones:[]};
+      estado.idiomas=detectarIdiomas(estado.datos);
+      estado.imagenes=detectarImagenes(estado.datos);
+    }
     estado.datos.secciones=estado.datos.secciones??[];
     const s={id:nuevoId('s','seccion'),nombre:crearTexto('NUEVA SECCIÓN'),grupos:[]};
     estado.datos.secciones.push(s);

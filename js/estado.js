@@ -11,6 +11,7 @@ const estado = {
   datos:null,                // la carta entera, tal cual está en carta.json
   sha:null,                  // "huella" del archivo en GitHub, para no pisar cambios ajenos
   idiomas:['es'],
+  imagenes:false,           // ¿esta carta lleva fotos? lo dice negocio.imagenes
   estadisticas:null,
   vista:'editor',            // 'editor' | 'estadisticas'
   seccionActiva:null, grupoActivo:null,

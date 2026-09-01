@@ -26,6 +26,10 @@ function errorImagen(txt){
 }
 
 function abrirModalImagen(tipo,id){
+  // Cerrojo de seguridad: si esta carta no lleva fotos, la ventana no se
+  // abre aunque se llegue aquí por otro camino (un atajo de teclado, un
+  // botón que se quedara pintado…).
+  if(!hayImagenes())return;
   const obj=objetoDeImagen(tipo,id);
   if(!obj)return;
   const conf=IMG_TIPOS[tipo];

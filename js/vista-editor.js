@@ -21,6 +21,7 @@ function camposTexto(attr,valor,etiquetaBase,textarea=false){
    grupos y platos: lo único que cambia es la forma del marco (que sale de
    la clase miniatura--<tipo>) y si lleva o no selector de zona. */
 function bloqueImagen(tipo,obj,{vacio='',foco=false}={}){
+  if(!hayImagenes())return '';   // esta carta no lleva fotos: ni miniatura ni aviso
   const pendiente=estado.imagenesPendientes[rutaImagenRepo(tipo,obj.id)];
   const url=pendiente?.previa||urlImagenExistente(obj.imagen);
   if(!url)return vacio?`<p class="campo__pista" style="margin-top:10px">${vacio}</p>`:'';
@@ -72,12 +73,22 @@ function pintarZona(){
     vacio:'Este grupo no tiene imagen. En la carta se verá el título en cursiva de siempre.'
   }):'';
 
+  // Los botones de foto solo existen si esta carta lleva fotos.
+  const btnImagenSeccion=hayImagenes()
+    ? `<span class="bloque__acciones">
+         <button class="btn btn--suave" data-imagen-seccion="1" type="button">Imagen</button>
+       </span>`
+    : '';
+  const btnImagenGrupo=hayImagenes()
+    ? `<span class="bloque__acciones">
+         <button class="btn btn--suave" data-imagen-grupo="1" type="button">Imagen</button>
+       </span>`
+    : '';
+
   zona.innerHTML=`
     <div class="bloque">
       <h2 class="bloque__titulo"><span class="etq etq--seccion">Sección</span>
-        <span class="bloque__acciones">
-          <button class="btn btn--suave" data-imagen-seccion="1" type="button">Imagen</button>
-        </span>
+        ${btnImagenSeccion}
       </h2>
       <div class="par-idiomas">${camposTexto('sec-nombre',sec.nombre,'Nombre')}</div>
       ${imagenSeccion}
@@ -89,9 +100,7 @@ function pintarZona(){
     ${gru?`
     <div class="bloque">
       <h2 class="bloque__titulo"><span class="etq etq--grupo">Grupo</span>
-        <span class="bloque__acciones">
-          <button class="btn btn--suave" data-imagen-grupo="1" type="button">Imagen</button>
-        </span>
+        ${btnImagenGrupo}
       </h2>
       <div class="par-idiomas">${camposTexto('gru-nombre',gru.nombre,'Nombre')}</div>
       ${imagenGrupo}
@@ -127,7 +136,7 @@ function pintarItem(item,indice,total){
         <input type="number" step="0.05" min="0" data-item-precio value="${Number(item.precio)||0}">
       </div>
       <div class="ficha-item__botones">
-        <button class="btn btn--suave btn--mini" data-item-imagen type="button">Foto</button>
+        ${hayImagenes()?'<button class="btn btn--suave btn--mini" data-item-imagen type="button">Foto</button>':''}
         <button class="btn btn--suave btn--mini" data-item-copiar type="button"
                 title="Copiar este ítem entero para pegarlo en otro grupo o sección">Copiar</button>
         <button class="mover" data-item-subir ${indice===0?'disabled':''}>▲</button>

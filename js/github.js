@@ -55,6 +55,7 @@ function cargarDatos(datos){
   }
   estado.datos.secciones=estado.datos.secciones||[];
   estado.idiomas=detectarIdiomas(estado.datos);
+  estado.imagenes=detectarImagenes(estado.datos);
   estado.seccionActiva=estado.datos.secciones[0]?.id??null;
   if(estado.seccionActiva)estado.expandidas.add(estado.seccionActiva);
   estado.grupoActivo=null;
