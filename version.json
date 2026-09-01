@@ -1,11 +1,10 @@
 {
-  "version": "4.0",
+  "version": "5.0.0",
   "fecha": "2026-09-01",
-  "titulo": "Ajustes de la página",
+  "titulo": "El pie de la carta, a tu gusto",
   "cambios": [
-    "Nuevo apartado «Ajustes de la página» en Ajustes: elige los colores de tu carta (principal, fondo y texto) y mírala en una portada en miniatura antes de publicar.",
-    "Pon el nombre, el eslogan y el logotipo de tu negocio en la portada. Con logotipo y título salen los dos; si el logotipo ya lleva el nombre, deja el título vacío y saldrá él solo.",
-    "Sube tus propias letras (fuentes): una para el título y otra para el resto del texto.",
-    "Todo se publica con su propio botón y comparte la espera de dos minutos con «Publicar cambios» del editor: mientras uno se despliega, el otro también espera."
+    "En «Ajustes de la página» ahora puedes escribir mensajes para el pie de la carta (horarios, avisos, agradecimientos…): cada uno con su título y su texto, y tantos como quieras.",
+    "Añade los enlaces de tus redes sociales (TikTok, Instagram, X, YouTube, Facebook y Snapchat) y sus iconos aparecerán abajo del todo de la carta, con tu color principal.",
+    "Los apartados de ajustes se ven ahora como tarjetas separadas, para distinguir mejor dónde acaba una cosa y empieza la siguiente."
   ]
 }

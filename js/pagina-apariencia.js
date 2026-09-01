@@ -23,9 +23,27 @@ function aparienciaDeFabrica(){
   return {
     colores:{ principal:'#E9B44C', fondo:'#12100E', texto:'auto' },
     identidad:{ titulo:'', eslogan:{ es:'', en:'' }, logo:'' },
-    fuentes:{ titulo:null, texto:null }
+    fuentes:{ titulo:null, texto:null },
+    pie:{ bloques:[], redes:{ tiktok:'', instagram:'', x:'', youtube:'', facebook:'', snapchat:'' } }
   };
 }
+
+/* Las seis redes que puede elegir el negocio, en el orden en que se
+   pintan. Los iconos son los mismos que dibuja la carta. */
+const REDES_PIE = [
+  { clave:'tiktok',    nombre:'TikTok',
+    icono:'<path d="M15 4.2c.4 2.3 2 3.9 4.2 4.1"/><path d="M15 4.2v9.3a4.1 4.1 0 1 1-3.4-4.04"/>' },
+  { clave:'instagram', nombre:'Instagram',
+    icono:'<rect x="4" y="4" width="16" height="16" rx="4.6"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.7" cy="7.3" r=".9" fill="currentColor" stroke="none"/>' },
+  { clave:'x',         nombre:'X',
+    icono:'<path d="M5.3 4.5h3.5l9.9 15h-3.5Z"/><path d="M10.6 13.4 5 19.5"/><path d="M18.7 4.5 13.3 10.4"/>' },
+  { clave:'youtube',   nombre:'YouTube',
+    icono:'<rect x="3.5" y="6" width="17" height="12" rx="3.6"/><path d="M10.4 9.5v5l4.4-2.5Z"/>' },
+  { clave:'facebook',  nombre:'Facebook',
+    icono:'<path d="M15.6 4.5h-1.9a3.5 3.5 0 0 0-3.5 3.5V20"/><path d="M8 11.6h6.6"/>' },
+  { clave:'snapchat',  nombre:'Snapchat',
+    icono:'<path d="M12 4c2.5 0 4.3 1.9 4.3 4.5v1.6c0 .3.2.5.5.5l1.7.4c-.6 1.3-1.6 2.2-2.9 2.7.9 1.2 2.2 1.9 3.9 2.1-1 1.2-2.4 1.9-4 1.9-.5.8-1.9 1.4-3.5 1.4s-3-.6-3.5-1.4c-1.6 0-3-.7-4-1.9 1.7-.2 3-.9 3.9-2.1-1.3-.5-2.3-1.4-2.9-2.7l1.7-.4c.3 0 .5-.2.5-.5V8.5C7.7 5.9 9.5 4 12 4Z"/>' }
+];
 
 const LOGO_LADO_MAX   = 1000;          // px del lado mayor al subirlo
 const LOGO_PESO_MAX   = 10*1024*1024;  // 10 MB de archivo original
@@ -197,7 +215,11 @@ async function cargarPagina(){
       colores:{...base.colores,...(guardada?.colores||{})},
       identidad:{...base.identidad,...(guardada?.identidad||{}),
         eslogan:{...base.identidad.eslogan,...(guardada?.identidad?.eslogan||{})}},
-      fuentes:{...base.fuentes,...(guardada?.fuentes||{})}
+      fuentes:{...base.fuentes,...(guardada?.fuentes||{})},
+      pie:{
+        bloques:Array.isArray(guardada?.pie?.bloques)?guardada.pie.bloques:[],
+        redes:{...base.pie.redes,...(guardada?.pie?.redes||{})}
+      }
     };
 
     /* Primera vez (sin título ni logo configurados): se rellena con lo
@@ -248,6 +270,97 @@ function volcarCampos(){
   pintarLogoCampo();
   pintarFuenteCampo('titulo');
   pintarFuenteCampo('texto');
+  pintarBloquesPie();
+  pintarRedesPie();
+}
+
+/* =========================================================
+   PIE DE PÁGINA: MENSAJES
+   Una lista que crece y encoge: cada mensaje es una
+   tarjetita con su título, su texto y su botón de quitar.
+   ========================================================= */
+function pintarBloquesPie(){
+  const bloques=apar.datos.pie.bloques;
+  const caja=$('#aparPieBloques');
+  caja.innerHTML=bloques.length?bloques.map((b,i)=>`
+    <div class="pie-bloque" data-indice="${i}">
+      <div class="pie-bloque__cabecera">
+        <span class="pie-bloque__numero">Mensaje ${i+1}</span>
+        <button class="btn btn--peligro btn--mini" type="button" data-quitar>Quitar</button>
+      </div>
+      <label class="campo">
+        <span class="campo__etiqueta">Título</span>
+        <input type="text" data-campo="titulo" value="${escapar(b.titulo||'')}"
+               autocomplete="off" placeholder="Horario, Aviso, Gracias…">
+      </label>
+      <label class="campo">
+        <span class="campo__etiqueta">Texto</span>
+        <textarea data-campo="texto" rows="3"
+          placeholder="Lo que quieras contar a tus clientes.">${escapar(b.texto||'')}</textarea>
+      </label>
+    </div>`).join('')
+    :'<p class="pie-bloques__vacio">Todavía no hay ningún mensaje. Añade el primero con el botón de abajo.</p>';
+}
+
+// Escribir dentro de un mensaje: se apunta en su sitio de la lista.
+$('#aparPieBloques').addEventListener('input',(ev)=>{
+  const tarjeta=ev.target.closest('[data-indice]');
+  const campo=ev.target.dataset.campo;
+  if(!tarjeta||!campo)return;
+  apar.datos.pie.bloques[Number(tarjeta.dataset.indice)][campo]=ev.target.value;
+  marcarSucio();
+});
+// Quitar un mensaje: fuera de la lista y se repinta (los números cambian).
+$('#aparPieBloques').addEventListener('click',(ev)=>{
+  const boton=ev.target.closest('[data-quitar]');
+  if(!boton)return;
+  const indice=Number(boton.closest('[data-indice]').dataset.indice);
+  apar.datos.pie.bloques.splice(indice,1);
+  pintarBloquesPie();
+  marcarSucio();
+});
+$('#btnAparPieAnadir').addEventListener('click',()=>{
+  apar.datos.pie.bloques.push({titulo:'',texto:''});
+  pintarBloquesPie();
+  // El cursor, directo al título del mensaje recién creado.
+  const nuevas=$('#aparPieBloques').querySelectorAll('[data-indice]');
+  nuevas[nuevas.length-1]?.querySelector('input')?.focus();
+  marcarSucio();
+});
+
+/* =========================================================
+   PIE DE PÁGINA: REDES SOCIALES
+   Las seis redes, cada una con su icono y su campo de
+   enlace. Con enlace, sale en la carta; en blanco, no.
+   ========================================================= */
+function pintarRedesPie(){
+  const redes=apar.datos.pie.redes;
+  $('#aparPieRedes').innerHTML=REDES_PIE.map((r)=>`
+    <label class="redes__fila">
+      <span class="redes__icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+             stroke-linecap="round" stroke-linejoin="round">${r.icono}</svg>
+      </span>
+      <span class="redes__datos">
+        <span class="campo__etiqueta">${r.nombre}</span>
+        <input type="text" inputmode="url" autocomplete="off" spellcheck="false"
+               data-red="${r.clave}" value="${escapar(redes[r.clave]||'')}"
+               placeholder="https://…">
+      </span>
+    </label>`).join('');
+}
+$('#aparPieRedes').addEventListener('input',(ev)=>{
+  const red=ev.target.dataset.red;
+  if(!red)return;
+  apar.datos.pie.redes[red]=ev.target.value;
+  marcarSucio();
+});
+
+/* Un enlace escrito sin el «https://» delante se arregla solo. */
+function normalizarEnlace(url){
+  const t=String(url||'').trim();
+  if(!t)return '';
+  return /^https?:\/\//i.test(t)?t:`https://${t}`;
 }
 
 function pintarLogoCampo(){
@@ -427,6 +540,14 @@ async function publicarPagina(){
     apar.datos.identidad.titulo=$('#aparTitulo').value.trim();
     apar.datos.identidad.eslogan.es=$('#aparEsloganEs').value.trim();
     apar.datos.identidad.eslogan.en=$('#aparEsloganEn').value.trim();
+    // Los mensajes en blanco no viajan, y los enlaces quedan bien formados.
+    apar.datos.pie.bloques=apar.datos.pie.bloques
+      .map(b=>({titulo:String(b.titulo||'').trim(),texto:String(b.texto||'').trim()}))
+      .filter(b=>b.titulo||b.texto);
+    for(const clave of Object.keys(apar.datos.pie.redes)){
+      apar.datos.pie.redes[clave]=normalizarEnlace(apar.datos.pie.redes[clave]);
+    }
+    volcarCampos();   // la pantalla enseña lo que de verdad se publica
 
     // 1) El logotipo, si hay uno nuevo.
     if(apar.logoPendiente){

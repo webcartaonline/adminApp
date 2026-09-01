@@ -357,6 +357,32 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
           sencilla; las muy decorativas lucen más solo en el título.</p>
       </section>
 
+      <!-- ===== Mensajes del pie de página ===== -->
+      <section class="bloque">
+        <h3 class="bloque__titulo">Mensajes del pie de página</h3>
+        <p class="bloque__nota">Textos que salen al final de la carta: horarios, avisos,
+          agradecimientos, direcciones… Cada mensaje lleva un título y un texto, y puedes añadir
+          tantos como quieras (o ninguno).</p>
+
+        <div class="pie-bloques" id="aparPieBloques"></div>
+
+        <div class="ajustes__acciones">
+          <button class="btn btn--suave" id="btnAparPieAnadir" type="button">+ Añadir un mensaje</button>
+        </div>
+      </section>
+
+      <!-- ===== Redes sociales ===== -->
+      <section class="bloque">
+        <h3 class="bloque__titulo">Redes sociales</h3>
+        <p class="bloque__nota">Pega el enlace de las redes que quieras enseñar y su icono aparecerá
+          abajo del todo de la carta, pintado con tu color principal. Las que dejes en blanco no
+          salen. Los enlaces se abren en una pestaña nueva.</p>
+
+        <!-- Las seis redes con su icono y su campo de enlace. Las pinta
+             js/pagina-apariencia.js para no repetir aquí seis veces lo mismo. -->
+        <div class="redes" id="aparPieRedes"></div>
+      </section>
+
       <!-- ===== Publicar ===== -->
       <div class="apariencia__publicar">
         <button class="btn btn--principal" id="btnPublicarPagina" type="button" disabled>Publicar en la página</button>

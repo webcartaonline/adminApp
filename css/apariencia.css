@@ -101,10 +101,53 @@
 }
 .apariencia__fuente-estado b{ color:var(--tinta); }
 
+/* ---------- Mensajes del pie ----------
+   Cada mensaje es una tarjetita dentro del bloque, con su número
+   y su botón de quitar arriba. */
+.pie-bloques{ display:flex; flex-direction:column; gap:12px; }
+.pie-bloque{
+  padding:12px 14px 14px;
+  border:1px solid var(--linea-fuerte); border-radius:var(--radio-m);
+  background:var(--marfil-alto,transparent);
+}
+.pie-bloque__cabecera{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  margin-bottom:10px;
+}
+.pie-bloque__numero{
+  font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--tinta-suave);
+}
+.pie-bloque .campo+.campo{ margin-top:10px; }
+.pie-bloque textarea{ resize:vertical; min-height:64px; }
+.pie-bloques__vacio{ margin:4px 0 0; font-size:.79rem; color:var(--tinta-suave); }
+
+/* ---------- Redes sociales ----------
+   Una fila por red: el icono en su pastilla y el campo del enlace. */
+.redes{
+  display:grid; gap:10px 14px;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+}
+.redes__fila{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px;
+  border:1px solid var(--linea); border-radius:var(--radio-m);
+  background:var(--velo);
+}
+.redes__icono{
+  flex:none; width:38px; height:38px;
+  display:grid; place-items:center;
+  border-radius:12px;
+  background:var(--pastilla); color:var(--acento-texto,currentColor);
+}
+.redes__icono svg{ width:20px; height:20px; }
+.redes__datos{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:4px; }
+.redes__datos input{ width:100%; }
+
 /* ---------- Publicar ---------- */
 .apariencia__publicar{
   display:flex; align-items:center; gap:12px; flex-wrap:wrap;
-  padding-top:16px; border-top:1px solid var(--linea);
+  margin-top:18px; padding-top:16px; border-top:1px solid var(--linea);
 }
 .apariencia__espera{
   padding:5px 12px; border-radius:100px;
