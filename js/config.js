@@ -26,6 +26,7 @@ const CLAVE_ESPERA         = 'editorCartaUniversal.esperaHasta';
 const CLAVE_VERSION_VISTA  = 'editorCartaUniversal.versionVista';
 const CLAVE_COLOR          = 'editorCartaUniversal.color';
 const CLAVE_PANEL_ANCHO    = 'editorCartaUniversal.panelAncho';
+const CLAVE_SITIO          = 'editorCartaUniversal.sitio';
 
 /* ---------- Espera entre publicaciones ---------- */
 const MS_ESPERA = 2*60*1000;   // 2 minutos
@@ -66,10 +67,12 @@ const IMG_TIPOS = {
 
 /* ---------- Zona importante de la foto ----------
    Las franjas de sección y grupo ocupan todo el ancho de la pantalla,
-   así que según la pantalla quedan más o menos bajas y la foto se
-   recorta. Esto decide qué parte se conserva siempre. Se guarda en el
-   campo "foco" y va en el orden de la cuadrícula de tres por tres que
-   se ve en la ventana de la foto: primera fila, segunda y tercera. */
+   así que según la pantalla quedan más bajas o más estrechas de lo que
+   se encuadró y la foto se recorta un poco. Esto decide qué parte se
+   conserva siempre. Se guarda en el campo "foco".
+
+   El orden es el de la cuadrícula de tres por tres que se ve en la
+   ventana de la foto: primera fila, segunda fila y tercera. */
 const FOCOS = [
   { clave:'arriba-izquierda', rotulo:'Arriba a la izquierda' },
   { clave:'arriba',           rotulo:'Arriba' },

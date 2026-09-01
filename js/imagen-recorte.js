@@ -22,8 +22,8 @@ function previaAlto(){
 /* ---------- Zona importante de la foto ----------
    Cuadrícula de tres por tres sobre la propia foto. Solo se enseña en los
    tipos que la carta recorta (sección y grupo) y solo cuando de verdad hay
-   foto: publicada, preparada, o recién elegida en el marco de encuadre.
-   Si el objeto no tiene imagen, esto no aparece, igual que antes. */
+   foto: publicada, preparada sin publicar, o recién elegida en el marco de
+   encuadre. Si el objeto no tiene imagen, esto no aparece. */
 function pintarFoco(){
   const zona=$('#focoZona');
   const conf=IMG_TIPOS[recorte.tipo];
@@ -31,15 +31,15 @@ function pintarFoco(){
   const pendiente=estado.imagenesPendientes[rutaImagenRepo(recorte.tipo,recorte.id)];
   const hayFoto=!!(obj?.imagen||pendiente||recorte.mapa);
 
-  if(!conf.conFoco||!obj||!hayFoto){zona.hidden=true;return;}
+  if(!hayImagenes()||!conf.conFoco||!obj||!hayFoto){zona.hidden=true;return;}
 
   const elegida=normalizarFoco(obj.foco);
   const rejilla=$('#focoRejilla');
   rejilla.style.aspectRatio=`${conf.relA}/${conf.relB}`;
 
-  // De fondo, la foto que se está tocando: así se ve sobre qué se elige.
-  // Si hay una foto nueva a medio encuadrar, se usa el propio marco de
-  // encuadre, que es exactamente lo que va a acabar en la carta.
+  // De fondo, la foto que se está tocando: así se elige sobre la imagen y
+  // no a ciegas. Si hay una foto nueva a medio encuadrar, se usa el propio
+  // marco de encuadre, que es exactamente lo que va a acabar en la carta.
   if(recorte.mapa){
     refrescarFondoFoco();
   }else{
@@ -56,13 +56,14 @@ function pintarFoco(){
 }
 
 /* Copia el marco de encuadre al fondo de la cuadrícula. Se llama solo al
-   soltar el dedo o el zoom, no en cada movimiento: sacar una foto del
+   soltar el dedo o el zoom, no en cada movimiento: sacar una copia del
    lienzo es caro y no hace falta hacerlo sesenta veces por segundo. */
 function refrescarFondoFoco(){
   if(!recorte.mapa||!IMG_TIPOS[recorte.tipo].conFoco)return;
   try{
-    $('#focoRejilla').style.backgroundImage=`url("${$('#imgLienzo').toDataURL('image/jpeg',0.6)}")`;
-  }catch{ /* si el navegador se queja, la cuadrícula se queda sin fondo y punto */ }
+    $('#focoRejilla').style.backgroundImage=
+      `url("${$('#imgLienzo').toDataURL('image/jpeg',0.6)}")`;
+  }catch{ /* si el navegador se queja, la cuadrícula se queda sin fondo y ya */ }
 }
 
 function errorImagen(txt){
@@ -72,6 +73,10 @@ function errorImagen(txt){
 }
 
 function abrirModalImagen(tipo,id){
+  // Cerrojo de seguridad: si esta carta no lleva fotos, la ventana no se
+  // abre aunque se llegue aquí por otro camino (un atajo de teclado, un
+  // botón que se quedara pintado…).
+  if(!hayImagenes())return;
   const obj=objetoDeImagen(tipo,id);
   if(!obj)return;
   const conf=IMG_TIPOS[tipo];

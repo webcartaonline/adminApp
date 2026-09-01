@@ -5,6 +5,24 @@
    cuáles se pueden recuperar y cuáles hay que borrar.
    ========================================================= */
 
+/* ---------- ¿Esta carta tiene imágenes? ----------
+   Es un interruptor general que viene en la propia carta, en
+   negocio.imagenes, igual que los idiomas vienen en negocio.idiomas.
+
+   Apagado significa apagado del todo: ni la carta las enseña, ni el
+   editor ofrece un solo botón de foto. No se borra nada: las fotos
+   que hubiera siguen en su sitio y vuelven solas al encenderlo.
+
+   Si el campo no viene escrito, cuenta como apagado. Las fotos se
+   encienden queriendo, no por descuido. */
+function detectarImagenes(datos){
+  const v=datos?.negocio?.imagenes;
+  return v===true||v===1||/^(true|si|sí|1)$/i.test(String(v??''));
+}
+
+/* Atajo para preguntarlo desde cualquier sitio. */
+function hayImagenes(){ return estado.imagenes===true; }
+
 /* Nombre de archivo a partir del id, saneado por si el JSON viene
    de fuera con ids raros. Siempre .jpg. */
 function nombreArchivoImagen(id){
@@ -44,12 +62,12 @@ function normalizarFoco(valor){
 
 /* Nombre en cristiano de la casilla elegida. */
 function rotuloFoco(valor){
-  const v=normalizarFoco(valor);
-  return FOCOS.find(f=>f.clave===v).rotulo;
+  return FOCOS.find(f=>f.clave===normalizarFoco(valor)).rotulo;
 }
 
-/* Cuadrícula diminuta con la casilla elegida encendida, para la vista
-   general: se ve de un vistazo sin tener que abrir la foto. */
+/* Cuadrícula diminuta con la casilla elegida encendida. Se usa en la
+   vista general para saber de un vistazo cuál está puesta, sin tener
+   que abrir la ventana de la foto. */
 function iconoFoco(valor){
   const elegida=normalizarFoco(valor);
   const celdas=FOCOS.map((f,n)=>{
@@ -118,8 +136,12 @@ function tirarImagenesDe(seccionOGrupo,esSeccion){
   if(esSeccion)marcarImagenParaBorrar('seccion',seccionOGrupo.id,seccionOGrupo);
 }
 
-/* Cuenta cuántas fotos se llevará por delante borrar esto, para avisar. */
+/* Cuenta cuántas fotos se llevará por delante borrar esto, para avisar.
+   Con el interruptor apagado se devuelve 0: los archivos sobrantes se
+   siguen limpiando por dentro, pero no se le habla de fotos a quien no
+   tiene fotos. */
 function contarImagenesDe(seccionOGrupo,esSeccion){
+  if(!hayImagenes())return 0;
   const grupos=esSeccion?(seccionOGrupo.grupos??[]):[seccionOGrupo];
   let n=grupos.reduce((s,g)=>s+(g.items??[]).filter(it=>it.imagen).length+(g.imagen?1:0),0);
   if(esSeccion&&seccionOGrupo.imagen)n++;
