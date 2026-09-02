@@ -46,13 +46,8 @@ const REDES_PIE = [
     icono:'<path d="M12 4c2.5 0 4.3 1.9 4.3 4.5v1.6c0 .3.2.5.5.5l1.7.4c-.6 1.3-1.6 2.2-2.9 2.7.9 1.2 2.2 1.9 3.9 2.1-1 1.2-2.4 1.9-4 1.9-.5.8-1.9 1.4-3.5 1.4s-3-.6-3.5-1.4c-1.6 0-3-.7-4-1.9 1.7-.2 3-.9 3.9-2.1-1.3-.5-2.3-1.4-2.9-2.7l1.7-.4c.3 0 .5-.2.5-.5V8.5C7.7 5.9 9.5 4 12 4Z"/>' }
 ];
 
-const LOGO_LADO_MAX   = 1000;          // px del lado mayor al subirlo
-const LOGO_PESO_MAX   = 10*1024*1024;  // 10 MB de archivo original
-
-/* La foto de fondo de la portada. Se sube ancha porque ocupa toda la
-   pantalla, pero no hace falta más: a partir de ahí solo pesa. */
-const FONDO_ANCHO_MAX = 1800;
-const FONDO_PESO_MAX  = 15*1024*1024;
+/* Los límites del logotipo y de la portada están en config.js:
+   LOGO_LADO_MAX, LOGO_PESO_INTACTO, FONDO_LADO_MAX… */
 const FUENTE_PESO_MAX = 10*1024*1024;
 const FUENTE_TIPOS    = ['woff2','woff','ttf','otf'];
 
@@ -423,50 +418,47 @@ function refrescarBotonPublicar(){
 
 /* =========================================================
    LOGOTIPO
-   Se acepta cualquier forma (apaisado, cuadrado, redondo…):
-   solo se encoge si es enorme, sin recortarlo ni deformarlo.
-   Los PNG, WebP y SVG conservan su transparencia.
+   Se acepta cualquier forma (apaisado, cuadrado, redondo…)
+   y se sube tal cual: ni se recorta, ni se deforma, ni se
+   comprime. Solo si es enorme se reduce, y con la calidad
+   más alta posible. Los SVG ni se miran: pesan nada y se
+   ven perfectos a cualquier tamaño.
    ========================================================= */
+const POLITICA_LOGO = {
+  ladoMax:LOGO_LADO_MAX,
+  pesoIntacto:LOGO_PESO_INTACTO,
+  calidad:LOGO_CALIDAD,
+  conservarTransparencia:true     // un logo sin fondo debe seguir sin fondo
+};
+
 async function elegirLogo(archivo){
   if(!archivo)return;
-  if(archivo.size>LOGO_PESO_MAX){avisar('Ese archivo pesa demasiado. Prueba con una imagen de menos de 10 MB.','error');return;}
+  if(archivo.size>LOGO_PESO_MAX){
+    avisar('Ese archivo pesa demasiado. Prueba con una imagen de menos de 10 MB.','error');return;
+  }
   try{
     const preparado=archivo.type==='image/svg+xml'
-      ?{base64:await blobABase64(archivo),extension:'svg'}
-      :await encogerLogo(archivo);
-    if(apar.previas.logo)URL.revokeObjectURL(apar.previas.logo);
-    apar.previas.logo=URL.createObjectURL(base64ABlob(preparado.base64,
-      preparado.extension==='svg'?'image/svg+xml':preparado.extension==='png'?'image/png':'image/jpeg'));
+      ? {blob:archivo,extension:'svg',tocada:false,ancho:0,alto:0}
+      : await prepararImagenIntacta(archivo,POLITICA_LOGO);
 
-    const ruta=`img/logo.${preparado.extension}`;
-    apuntarSiSobra(apar.publicado.logo,ruta);
-    apar.logoPendiente={ruta,base64:preparado.base64};
-    apar.datos.identidad.logo=`${ruta}?v=${marcaDeTiempo()}`;
-    pintarLogoCampo(); pintarPrevia(); marcarSucio();
-  }catch{avisar('No se ha podido leer esa imagen. Prueba con un PNG, JPG, WebP o SVG.','error');}
+    await guardarLogoPreparado(preparado);
+    avisar(`Logotipo listo. ${resumenDeImagen(preparado)}`,'bien');
+  }catch{
+    avisar('No se ha podido leer esa imagen. Prueba con un PNG, JPG, WebP o SVG.','error');
+  }
 }
 
-function encogerLogo(archivo){
-  return new Promise((listo,fallo)=>{
-    const url=URL.createObjectURL(archivo);
-    const imagen=new Image();
-    imagen.onload=()=>{
-      const escala=Math.min(1,LOGO_LADO_MAX/Math.max(imagen.width,imagen.height));
-      const lienzo=document.createElement('canvas');
-      lienzo.width=Math.max(1,Math.round(imagen.width*escala));
-      lienzo.height=Math.max(1,Math.round(imagen.height*escala));
-      lienzo.getContext('2d').drawImage(imagen,0,0,lienzo.width,lienzo.height);
-      URL.revokeObjectURL(url);
-      // PNG para los formatos con transparencia; JPG para las fotos.
-      const conAlfa=/png|webp|gif/.test(archivo.type);
-      lienzo.toBlob(async(blob)=>{
-        if(!blob){fallo(new Error('sin blob'));return;}
-        listo({base64:await blobABase64(blob),extension:conAlfa?'png':'jpg'});
-      },conAlfa?'image/png':'image/jpeg',0.85);
-    };
-    imagen.onerror=()=>{URL.revokeObjectURL(url);fallo(new Error('imagen ilegible'));};
-    imagen.src=url;
-  });
+/* Deja el logotipo preparado para subirse y refresca la pantalla. */
+async function guardarLogoPreparado(preparado){
+  const ruta=`img/logo.${preparado.extension}`;
+
+  if(apar.previas.logo)URL.revokeObjectURL(apar.previas.logo);
+  apar.previas.logo=URL.createObjectURL(preparado.blob);
+
+  apuntarSiSobra(apar.publicado.logo,ruta);
+  apar.logoPendiente={ruta,base64:await blobABase64(preparado.blob)};
+  apar.datos.identidad.logo=`${ruta}?v=${marcaDeTiempo()}`;
+  pintarLogoCampo(); pintarPrevia(); marcarSucio();
 }
 
 function quitarLogo(){
@@ -544,45 +536,42 @@ function montarRejillaFoco(){
              aria-pressed="false" title="${f.rotulo}"><span>${f.rotulo}</span></button>`).join('');
 }
 
+/* La portada tampoco se comprime: se sube tal cual mientras no se pase
+   de ancho ni de peso. Solo si se pasa se reduce, con calidad muy alta. */
+const POLITICA_FONDO = {
+  ladoMax:FONDO_LADO_MAX,
+  pesoIntacto:FONDO_PESO_INTACTO,
+  calidad:FONDO_CALIDAD,
+  conservarTransparencia:false    // es una foto de fondo: no hay nada transparente
+};
+
 async function elegirFondo(archivo){
   if(!archivo)return;
   if(archivo.size>FONDO_PESO_MAX){
     avisar('Esa foto pesa demasiado. Prueba con una de menos de 15 MB.','error');return;
   }
   try{
-    const base64=await encogerFondo(archivo);
-    if(apar.previas.fondo)URL.revokeObjectURL(apar.previas.fondo);
-    apar.previas.fondo=URL.createObjectURL(base64ABlob(base64,'image/jpeg'));
-
-    const ruta='img/portada.jpg';
-    apuntarSiSobra(apar.publicado.fondo,ruta);
-    apar.fondoPendiente={ruta,base64};
-    apar.datos.identidad.fondo.imagen=`${ruta}?v=${marcaDeTiempo()}`;
-    pintarFondoCampo(); pintarPrevia(); marcarSucio();
-  }catch{avisar('No se ha podido leer esa imagen. Prueba con un JPG, PNG o WebP.','error');}
+    const preparado=await prepararImagenIntacta(archivo,POLITICA_FONDO);
+    await guardarFondoPreparado(preparado);
+    avisar(`Foto de portada lista. ${resumenDeImagen(preparado)}`,'bien');
+  }catch{
+    avisar('No se ha podido leer esa imagen. Prueba con un JPG, PNG o WebP.','error');
+  }
 }
 
-/* Se encoge a lo ancho y se guarda como JPG: es una foto de fondo, no
-   necesita transparencia y así pesa mucho menos. */
-function encogerFondo(archivo){
-  return new Promise((listo,fallo)=>{
-    const url=URL.createObjectURL(archivo);
-    const imagen=new Image();
-    imagen.onload=()=>{
-      const escala=Math.min(1,FONDO_ANCHO_MAX/imagen.width);
-      const lienzo=document.createElement('canvas');
-      lienzo.width=Math.max(1,Math.round(imagen.width*escala));
-      lienzo.height=Math.max(1,Math.round(imagen.height*escala));
-      lienzo.getContext('2d').drawImage(imagen,0,0,lienzo.width,lienzo.height);
-      URL.revokeObjectURL(url);
-      lienzo.toBlob(async(blob)=>{
-        if(!blob){fallo(new Error('sin blob'));return;}
-        listo(await blobABase64(blob));
-      },'image/jpeg',0.82);
-    };
-    imagen.onerror=()=>{URL.revokeObjectURL(url);fallo(new Error('imagen ilegible'));};
-    imagen.src=url;
-  });
+/* Deja la foto de la portada preparada para subirse. La extensión sale
+   del propio archivo: si el cliente sube un PNG y se queda tal cual, en
+   el repositorio tiene que llamarse portada.png y no portada.jpg. */
+async function guardarFondoPreparado(preparado){
+  const ruta=`img/portada.${preparado.extension}`;
+
+  if(apar.previas.fondo)URL.revokeObjectURL(apar.previas.fondo);
+  apar.previas.fondo=URL.createObjectURL(preparado.blob);
+
+  apuntarSiSobra(apar.publicado.fondo,ruta);
+  apar.fondoPendiente={ruta,base64:await blobABase64(preparado.blob)};
+  apar.datos.identidad.fondo.imagen=`${ruta}?v=${marcaDeTiempo()}`;
+  pintarFondoCampo(); pintarPrevia(); marcarSucio();
 }
 
 function quitarFondo(){

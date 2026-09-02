@@ -171,13 +171,7 @@ async function leerArchivoImagen(archivo){
   if(archivo.size>IMG_ENTRADA_MAX){
     throw new Error(`La foto pesa ${(archivo.size/1024/1024).toFixed(1)} MB y el máximo son 25 MB. Haz una captura o redúcela antes.`);
   }
-  let mapa;
-  try{
-    // 'from-image' respeta la orientación con la que se hizo la foto.
-    mapa=await createImageBitmap(archivo,{imageOrientation:'from-image'});
-  }catch{
-    throw new Error('No se ha podido abrir esa foto. Puede estar dañada o en un formato que el navegador no entiende.');
-  }
+  const mapa=await abrirImagen(archivo);   // respeta la orientación de la foto
   const megapixeles=(mapa.width*mapa.height)/1e6;
   if(megapixeles>IMG_MEGAPIXELES_MAX){
     mapa.close?.();
@@ -221,29 +215,10 @@ function pintarRecorte(){
   ctx.drawImage(recorte.mapa,z.sx,z.sy,z.sw,z.sh,0,0,PREVIA_ANCHO,alto);
 }
 
-/* Recorta y comprime hasta que el archivo pese poco, bajando primero
-   la calidad y, si aún así no basta, también el tamaño. */
-async function generarJpg(){
-  const conf=IMG_TIPOS[recorte.tipo];
-  const z=zonaRecortada();
-  let ancho=Math.min(conf.anchoMax,Math.max(conf.anchoMin,Math.round(z.sw)));
-  for(let intento=0;intento<6;intento++){
-    const alto=Math.round(ancho*conf.relB/conf.relA);
-    const lienzo=document.createElement('canvas');
-    lienzo.width=ancho; lienzo.height=alto;
-    const ctx=lienzo.getContext('2d');
-    ctx.imageSmoothingQuality='high';
-    ctx.drawImage(recorte.mapa,z.sx,z.sy,z.sw,z.sh,0,0,ancho,alto);
-    for(const calidad of [0.82,0.72,0.62]){
-      const blob=await new Promise(r=>lienzo.toBlob(r,'image/jpeg',calidad));
-      if(!blob)throw new Error('El navegador no ha podido preparar la imagen.');
-      if(blob.size<=conf.peso||(ancho<=conf.anchoMin&&calidad===0.62)){
-        return {blob,ancho,alto};
-      }
-    }
-    ancho=Math.max(conf.anchoMin,Math.round(ancho*0.85));
-  }
-  throw new Error('No se ha podido reducir la foto lo suficiente. Prueba con otra imagen.');
+/* El recorte y la compresión los hace imagen-comprimir.js: aquí solo
+   se le dice qué trozo de la foto es y de qué tipo de imagen se trata. */
+function generarJpg(){
+  return comprimirAMedida(recorte.mapa,zonaRecortada(),IMG_TIPOS[recorte.tipo]);
 }
 
 async function guardarImagenRecortada(){

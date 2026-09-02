@@ -1,10 +1,11 @@
 {
-  "version": "6.7.1",
+  "version": "6.8.0",
   "fecha": "2026-09-02",
-  "titulo": "Arreglo de «Ajustes de la página»",
+  "titulo": "Las fotos ocupan menos",
   "cambios": [
-    "Se ha recuperado el diseño de «Ajustes de la página»: el logotipo, la foto de portada, las redes sociales y los mensajes del pie volvían a verse amontonados y sin forma, y ya están otra vez en su sitio.",
-    "La foto de portada tiene ya su recuadro con la vista previa, y encima la cuadrícula de nueve casillas para marcar qué parte de la foto no se puede perder al recortarla.",
-    "En el móvil, el recuadro de la foto de portada ocupa todo el ancho para que se vea bien."
+    "Las fotos de las secciones, los grupos y los platos se guardan ahora a un tamaño más ajustado al que de verdad se ve en la carta. Ocupan aproximadamente la mitad que antes y en pantalla se ven igual.",
+    "El logotipo y la foto de la portada ya no se comprimen: se suben tal cual, con toda su calidad. Solo si son muy grandes se reducen, y lo justo para que quepan.",
+    "La foto de la portada conserva su formato original (JPG, PNG o WEBP) en vez de pasarse siempre a JPG.",
+    "Al elegir el logotipo o la foto de la portada se avisa de cuánto ocupan y de si ha hecho falta reducirlas."
   ]
 }

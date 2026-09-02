@@ -31,39 +31,65 @@ const CLAVE_SITIO          = 'editorCartaUniversal.sitio';
 /* ---------- Espera entre publicaciones ---------- */
 const MS_ESPERA = 2*60*1000;   // 2 minutos
 
-/* ---------- Imágenes ----------
-   Cada tipo de imagen tiene su propia forma y su propio tamaño.
-   La proporción debe coincidir con la de estilos.css de la carta:
+/* ---------- Imágenes de la carta ----------
+   Secciones, grupos y platos. Cada tipo tiene su propia forma y su
+   propio tamaño. La proporción debe coincidir con la de estilos.css
+   de la carta:
      seccion -> .panel__cabecera--imagen{aspect-ratio:3/1}
      grupo   -> .grupo__cabecera--imagen{aspect-ratio:4/1}
      item    -> .item__foto{aspect-ratio:1/1}
-   Si allí cambian, cámbialas también aquí. */
+   Si allí cambian, cámbialas también aquí.
+
+   Los anchos son los que de verdad se ven en la carta con margen de
+   sobra para las pantallas más nítidas. Guardar más píxeles no se
+   nota en ninguna pantalla y sí se nota en lo que ocupa el
+   repositorio, así que aquí se recorta sin miedo. */
 const IMG_TIPOS = {
   seccion:{
     etiqueta:'sección', rotulo:'Sección', demostrativo:'esta sección',
     titulo:'Imagen de la sección', carpeta:'img/secciones',
     conFoco:true,                   // franja: la carta la recorta según la pantalla
     relA:3, relB:1,                 // franja ancha, de borde a borde de la pantalla
-    anchoMax:1600, anchoMin:800,
-    peso:400*1024
+    anchoMax:1200, anchoMin:600,
+    peso:180*1024
   },
   grupo:{
     etiqueta:'grupo', rotulo:'Grupo', demostrativo:'este grupo',
     titulo:'Imagen del grupo', carpeta:'img/grupos',
     conFoco:true,
     relA:4, relB:1,                 // banda más baja que la de la sección
-    anchoMax:1400, anchoMin:700,
-    peso:300*1024
+    anchoMax:1100, anchoMin:550,
+    peso:150*1024
   },
   item:{
     etiqueta:'plato', rotulo:'Plato', demostrativo:'este plato',
     titulo:'Foto del plato', carpeta:'img/items',
     conFoco:false,                  // cuadrado exacto: se ve entera, no hay nada que elegir
     relA:1, relB:1,                 // cuadrado exacto
-    anchoMax:600, anchoMin:300,     // se ve a ~104 px: 600 sobra hasta en pantallas muy nítidas
-    peso:150*1024
+    anchoMax:450, anchoMin:240,     // se ve a ~104 px: 450 sobra hasta en pantallas muy nítidas
+    peso:70*1024
   }
 };
+
+/* Escalera de calidad del JPG. Se prueba de arriba abajo hasta que el
+   archivo cabe en el peso previsto de su tipo. Con los anchos de arriba
+   casi siempre basta el primer peldaño, que casi no se nota. */
+const IMG_CALIDADES = [0.80, 0.70, 0.60];
+
+/* ---------- Logotipo y foto de la portada ----------
+   Estas dos NO se comprimen: son las que dan la cara y se suben tal
+   cual mientras no se pasen de estos límites. Solo si los superan se
+   tocan, y lo mínimo posible (calidad muy alta, y sin tocar la
+   transparencia del logotipo). */
+const LOGO_LADO_MAX     = 1000;          // px del lado mayor
+const LOGO_PESO_INTACTO = 400*1024;      // hasta aquí, se sube sin tocar
+const LOGO_PESO_MAX     = 10*1024*1024;  // más que esto no se acepta
+const LOGO_CALIDAD      = 0.92;          // solo se usa si hay que reducirlo
+
+const FONDO_LADO_MAX     = 1800;         // ocupa toda la pantalla, por eso es ancha
+const FONDO_PESO_INTACTO = 900*1024;
+const FONDO_PESO_MAX     = 15*1024*1024;
+const FONDO_CALIDAD      = 0.90;
 
 /* ---------- Zona importante de la foto ----------
    Las franjas de sección y grupo ocupan todo el ancho de la pantalla,

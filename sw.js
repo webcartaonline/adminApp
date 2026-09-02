@@ -15,7 +15,7 @@
    automáticamente la ventana con lo que ha cambiado.
    ========================================================= */
 
-const VERSION = '6.7.1';
+const VERSION = '6.8.0';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
@@ -38,6 +38,7 @@ const ARCHIVOS = [
   './css/apariencia.css',
   './js/config.js',
   './js/utiles.js',
+  './js/imagen-comprimir.js',
   './js/estado.js',
   './js/tema.js',
   './js/color.js',
