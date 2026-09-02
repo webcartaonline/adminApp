@@ -1,73 +1,232 @@
 /* =========================================================
-   ETIQUETAS Y ALERTAS
-   El apartado que sale dentro del recuadro del grupo (su
-   alerta) y dentro de la ficha de cada plato (sus
-   etiquetas). Los dos se ven igual a propósito: son la
-   misma idea, cambia dónde se pintan en la carta.
-
-   La tarjeta de cada etiqueta o alerta es SIEMPRE una sola
-   columna compacta, en cualquier pantalla. Lo único que
-   cambia en escritorio es que las tarjetas de etiquetas se
-   reparten en rejilla, varias por fila, en vez de estirarse
-   cada una a todo lo ancho.
+   AJUSTES DE LA PÁGINA
+   El apartado donde el negocio personaliza su carta pública:
+   colores, título, eslogan, logotipo, foto de portada y fuentes.
+   Incluye una portada en miniatura que enseña en vivo cómo
+   quedará, pintada con los mismos colores que calculará la
+   propia carta.
    ========================================================= */
 
-.destacados{margin-top:14px;padding-top:14px;border-top:1px solid var(--linea)}
-.destacados__cabecera{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
-.destacados__cabecera .campo__etiqueta{margin-right:auto}
-
-/* Lista de tarjetas: en móvil, una debajo de otra */
-.destacados__lista{display:grid;gap:10px;margin-top:10px}
-
-/* Cada alerta o etiqueta, en su propia tarjetita hundida */
-.destacado{padding:10px;border:1px solid var(--linea);
-  border-radius:var(--radio-m);background:var(--velo);
-  display:flex;flex-direction:column;gap:10px}
-.destacado--alerta{margin-top:10px}
-
-/* Arriba: la posición a la izquierda y los botones a la derecha */
-.destacado__cabecera{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.destacado__cabecera .chips{margin-top:0}
-.destacado__botones{display:flex;align-items:center;gap:4px;margin-left:auto}
-
-/* Dentro de la tarjeta todo va en una columna: un campo por idioma
-   uno debajo de otro, y los dos juegos de color igual. */
-.destacado .par-idiomas{grid-template-columns:1fr;gap:6px;margin-bottom:0}
-.destacado .campo__pista{margin:-2px 0 0}
-.colorines{display:grid;gap:8px}
-.colorines__juego{display:flex;flex-direction:column;gap:4px}
-.colorines .chips{margin-top:0;align-items:center}
-
-/* La rueda de color del navegador, encajada con el resto de controles */
-.rueda{width:38px;height:30px;padding:2px;flex:0 0 auto;
-  border:1px solid var(--linea-fuerte);border-radius:var(--radio-s);
-  background:var(--velo);cursor:pointer}
-.rueda::-webkit-color-swatch-wrapper{padding:0}
-.rueda::-webkit-color-swatch{border:none;border-radius:6px}
-.rueda::-moz-color-swatch{border:none;border-radius:6px}
-
-/* La muestra: el mismo fondo oscuro de la carta, con la pieza encima,
-   para ver de verdad cómo va a quedar. Baja y discreta. */
-.previa-destacado{padding:9px 10px;border-radius:var(--radio-s);
-  border:1px solid var(--linea);display:flex;justify-content:center;overflow:hidden}
-.previa-destacado__pieza{max-width:100%;overflow-wrap:anywhere;text-align:center}
-
-/* Igual que en la carta: la etiqueta va en versalitas y a pelo; la
-   alerta, con letra normal. */
-.previa-destacado__pieza--etiqueta{display:inline-block;padding:3px 10px;border-radius:999px;
-  font-size:.67rem;font-weight:600;line-height:1.55;letter-spacing:.09em;text-transform:uppercase}
-.previa-destacado__pieza--alerta{display:inline-block;padding:4px 12px;border-radius:999px;
-  font-size:.72rem;font-weight:500;line-height:1.45}
-
-/* Móvil: los botones bajan a su propia línea para no aplastarse */
-@media(max-width:600px){
-  .destacado__botones{margin-left:0;width:100%;justify-content:flex-end}
+/* ---------- Portada en miniatura ----------
+   Sus colores llegan como variables --pc-* que pone el programa
+   (pagina-apariencia.js) con la misma receta que usa la carta. */
+.previa-carta{
+  position:relative; overflow:hidden;
+  margin:14px 0 6px;
+  padding:30px 18px 34px;
+  border:1px solid var(--linea-fuerte);
+  border-radius:var(--radio-m);
+  background:var(--pc-fondo,#12100E);
+  color:var(--pc-texto,#F4EFE7);
+  text-align:center;
+}
+/* La foto de portada va la primera de todas, debajo de todo lo
+   demás, y se recorta por donde haga falta igual que en la carta. */
+.previa-carta__fondo{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+}
+.previa-carta__halo{
+  position:absolute; inset:-60% 0 auto 0; height:200%;
+  background:radial-gradient(58% 46% at 50% 30%, var(--pc-halo,rgba(233,180,76,.16)), transparent 68%);
+  pointer-events:none;
+}
+/* Con foto detrás, el mismo halo hace de velo oscuro para que el
+   nombre y el eslogan se sigan leyendo. */
+.previa-carta--con-fondo .previa-carta__halo{
+  inset:0; height:100%;
+  background:
+    radial-gradient(58% 46% at 50% 30%, var(--pc-halo,rgba(233,180,76,.16)), transparent 68%),
+    linear-gradient(180deg, rgba(0,0,0,.50), rgba(0,0,0,.70));
+}
+.previa-carta__lema{
+  position:relative;
+  margin:0 0 10px;
+  font-size:.6rem; font-weight:500;
+  letter-spacing:.3em; text-transform:uppercase;
+  color:var(--pc-acento,#E9B44C);
+  overflow-wrap:anywhere;
+}
+.previa-carta__marca{
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+  flex-wrap:wrap; gap:8px 16px;
+}
+.previa-carta__logo{
+  display:block; width:auto; height:auto;
+  max-height:56px; max-width:min(60%,240px);
+  object-fit:contain;
+}
+.previa-carta--solo-logo .previa-carta__logo{ max-height:84px; max-width:min(80%,320px); }
+.previa-carta__nombre{
+  margin:0;
+  font-family:var(--pc-fuente-titulo,Georgia,serif);
+  font-weight:600; font-size:clamp(1.5rem,6vw,2.2rem);
+  line-height:1; letter-spacing:-.02em;
+  overflow-wrap:anywhere;
+}
+.previa-carta__pie{
+  position:relative;
+  margin:22px auto 0; padding-top:12px;
+  max-width:340px;
+  border-top:1px solid var(--pc-borde,#2C2620);
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  font-family:var(--pc-fuente-texto,system-ui,sans-serif);
+  font-size:.72rem;
+}
+.previa-carta__plato{ color:var(--pc-texto,#F4EFE7); }
+.previa-carta__precio{ color:var(--pc-acento,#E9B44C); font-weight:700; }
+.previa-carta__nota{
+  position:relative;
+  margin:8px auto 0; max-width:340px;
+  font-family:var(--pc-fuente-texto,system-ui,sans-serif);
+  font-size:.62rem; text-align:left;
+  color:var(--pc-texto-suave,#8E8578);
 }
 
-/* Escritorio: las etiquetas se reparten en rejilla, tantas por fila
-   como quepan sin bajar de 270 px cada una. La alerta del grupo, que
-   es una sola, no se estira a todo lo ancho. */
-@media(min-width:601px){
-  .destacados__lista{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
-  .destacado--alerta{max-width:420px}
+/* ---------- Elegir el color del texto ---------- */
+.apariencia__texto-modos{ display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 12px; }
+
+/* ---------- Logotipo ---------- */
+.apariencia__logo-fila{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  margin:10px 0 14px;
+}
+.apariencia__logo-marco{
+  flex:none; width:120px; height:84px;
+  display:grid; place-items:center;
+  padding:8px;
+  border:1px dashed var(--linea-fuerte); border-radius:var(--radio-s);
+  background:
+    conic-gradient(var(--velo) 25%, transparent 0 50%, var(--velo) 0 75%, transparent 0)
+    0 0/16px 16px;              /* cuadritos suaves: se aprecia la transparencia */
+}
+.apariencia__logo-marco img{
+  max-width:100%; max-height:100%;
+  width:auto; height:auto; object-fit:contain; display:block;
+}
+.apariencia__logo-vacio{ font-size:.72rem; color:var(--tinta-suave); text-align:center; }
+.apariencia__logo-datos{ flex:1 1 220px; min-width:0; }
+
+/* ---------- Foto de la portada ----------
+   Misma fila que el logotipo (marco a la izquierda, campos a la
+   derecha), pero el marco es apaisado y la foto lo llena entero,
+   porque así es como se verá luego en la carta. */
+.apariencia__fondo-fila{
+  display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap;
+  margin:10px 0 4px;
+}
+.apariencia__fondo-marco{
+  position:relative; flex:none; overflow:hidden;
+  width:min(200px,100%); aspect-ratio:16/10;
+  display:grid; place-items:center;
+  border:1px dashed var(--linea-fuerte); border-radius:var(--radio-s);
+  background:var(--velo);
+}
+.apariencia__fondo-marco img{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover; display:block;
+}
+.apariencia__fondo-vacio{
+  padding:0 8px;
+  font-size:.72rem; color:var(--tinta-suave); text-align:center;
+}
+.apariencia__fondo-datos{ flex:1 1 220px; min-width:0; }
+
+/* La cuadrícula de nueve casillas va encima de la propia foto: se
+   marca la casilla con lo que no se puede perder al recortar. */
+.apariencia__fondo-marco .foco-rejilla{
+  position:absolute; inset:0;
+  display:grid; gap:2px; padding:2px;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);
+}
+.foco-casilla{
+  padding:0; cursor:pointer; border-radius:3px;
+  border:1px solid rgba(255,255,255,.28);
+  background:rgba(9,12,24,.30);
+  transition:background .12s ease, border-color .12s ease;
+}
+.foco-casilla:hover{ background:rgba(9,12,24,.10); }
+.foco-casilla[aria-pressed="true"]{
+  background:transparent;
+  border:2px solid var(--acento-1);
+  box-shadow:0 0 0 1px rgba(0,0,0,.45);
+}
+/* El nombre de la casilla («Arriba izquierda»…) no se pinta: está
+   solo para quien navega con lector de pantalla. */
+.foco-casilla span{
+  display:block; width:1px; height:1px;
+  overflow:hidden; clip-path:inset(50%);
+}
+
+/* ---------- Fuentes ---------- */
+.apariencia__fuente-estado{
+  margin:6px 0 0; font-size:.74rem; color:var(--tinta-suave);
+  overflow-wrap:anywhere;
+}
+.apariencia__fuente-estado b{ color:var(--tinta); }
+
+/* ---------- Mensajes del pie ----------
+   Cada mensaje es una tarjetita dentro del bloque, con su número
+   y su botón de quitar arriba. */
+.pie-bloques{ display:flex; flex-direction:column; gap:12px; }
+.pie-bloque{
+  padding:12px 14px 14px;
+  border:1px solid var(--linea-fuerte); border-radius:var(--radio-m);
+  background:var(--marfil-alto,transparent);
+}
+.pie-bloque__cabecera{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  margin-bottom:10px;
+}
+.pie-bloque__numero{
+  font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--tinta-suave);
+}
+.pie-bloque .campo+.campo{ margin-top:10px; }
+.pie-bloque textarea{ resize:vertical; min-height:64px; }
+.pie-bloques__vacio{ margin:4px 0 0; font-size:.79rem; color:var(--tinta-suave); }
+
+/* ---------- Redes sociales ----------
+   Una fila por red: el icono en su pastilla y el campo del enlace. */
+.redes{
+  display:grid; gap:10px 14px;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+}
+.redes__fila{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px;
+  border:1px solid var(--linea); border-radius:var(--radio-m);
+  background:var(--velo);
+}
+.redes__icono{
+  flex:none; width:38px; height:38px;
+  display:grid; place-items:center;
+  border-radius:12px;
+  background:var(--pastilla); color:var(--acento-texto,currentColor);
+}
+.redes__icono svg{ width:20px; height:20px; }
+.redes__datos{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:4px; }
+.redes__datos input{ width:100%; }
+
+/* ---------- Publicar ---------- */
+.apariencia__publicar{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  margin-top:18px; padding-top:16px; border-top:1px solid var(--linea);
+}
+.apariencia__espera{
+  padding:5px 12px; border-radius:100px;
+  background:var(--pastilla); color:var(--tinta-suave);
+  font-size:.74rem; font-weight:700; font-variant-numeric:tabular-nums;
+}
+
+/* En un móvil estrecho, botones a lo ancho para que no se aprieten
+   y los marcos de foto ocupan toda la fila. */
+@media(max-width:460px){
+  .apariencia__publicar .btn{ flex:1 1 auto; }
+  .apariencia__logo-fila{ align-items:flex-start; }
+  .apariencia__fondo-marco{ width:100%; }
 }
