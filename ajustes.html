@@ -234,6 +234,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 
       <!-- Portada en miniatura: refleja en vivo todo lo de este apartado. -->
       <div class="previa-carta" id="previaCarta" aria-hidden="true">
+        <img class="previa-carta__fondo" id="previaFondo" alt="" hidden>
         <div class="previa-carta__halo"></div>
         <p class="previa-carta__lema" id="previaLema" hidden></p>
         <div class="previa-carta__marca">
@@ -319,6 +320,36 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
             </label>
             <div class="ajustes__acciones">
               <button class="btn btn--peligro btn--mini" id="btnAparLogoQuitar" type="button" hidden>Quitar el logotipo</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Fondo de la portada ===== -->
+      <section class="bloque">
+        <h3 class="bloque__titulo">Fondo de la portada</h3>
+        <p class="bloque__nota">Una foto detrás del título, el eslogan y el logotipo. La carta la
+          oscurece un poco sola, para que el texto se lea encima. Como la portada es alta y estrecha
+          en el móvil y baja y ancha en el ordenador, la foto se recorta según la pantalla: marca en
+          la cuadrícula qué parte no se puede perder.</p>
+
+        <div class="apariencia__fondo-fila">
+          <div class="apariencia__fondo-marco">
+            <img id="aparFondoImg" alt="Fondo actual de la portada" hidden>
+            <span class="apariencia__fondo-vacio" id="aparFondoVacio">Sin foto de fondo</span>
+            <div class="foco-rejilla" id="aparFondoRejilla" role="group"
+                 aria-label="Zona importante de la foto" hidden></div>
+          </div>
+          <div class="apariencia__fondo-datos">
+            <label class="campo">
+              <span class="campo__etiqueta">Foto de la portada</span>
+              <input type="file" id="aparFondoArchivo" accept="image/png,image/jpeg,image/webp">
+              <span class="campo__pista">Mejor una foto apaisada y bien iluminada. Si es enorme se
+                encoge sola antes de subirla.</span>
+            </label>
+            <p class="campo__pista" id="aparFondoFocoRotulo"></p>
+            <div class="ajustes__acciones">
+              <button class="btn btn--peligro btn--mini" id="btnAparFondoQuitar" type="button" hidden>Quitar la foto</button>
             </div>
           </div>
         </div>

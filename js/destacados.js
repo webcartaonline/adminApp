@@ -223,7 +223,7 @@ function bloqueAlerta(grupo){
         <span class="campo__etiqueta">Alerta del grupo</span>
         <button class="btn btn--peligro btn--mini" data-alerta-quitar type="button">Quitar alerta</button>
       </div>
-      <div class="destacado" data-destacado="alerta">
+      <div class="destacado destacado--alerta" data-destacado="alerta">
         <div class="par-idiomas">${camposTexto('alerta-texto',alerta.texto,'Texto de la alerta')}</div>
         <p class="campo__pista">Cuanto más corta, mejor: comparte línea con el título del grupo.</p>
         ${bloqueColores(alerta)}
@@ -263,7 +263,7 @@ function bloqueEtiquetas(item){
         <button class="btn btn--suave btn--mini" data-etq-anadir type="button">Añadir etiqueta</button>
       </div>
       <p class="campo__pista">Palabras cortas que se ven destacadas junto al plato: «250 g», «Nuevo», «Picante». Se escriben en mayúsculas solas y puedes poner las que quieras.</p>
-      ${fichas}
+      ${fichas?`<div class="destacados__lista">${fichas}</div>`:''}
     </div>`;
 }
 

@@ -22,7 +22,8 @@
 function aparienciaDeFabrica(){
   return {
     colores:{ principal:'#E9B44C', fondo:'#12100E', texto:'auto' },
-    identidad:{ titulo:'', eslogan:{ es:'', en:'' }, logo:'' },
+    identidad:{ titulo:'', eslogan:{ es:'', en:'' }, logo:'',
+                fondo:{ imagen:'', foco:'centro' } },
     fuentes:{ titulo:null, texto:null },
     pie:{ bloques:[], redes:{ tiktok:'', instagram:'', x:'', youtube:'', facebook:'', snapchat:'' } }
   };
@@ -47,6 +48,11 @@ const REDES_PIE = [
 
 const LOGO_LADO_MAX   = 1000;          // px del lado mayor al subirlo
 const LOGO_PESO_MAX   = 10*1024*1024;  // 10 MB de archivo original
+
+/* La foto de fondo de la portada. Se sube ancha porque ocupa toda la
+   pantalla, pero no hace falta más: a partir de ahí solo pesa. */
+const FONDO_ANCHO_MAX = 1800;
+const FONDO_PESO_MAX  = 15*1024*1024;
 const FUENTE_PESO_MAX = 10*1024*1024;
 const FUENTE_TIPOS    = ['woff2','woff','ttf','otf'];
 
@@ -56,9 +62,10 @@ const apar={
   datos:null,             // el apariencia.json que se está editando
   sucio:false,            // ¿hay cambios sin publicar?
   logoPendiente:null,     // {ruta, base64} esperando a subirse
+  fondoPendiente:null,    // la foto de la portada, esperando a subirse
   fuentesPendientes:{},   // clave -> {ruta, base64}
   porBorrar:[],           // archivos del repositorio que ya sobran
-  publicado:{ logo:'', fuentes:{ titulo:'', texto:'' } }, // lo que hay ahora en el repo
+  publicado:{ logo:'', fondo:'', fuentes:{ titulo:'', texto:'' } }, // lo que hay ahora en el repo
   previas:{}              // URLs locales de vista previa, para liberarlas
 };
 
@@ -136,6 +143,19 @@ function pintarPrevia(){
   if(origen){ if(img.getAttribute('src')!==origen)img.src=origen; img.hidden=false; }
   else{ img.hidden=true; img.removeAttribute('src'); }
   caja.classList.toggle('previa-carta--solo-logo',hayLogo&&!titulo);
+
+  // La foto de fondo, con el mismo encuadre que tendrá en la carta,
+  // para que la miniatura no engañe.
+  const fondo=$('#previaFondo');
+  const origenFondo=urlDelFondo();
+  if(origenFondo){
+    if(fondo.getAttribute('src')!==origenFondo)fondo.src=origenFondo;
+    fondo.style.objectPosition=posicionDelFoco(d.identidad.fondo.foco);
+    fondo.hidden=false;
+  }else{
+    fondo.hidden=true; fondo.removeAttribute('src');
+  }
+  caja.classList.toggle('previa-carta--con-fondo',!!origenFondo);
 }
 
 /* La dirección pública de un archivo del repositorio, para poder
@@ -214,7 +234,8 @@ async function cargarPagina(){
     apar.datos={
       colores:{...base.colores,...(guardada?.colores||{})},
       identidad:{...base.identidad,...(guardada?.identidad||{}),
-        eslogan:{...base.identidad.eslogan,...(guardada?.identidad?.eslogan||{})}},
+        eslogan:{...base.identidad.eslogan,...(guardada?.identidad?.eslogan||{})},
+        fondo:{...base.identidad.fondo,...(guardada?.identidad?.fondo||{})}},
       fuentes:{...base.fuentes,...(guardada?.fuentes||{})},
       pie:{
         bloques:Array.isArray(guardada?.pie?.bloques)?guardada.pie.bloques:[],
@@ -236,11 +257,13 @@ async function cargarPagina(){
     // Se apunta qué archivos hay publicados ahora, para poder borrar
     // los que sobren si se cambian o se quitan.
     apar.publicado.logo=sinVersion(apar.datos.identidad.logo);
+    apar.publicado.fondo=sinVersion(apar.datos.identidad.fondo.imagen);
     apar.publicado.fuentes.titulo=sinVersion(apar.datos.fuentes.titulo?.archivo);
     apar.publicado.fuentes.texto=sinVersion(apar.datos.fuentes.texto?.archivo);
 
     apar.cargada=true; apar.sucio=false;
-    apar.logoPendiente=null; apar.fuentesPendientes={}; apar.porBorrar=[];
+    apar.logoPendiente=null; apar.fondoPendiente=null;
+    apar.fuentesPendientes={}; apar.porBorrar=[];
     volcarCampos();
     pintarPrevia();
     pintarEstadoPagina('Al día','bien');
@@ -267,6 +290,7 @@ function volcarCampos(){
   $('#aparTitulo').value=d.identidad.titulo;
   $('#aparEsloganEs').value=d.identidad.eslogan.es;
   $('#aparEsloganEn').value=d.identidad.eslogan.en;
+  pintarFondoCampo();
   pintarLogoCampo();
   pintarFuenteCampo('titulo');
   pintarFuenteCampo('texto');
@@ -453,6 +477,122 @@ function quitarLogo(){
   pintarLogoCampo(); pintarPrevia(); marcarSucio();
 }
 
+/* =========================================================
+   FONDO DE LA PORTADA
+   Una foto que ocupa toda la cabecera de la carta, detrás
+   del título, el eslogan y el logotipo. Se guarda junto al
+   resto de la identidad, en apariencia.json.
+
+   Como la portada cambia de forma según la pantalla (alta y
+   estrecha en el móvil, baja y ancha en el ordenador), la
+   foto se recorta sola. La cuadrícula de tres por tres dice
+   qué parte NO se puede perder: es la misma regla que usan
+   las franjas de las secciones y los grupos, y se guarda
+   igual, en un campo "foco".
+
+   La foto no se recorta aquí: solo se encoge si viene
+   enorme. El encuadre lo hace la carta al pintarla, así la
+   misma foto sirve para cualquier pantalla.
+   ========================================================= */
+
+/* Las nueve posiciones, traducidas a lo que entiende el CSS.
+   Tiene que coincidir con la tabla FOCOS de la carta. */
+const FOCO_A_CSS = {
+  'arriba-izquierda':'left top',    'arriba':'center top',    'arriba-derecha':'right top',
+  'izquierda':'left center',        'centro':'center',        'derecha':'right center',
+  'abajo-izquierda':'left bottom',  'abajo':'center bottom',  'abajo-derecha':'right bottom'
+};
+
+function focoDelFondo(){
+  const v=String(apar.datos?.identidad?.fondo?.foco||'').trim().toLowerCase();
+  return FOCO_A_CSS[v]?v:FOCO_DEFECTO;
+}
+function posicionDelFoco(valor){
+  return FOCO_A_CSS[String(valor||'').trim().toLowerCase()]||'center';
+}
+
+/* De dónde sale la imagen que se enseña: la recién elegida (todavía sin
+   publicar) o la que ya está en el repositorio. */
+function urlDelFondo(){
+  const ruta=apar.datos?.identidad?.fondo?.imagen;
+  return apar.previas.fondo||(ruta?rutaPublica(ruta):'');
+}
+
+function pintarFondoCampo(){
+  const hay=!!apar.datos.identidad.fondo.imagen;
+  const origen=urlDelFondo();
+  const img=$('#aparFondoImg');
+  if(origen){ img.src=origen; img.style.objectPosition=posicionDelFoco(focoDelFondo()); img.hidden=false; }
+  else{ img.hidden=true; img.removeAttribute('src'); }
+  $('#aparFondoVacio').hidden=!!origen;
+  $('#btnAparFondoQuitar').hidden=!hay;
+  $('#aparFondoRejilla').hidden=!origen;
+
+  const elegido=focoDelFondo();
+  $('#aparFondoRejilla').querySelectorAll('[data-foco]').forEach(b=>{
+    b.setAttribute('aria-pressed',String(b.dataset.foco===elegido));
+  });
+  $('#aparFondoFocoRotulo').textContent=hay||origen
+    ? `Zona importante: ${FOCOS.find(f=>f.clave===elegido).rotulo.toLowerCase()}`
+    : '';
+}
+
+/* La cuadrícula se dibuja una sola vez, al arrancar la página. */
+function montarRejillaFoco(){
+  $('#aparFondoRejilla').innerHTML=FOCOS.map(f=>
+    `<button class="foco-casilla" type="button" data-foco="${f.clave}"
+             aria-pressed="false" title="${f.rotulo}"><span>${f.rotulo}</span></button>`).join('');
+}
+
+async function elegirFondo(archivo){
+  if(!archivo)return;
+  if(archivo.size>FONDO_PESO_MAX){
+    avisar('Esa foto pesa demasiado. Prueba con una de menos de 15 MB.','error');return;
+  }
+  try{
+    const base64=await encogerFondo(archivo);
+    if(apar.previas.fondo)URL.revokeObjectURL(apar.previas.fondo);
+    apar.previas.fondo=URL.createObjectURL(base64ABlob(base64,'image/jpeg'));
+
+    const ruta='img/portada.jpg';
+    apuntarSiSobra(apar.publicado.fondo,ruta);
+    apar.fondoPendiente={ruta,base64};
+    apar.datos.identidad.fondo.imagen=`${ruta}?v=${marcaDeTiempo()}`;
+    pintarFondoCampo(); pintarPrevia(); marcarSucio();
+  }catch{avisar('No se ha podido leer esa imagen. Prueba con un JPG, PNG o WebP.','error');}
+}
+
+/* Se encoge a lo ancho y se guarda como JPG: es una foto de fondo, no
+   necesita transparencia y así pesa mucho menos. */
+function encogerFondo(archivo){
+  return new Promise((listo,fallo)=>{
+    const url=URL.createObjectURL(archivo);
+    const imagen=new Image();
+    imagen.onload=()=>{
+      const escala=Math.min(1,FONDO_ANCHO_MAX/imagen.width);
+      const lienzo=document.createElement('canvas');
+      lienzo.width=Math.max(1,Math.round(imagen.width*escala));
+      lienzo.height=Math.max(1,Math.round(imagen.height*escala));
+      lienzo.getContext('2d').drawImage(imagen,0,0,lienzo.width,lienzo.height);
+      URL.revokeObjectURL(url);
+      lienzo.toBlob(async(blob)=>{
+        if(!blob){fallo(new Error('sin blob'));return;}
+        listo(await blobABase64(blob));
+      },'image/jpeg',0.82);
+    };
+    imagen.onerror=()=>{URL.revokeObjectURL(url);fallo(new Error('imagen ilegible'));};
+    imagen.src=url;
+  });
+}
+
+function quitarFondo(){
+  apuntarSiSobra(apar.publicado.fondo,'');
+  apar.fondoPendiente=null;
+  if(apar.previas.fondo){URL.revokeObjectURL(apar.previas.fondo);delete apar.previas.fondo;}
+  apar.datos.identidad.fondo={imagen:'',foco:FOCO_DEFECTO};
+  pintarFondoCampo(); pintarPrevia(); marcarSucio();
+}
+
 /* Si en el repositorio hay un archivo publicado y va a dejar de
    usarse (o va a llamarse distinto), se apunta para borrarlo. */
 function apuntarSiSobra(publicada,nueva){
@@ -555,19 +695,25 @@ async function publicarPagina(){
       await subirAlRepo(apar.logoPendiente.ruta,apar.logoPendiente.base64,`${mensaje} (logotipo)`);
       apar.logoPendiente=null;
     }
-    // 2) Las fuentes nuevas.
+    // 2) La foto de fondo de la portada, si hay una nueva.
+    if(apar.fondoPendiente){
+      avisar('Subiendo la foto de la portada…');
+      await subirAlRepo(apar.fondoPendiente.ruta,apar.fondoPendiente.base64,`${mensaje} (portada)`);
+      apar.fondoPendiente=null;
+    }
+    // 3) Las fuentes nuevas.
     for(const clave of Object.keys(apar.fuentesPendientes)){
       avisar(`Subiendo la fuente ${clave==='titulo'?'del título':'del texto'}…`);
       const f=apar.fuentesPendientes[clave];
       await subirAlRepo(f.ruta,f.base64,`${mensaje} (fuente)`);
       delete apar.fuentesPendientes[clave];
     }
-    // 3) El propio apariencia.json.
+    // 4) El propio apariencia.json.
     avisar('Publicando los ajustes de la página…');
     apar.datos.actualizado=new Date().toISOString();
     await subirAlRepo(rutaJunto('apariencia.json'),aBase64(JSON.stringify(apar.datos,null,2)),mensaje);
 
-    // 4) Y lo que ya no usa nadie. Si un borrado falla, no es grave:
+    // 5) Y lo que ya no usa nadie. Si un borrado falla, no es grave:
     //    queda apuntado y se reintenta en la siguiente publicación.
     const fallos=[];
     for(const ruta of [...apar.porBorrar]){
@@ -576,6 +722,7 @@ async function publicarPagina(){
     }
 
     apar.publicado.logo=sinVersion(apar.datos.identidad.logo);
+    apar.publicado.fondo=sinVersion(apar.datos.identidad.fondo.imagen);
     apar.publicado.fuentes.titulo=sinVersion(apar.datos.fuentes.titulo?.archivo);
     apar.publicado.fuentes.texto=sinVersion(apar.datos.fuentes.texto?.archivo);
     apar.sucio=fallos.length>0;
@@ -679,6 +826,17 @@ $('#btnAparColoresOriginales').addEventListener('click',()=>{
 // Logotipo
 $('#aparLogoArchivo').addEventListener('change',(ev)=>{elegirLogo(ev.target.files[0]);ev.target.value='';});
 $('#btnAparLogoQuitar').addEventListener('click',quitarLogo);
+
+// Fondo de la portada
+montarRejillaFoco();
+$('#aparFondoArchivo').addEventListener('change',(ev)=>{elegirFondo(ev.target.files[0]);ev.target.value='';});
+$('#btnAparFondoQuitar').addEventListener('click',quitarFondo);
+$('#aparFondoRejilla').addEventListener('click',(ev)=>{
+  const casilla=ev.target.closest('[data-foco]');
+  if(!casilla||!apar.datos)return;
+  apar.datos.identidad.fondo.foco=casilla.dataset.foco;
+  pintarFondoCampo(); pintarPrevia(); marcarSucio();
+});
 
 // Fuentes
 $('#aparFuenteTitulo').addEventListener('change',(ev)=>{elegirFuente('titulo',ev.target.files[0]);ev.target.value='';});

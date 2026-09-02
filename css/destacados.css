@@ -4,24 +4,38 @@
    alerta) y dentro de la ficha de cada plato (sus
    etiquetas). Los dos se ven igual a propósito: son la
    misma idea, cambia dónde se pintan en la carta.
+
+   La tarjeta de cada etiqueta o alerta es SIEMPRE una sola
+   columna compacta, en cualquier pantalla. Lo único que
+   cambia en escritorio es que las tarjetas de etiquetas se
+   reparten en rejilla, varias por fila, en vez de estirarse
+   cada una a todo lo ancho.
    ========================================================= */
 
 .destacados{margin-top:14px;padding-top:14px;border-top:1px solid var(--linea)}
 .destacados__cabecera{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
 .destacados__cabecera .campo__etiqueta{margin-right:auto}
 
+/* Lista de tarjetas: en móvil, una debajo de otra */
+.destacados__lista{display:grid;gap:10px;margin-top:10px}
+
 /* Cada alerta o etiqueta, en su propia tarjetita hundida */
-.destacado{margin-top:10px;padding:12px;border:1px solid var(--linea);
-  border-radius:var(--radio-m);background:var(--velo)}
-.destacado__cabecera{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.destacado{padding:10px;border:1px solid var(--linea);
+  border-radius:var(--radio-m);background:var(--velo);
+  display:flex;flex-direction:column;gap:10px}
+.destacado--alerta{margin-top:10px}
+
+/* Arriba: la posición a la izquierda y los botones a la derecha */
+.destacado__cabecera{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .destacado__cabecera .chips{margin-top:0}
 .destacado__botones{display:flex;align-items:center;gap:4px;margin-left:auto}
-.destacado .campo__pista{margin:-4px 0 10px}
 
-/* Los dos juegos de botones de color, uno al lado del otro cuando cabe */
-.colorines{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-  margin-top:4px}
-.colorines__juego{display:flex;flex-direction:column;gap:5px}
+/* Dentro de la tarjeta todo va en una columna: un campo por idioma
+   uno debajo de otro, y los dos juegos de color igual. */
+.destacado .par-idiomas{grid-template-columns:1fr;gap:6px;margin-bottom:0}
+.destacado .campo__pista{margin:-2px 0 0}
+.colorines{display:grid;gap:8px}
+.colorines__juego{display:flex;flex-direction:column;gap:4px}
 .colorines .chips{margin-top:0;align-items:center}
 
 /* La rueda de color del navegador, encajada con el resto de controles */
@@ -33,8 +47,8 @@
 .rueda::-moz-color-swatch{border:none;border-radius:6px}
 
 /* La muestra: el mismo fondo oscuro de la carta, con la pieza encima,
-   para ver de verdad cómo va a quedar. */
-.previa-destacado{margin-top:12px;padding:14px;border-radius:var(--radio-m);
+   para ver de verdad cómo va a quedar. Baja y discreta. */
+.previa-destacado{padding:9px 10px;border-radius:var(--radio-s);
   border:1px solid var(--linea);display:flex;justify-content:center;overflow:hidden}
 .previa-destacado__pieza{max-width:100%;overflow-wrap:anywhere;text-align:center}
 
@@ -45,10 +59,15 @@
 .previa-destacado__pieza--alerta{display:inline-block;padding:4px 12px;border-radius:999px;
   font-size:.72rem;font-weight:500;line-height:1.45}
 
-/* Móvil: los controles se apilan y los botones de la tarjeta bajan a
-   su propia línea, para que no se aplasten. */
+/* Móvil: los botones bajan a su propia línea para no aplastarse */
 @media(max-width:600px){
-  .destacado{padding:10px}
   .destacado__botones{margin-left:0;width:100%;justify-content:flex-end}
-  .colorines{grid-template-columns:1fr}
+}
+
+/* Escritorio: las etiquetas se reparten en rejilla, tantas por fila
+   como quepan sin bajar de 270 px cada una. La alerta del grupo, que
+   es una sola, no se estira a todo lo ancho. */
+@media(min-width:601px){
+  .destacados__lista{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+  .destacado--alerta{max-width:420px}
 }
