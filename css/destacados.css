@@ -64,10 +64,12 @@
   .destacado__botones{margin-left:0;width:100%;justify-content:flex-end}
 }
 
-/* Escritorio: las etiquetas se reparten en rejilla, tantas por fila
-   como quepan sin bajar de 270 px cada una. La alerta del grupo, que
-   es una sola, no se estira a todo lo ancho. */
+/* Escritorio: las etiquetas se reparten en tres columnas fijas, más
+   anchas, para aprovechar el espacio en vez de quedarse angostas. El
+   'minmax(0,1fr)' deja que cada tarjeta se encoja si hiciera falta, sin
+   desbordar. La alerta del grupo, que es una sola, no se estira a todo
+   lo ancho. */
 @media(min-width:601px){
-  .destacados__lista{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+  .destacados__lista{grid-template-columns:repeat(3,minmax(0,1fr))}
   .destacado--alerta{max-width:420px}
 }
