@@ -94,6 +94,7 @@ function pintarZona(){
       </h2>
       <div class="par-idiomas">${camposTexto('gru-nombre',gru.nombre,'Nombre')}</div>
       ${imagenGrupo}
+      ${bloqueAlerta(gru)}
       <div class="acc">
         <button class="btn btn--suave" data-nuevo-item="1" type="button">Añadir ítem</button>
         <button class="btn btn--suave" data-pegar-item="1" type="button"
@@ -144,5 +145,6 @@ function pintarItem(item,indice,total){
           aria-pressed="${puestos.has(a)}">${ETIQUETAS[a]}</button>`).join('')}
       </div>
     </div>
+    ${bloqueEtiquetas(item)}
   </article>`;
 }

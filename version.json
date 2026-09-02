@@ -1,10 +1,11 @@
 {
-  "version": "5.0.0",
-  "fecha": "2026-09-01",
-  "titulo": "El pie de la carta, a tu gusto",
+  "version": "6.0.0",
+  "fecha": "2026-09-02",
+  "titulo": "Etiquetas y alertas en la carta",
   "cambios": [
-    "En «Ajustes de la página» ahora puedes escribir mensajes para el pie de la carta (horarios, avisos, agradecimientos…): cada uno con su título y su texto, y tantos como quieras.",
-    "Añade los enlaces de tus redes sociales (TikTok, Instagram, X, YouTube, Facebook y Snapchat) y sus iconos aparecerán abajo del todo de la carta, con tu color principal.",
-    "Los apartados de ajustes se ven ahora como tarjetas separadas, para distinguir mejor dónde acaba una cosa y empieza la siguiente."
+    "Cada plato puede llevar etiquetas: palabras cortas que se ven destacadas junto a él, como «250 g», «Nuevo» o «Picante». Pon las que quieras y elige, una a una, si van encima o debajo de la descripción.",
+    "Cada grupo puede llevar una alerta: un aviso que vale para todos sus platos, como «También en media ración». Se ve junto al título del grupo en la carta.",
+    "Tú eliges los colores de cada una: el fondo puede seguir tu color principal, el del fondo de la carta o el que tú escojas, y la letra puede ir automática o a tu gusto. Debajo tienes una muestra de cómo va a quedar.",
+    "Vuelven a funcionar los botones «Copiar» y «Pegar» de los platos, que se habían quedado a medias. Copia un plato y pégalo en el grupo que quieras: se lleva el nombre, la descripción, el precio, los alérgenos, las etiquetas y también la foto."
   ]
 }

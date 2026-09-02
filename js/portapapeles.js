@@ -1,316 +1,164 @@
 /* =========================================================
-   VENTANA DE LA FOTO
-   Flujo: el cliente elige una foto -> la encuadra en un
-   marco con la misma forma que tendrá en la carta -> al
-   guardar, la foto se recorta y se comprime aquí mismo, en
-   el navegador, y queda "pendiente". Al publicar, primero
-   se suben las imágenes y después el JSON, para que la
-   carta nunca apunte a una foto que no existe.
-   El mismo código sirve para los dos formatos: lo que
-   cambia (forma, tamaño, carpeta) sale de IMG_TIPOS.
+   PORTAPAPELES DE PLATOS
+   Para no tener que rehacer a mano un plato que ya existe.
+   Se copia uno y se pega donde haga falta: se lleva el
+   nombre, la descripción, el precio, los alérgenos, las
+   etiquetas y la foto.
+
+   La copia sobrevive a cerrar la aplicación, así que se
+   puede copiar hoy y pegar mañana. Se guarda en este
+   navegador y ocupa muy poco: solo el plato, sin la foto.
+
+   ---------------------------------------------------------
+   LA FOTO
+   El nombre del archivo de una foto sale del id del plato,
+   así que copiar un plato con foto tiene dos caminos:
+
+   1. Si el plato original ya no está (se copió, se borró y
+      se pega en otro sitio), su id queda libre. Se reutiliza
+      y la foto sigue siendo suya sin mover un archivo. Solo
+      hay que sacarla de la papelera, porque al borrar el
+      plato se apuntó para borrarla al publicar.
+
+   2. Si el original sigue estando, son dos platos distintos
+      y hacen falta dos archivos. Al pegado se le da un id
+      nuevo y se prepara una copia de la foto, que se subirá
+      con el resto al publicar.
+
+   Si la foto no se puede conseguir (sin conexión, o era una
+   foto preparada de una sesión que ya se cerró), el plato se
+   pega igual y se avisa de que ha ido sin ella.
    ========================================================= */
 
-const recorte = { mapa:null, zoom:1, tx:0, ty:0, tipo:'seccion', id:null,
-                  arrastrando:false, ultX:0, ultY:0, rescate:0 };
+/* ---------- Guardar y recuperar la copia ---------- */
 
-/* Alto del marco de vista previa, según la forma del tipo de imagen. */
-function previaAlto(){
-  const c=IMG_TIPOS[recorte.tipo];
-  return Math.round(PREVIA_ANCHO*c.relB/c.relA);
+function guardarCopia(copia){
+  try{ localStorage.setItem(CLAVE_COPIA,JSON.stringify(copia)); }catch{}
 }
 
-function errorImagen(txt){
-  const p=$('#imgError');
-  if(!txt){p.hidden=true;p.textContent='';return;}
-  p.textContent=txt;p.hidden=false;
+function leerCopiaGuardada(){
+  try{
+    const c=JSON.parse(localStorage.getItem(CLAVE_COPIA));
+    return c&&c.item ? c : null;
+  }catch{ return null; }
 }
 
-function abrirModalImagen(tipo,id){
-  // Cerrojo de seguridad: si esta carta no lleva fotos, la ventana no se
-  // abre aunque se llegue aquí por otro camino (un atajo de teclado, un
-  // botón que se quedara pintado…).
-  if(!hayImagenes())return;
-  const obj=objetoDeImagen(tipo,id);
-  if(!obj)return;
-  const conf=IMG_TIPOS[tipo];
-  recorte.mapa=null; recorte.zoom=1; recorte.tx=0; recorte.ty=0;
-  recorte.tipo=tipo; recorte.id=id;
+/* Copia de verdad, no un atajo al mismo objeto: si no, tocar el plato
+   pegado cambiaría también el original. Se hace por JSON porque la
+   carta es JSON puro y así funciona en cualquier navegador. */
+function clonarPlato(plato){ return JSON.parse(JSON.stringify(plato)); }
 
-  // El lienzo adopta la forma del tipo: franjas para secciones y grupos,
-  // cuadrado para platos.
-  const lienzo=$('#imgLienzo');
-  lienzo.width=PREVIA_ANCHO; lienzo.height=previaAlto();
-  lienzo.style.aspectRatio=`${conf.relA}/${conf.relB}`;
-  lienzo.style.maxWidth=tipo==='item'?'320px':'';   // un cuadrado a 700px sería enorme
-
-  $('#imgArchivo').value='';
-  $('#imgZoom').value=1;
-  $('#recorte').hidden=true;
-  $('#btnGuardarImagen').disabled=true;
-  errorImagen('');
-
-  const pendiente=estado.imagenesPendientes[rutaImagenRepo(tipo,id)];
-  const nombre=valorTexto(obj.nombre,estado.idiomas[0])||'(sin nombre)';
-  $('#modalImagenTitulo').textContent=conf.titulo;
-  $('#modalImagenPista').textContent=
-    pendiente
-      ? `${conf.rotulo} "${nombre}". Hay una imagen preparada sin publicar; si eliges otra foto, la sustituirá.`
-      : obj.imagen
-        ? `${conf.rotulo} "${nombre}". Ya tiene imagen publicada; si eliges otra foto, la sustituirá.`
-        : `${conf.rotulo} "${nombre}". Se guardará como ${rutaImagenCarta(tipo,id)}.`;
-
-  $('#btnQuitarImagen').hidden=!(obj.imagen||pendiente);
-  $('#btnRecuperarImagen').hidden=true;
-  $('#modalImagen').hidden=false;
-
-  // Si ahora mismo no tiene foto, miramos si quedó una guardada en el repo.
-  if(!obj.imagen&&!pendiente){
-    recorte.rescate=(recorte.rescate||0)+1;
-    buscarImagenGuardada(tipo,id,recorte.rescate);
-  }
+/* El nombre que se enseña en el botón de pegar. */
+function nombreDeLaCopia(){
+  return valorTexto(estado.itemCopiado?.item?.nombre,estado.idiomas[0])||'(sin nombre)';
 }
 
-/* Comprueba si sigue habiendo una foto de este plato/sección en el
-   repositorio. Como el nombre del archivo sale del id, siempre sabemos
-   dónde mirar: basta con intentar cargarla. */
-function buscarImagenGuardada(tipo,id,ficha){
-  const a=leerAjustes();
-  if(!a.owner||!a.repo)return;
-  const rutaEnCarta=rutaImagenCarta(tipo,id);
-  const url=urlImagenExistente(rutaEnCarta);
-  if(!url)return;
-  const prueba=new Image();
-  prueba.onload=()=>{
-    apuntarHuerfana(tipo,id);   // confirmado: el archivo está ahí
-    // Puede haber cambiado de ventana mientras se comprobaba.
-    if(ficha!==recorte.rescate||$('#modalImagen').hidden)return;
-    $('#btnRecuperarImagen').hidden=false;
-    $('#modalImagenPista').textContent+=
-      ' Queda una foto guardada de la última vez: puedes recuperarla sin volver a subirla.';
+/* ---------- Copiar ---------- */
+
+function copiarItem(item){
+  estado.itemCopiado={
+    item:clonarPlato(item),
+    origen:item.id            // de dónde salió, para saber dónde vive su foto
   };
-  prueba.onerror=()=>{};
-  prueba.src=`${url}?b=${Date.now().toString(36)}`;
+  guardarCopia(estado.itemCopiado);
+  avisar(`«${nombreDeLaCopia()}» copiado. Abre el grupo donde lo quieras y pulsa «Pegar».`,'bien');
+  pintarZona();               // el botón de pegar ya puede activarse
 }
 
-/* Vuelve a apuntar a la foto que ya estaba en el repositorio. */
-function recuperarImagen(){
-  const obj=objetoDeImagen(recorte.tipo,recorte.id);
-  if(!obj)return;
-  const ruta=rutaImagenRepo(recorte.tipo,recorte.id);
-  rescatarDeLaPapelera(ruta);
-  estado.imagenesHuerfanas.delete(ruta);   // vuelve a estar en uso
-  obj.imagen=`${rutaImagenCarta(recorte.tipo,recorte.id)}?v=${Date.now().toString(36)}`;
+/* ---------- Pegar ---------- */
+
+/* ¿Sigue habiendo un plato con este id en la carta? De eso depende que
+   el pegado pueda quedarse con el id (y con la foto) o necesite uno nuevo. */
+function idDePlatoOcupado(id){
+  return (estado.datos?.secciones??[]).some(s=>
+    (s.grupos??[]).some(g=>
+      (g.items??[]).some(it=>it.id===id)));
+}
+
+async function pegarItem(){
+  const copia=estado.itemCopiado;
+  const grupo=grupoActual();
+  if(!copia||!grupo)return;
+
+  const plato=clonarPlato(copia.item);
+  const heredaElId=copia.origen&&!idDePlatoOcupado(copia.origen);
+  plato.id=heredaElId
+    ? copia.origen
+    : nuevoId('i',valorTexto(plato.nombre,estado.idiomas[0])||'item');
+
+  grupo.items=grupo.items??[];
+  grupo.items.unshift(plato);
   marcarSucio();
-  cerrarModalImagen();
   pintarZona();
-  avisar('Imagen recuperada. Publica los cambios para que vuelva a verse en la carta.','bien');
+
+  const aviso=await colocarLaFoto(plato,copia.origen,heredaElId);
+  pintarZona();
+  avisar(`«${nombreDeLaCopia()}» pegado en «${valorTexto(grupo.nombre,estado.idiomas[0])}».${aviso}`,'bien');
 }
 
-function cerrarModalImagen(){
-  $('#modalImagen').hidden=true;
-  if(recorte.mapa)recorte.mapa.close?.();
-  recorte.mapa=null;
-}
+/* Deja la foto del plato pegado en su sitio. Devuelve la frase que se
+   añade al aviso final (vacía si no había nada que contar). */
+async function colocarLaFoto(plato,idOrigen,heredaElId){
+  if(!plato.imagen)return '';
 
-/* Carga el archivo comprobando formato, peso y tamaño en píxeles. */
-async function leerArchivoImagen(archivo){
-  if(!/^image\/(jpeg|png|webp)$/.test(archivo.type)){
-    const pista=/heic|heif/i.test(archivo.type+archivo.name)
-      ? ' Las fotos HEIC del iPhone no se pueden leer aquí: en el móvil, en Ajustes › Cámara › Formatos, elige "Más compatible", o comparte la foto como JPG.'
-      : '';
-    throw new Error(`Ese archivo no es una imagen JPG, PNG o WEBP.${pista}`);
+  // Caso 1: se ha quedado con el id, así que la foto ya es suya. Solo
+  // hay que rescatarla si estaba apuntada para borrarse al publicar.
+  if(heredaElId){
+    rescatarDeLaPapelera(rutaImagenRepo('item',plato.id));
+    return ' Conserva su foto.';
   }
-  if(archivo.size>IMG_ENTRADA_MAX){
-    throw new Error(`La foto pesa ${(archivo.size/1024/1024).toFixed(1)} MB y el máximo son 25 MB. Haz una captura o redúcela antes.`);
-  }
-  let mapa;
+
+  // Caso 2: id nuevo, así que hace falta una copia del archivo.
   try{
-    // 'from-image' respeta la orientación con la que se hizo la foto.
-    mapa=await createImageBitmap(archivo,{imageOrientation:'from-image'});
-  }catch{
-    throw new Error('No se ha podido abrir esa foto. Puede estar dañada o en un formato que el navegador no entiende.');
-  }
-  const megapixeles=(mapa.width*mapa.height)/1e6;
-  if(megapixeles>IMG_MEGAPIXELES_MAX){
-    mapa.close?.();
-    throw new Error(`La foto es demasiado grande (${Math.round(megapixeles)} millones de píxeles). Usa una más pequeña.`);
-  }
-  const minimo=IMG_TIPOS[recorte.tipo].anchoMin/2;
-  if(mapa.width<minimo||mapa.height<minimo){
-    mapa.close?.();
-    throw new Error(`La foto es demasiado pequeña y se vería borrosa. Usa una de al menos ${IMG_TIPOS[recorte.tipo].anchoMin} píxeles.`);
-  }
-  return mapa;
-}
+    const foto=await conseguirLaFoto(plato,idOrigen);
+    if(!foto)throw new Error('sin origen');
 
-/* Escala mínima para que la foto cubra el marco por completo. */
-function escalaBase(){
-  if(!recorte.mapa)return 1;
-  return Math.max(PREVIA_ANCHO/recorte.mapa.width, previaAlto()/recorte.mapa.height);
-}
-
-/* Impide que queden huecos vacíos dentro del marco. */
-function ajustarLimites(){
-  const s=escalaBase()*recorte.zoom;
-  const ancho=recorte.mapa.width*s, alto=recorte.mapa.height*s;
-  recorte.tx=Math.min(0,Math.max(PREVIA_ANCHO-ancho,recorte.tx));
-  recorte.ty=Math.min(0,Math.max(previaAlto()-alto,recorte.ty));
-}
-
-/* Zona de la foto original que queda dentro del marco. */
-function zonaRecortada(){
-  const s=escalaBase()*recorte.zoom;
-  return { sx:-recorte.tx/s, sy:-recorte.ty/s, sw:PREVIA_ANCHO/s, sh:previaAlto()/s };
-}
-
-function pintarRecorte(){
-  const lienzo=$('#imgLienzo'), ctx=lienzo.getContext('2d');
-  const alto=previaAlto();
-  ctx.clearRect(0,0,PREVIA_ANCHO,alto);
-  if(!recorte.mapa)return;
-  ajustarLimites();
-  const z=zonaRecortada();
-  ctx.drawImage(recorte.mapa,z.sx,z.sy,z.sw,z.sh,0,0,PREVIA_ANCHO,alto);
-}
-
-/* Recorta y comprime hasta que el archivo pese poco, bajando primero
-   la calidad y, si aún así no basta, también el tamaño. */
-async function generarJpg(){
-  const conf=IMG_TIPOS[recorte.tipo];
-  const z=zonaRecortada();
-  let ancho=Math.min(conf.anchoMax,Math.max(conf.anchoMin,Math.round(z.sw)));
-  for(let intento=0;intento<6;intento++){
-    const alto=Math.round(ancho*conf.relB/conf.relA);
-    const lienzo=document.createElement('canvas');
-    lienzo.width=ancho; lienzo.height=alto;
-    const ctx=lienzo.getContext('2d');
-    ctx.imageSmoothingQuality='high';
-    ctx.drawImage(recorte.mapa,z.sx,z.sy,z.sw,z.sh,0,0,ancho,alto);
-    for(const calidad of [0.82,0.72,0.62]){
-      const blob=await new Promise(r=>lienzo.toBlob(r,'image/jpeg',calidad));
-      if(!blob)throw new Error('El navegador no ha podido preparar la imagen.');
-      if(blob.size<=conf.peso||(ancho<=conf.anchoMin&&calidad===0.62)){
-        return {blob,ancho,alto};
-      }
-    }
-    ancho=Math.max(conf.anchoMin,Math.round(ancho*0.85));
-  }
-  throw new Error('No se ha podido reducir la foto lo suficiente. Prueba con otra imagen.');
-}
-
-async function guardarImagenRecortada(){
-  const obj=objetoDeImagen(recorte.tipo,recorte.id);
-  if(!obj||!recorte.mapa)return;
-  const btn=$('#btnGuardarImagen');
-  btn.disabled=true; errorImagen('');
-  const textoPrevio=btn.textContent; btn.textContent='Preparando…';
-  try{
-    const {blob,ancho,alto}=await generarJpg();
-    const base64=await blobABase64(blob);
-    const ruta=rutaImagenRepo(recorte.tipo,recorte.id);
-    const anterior=estado.imagenesPendientes[ruta];
-    if(anterior?.previa)URL.revokeObjectURL(anterior.previa);
-    // Esa ruta vuelve a estar ocupada: ni se borra ni está huérfana.
+    const ruta=rutaImagenRepo('item',plato.id);
+    if(estado.imagenesPendientes[ruta]?.previa)URL.revokeObjectURL(estado.imagenesPendientes[ruta].previa);
     rescatarDeLaPapelera(ruta);
     estado.imagenesHuerfanas.delete(ruta);
-    estado.imagenesPendientes[ruta]={
-      base64, bytes:blob.size, ancho, alto, previa:URL.createObjectURL(blob)
-    };
+    estado.imagenesPendientes[ruta]=foto;
+
     // El ?v= obliga al navegador del cliente a recargar la foto nueva.
-    obj.imagen=`${rutaImagenCarta(recorte.tipo,recorte.id)}?v=${Date.now().toString(36)}`;
-    marcarSucio();
-    cerrarModalImagen();
-    pintarZona();
-    avisar(`Imagen preparada (${Math.round(blob.size/1024)} KB). Se subirá al publicar los cambios.`,'bien');
-  }catch(e){
-    errorImagen(e.message);
-    btn.disabled=false;
-  }finally{
-    btn.textContent=textoPrevio;
+    plato.imagen=`${rutaImagenCarta('item',plato.id)}?v=${Date.now().toString(36)}`;
+    return ' Su foto se subirá al publicar.';
+  }catch{
+    // Sin foto, pero el plato se queda: es lo importante. Se quita la
+    // ruta para que la carta no apunte a un archivo que no existe.
+    delete plato.imagen;
+    return ' No se ha podido copiar la foto; el plato se ha pegado sin ella.';
   }
 }
 
-function quitarImagen(){
-  const obj=objetoDeImagen(recorte.tipo,recorte.id);
-  if(!obj)return;
-  const que=IMG_TIPOS[recorte.tipo].demostrativo;
-  if(!confirm(`¿Quitar la imagen de ${que}? La carta dejará de mostrarla, pero el archivo se queda en el repositorio: podrás recuperarlo desde esta misma ventana con el botón «Recuperar la guardada», sin volver a subirlo.`))return;
-  olvidarPendiente(recorte.tipo,recorte.id);
-  if(obj.imagen)apuntarHuerfana(recorte.tipo,recorte.id);   // el archivo se queda, y lo sabemos
-  delete obj.imagen;
-  marcarSucio();
-  cerrarModalImagen();
-  pintarZona();
-  avisar('Imagen quitada. Publica los cambios para que se note en la carta.','bien');
+/* La foto del plato original, lista para subir. Primero se mira si está
+   preparada en esta misma sesión (no hace falta internet) y, si no, se
+   trae del repositorio. */
+async function conseguirLaFoto(plato,idOrigen){
+  const preparada=idOrigen?estado.imagenesPendientes[rutaImagenRepo('item',idOrigen)]:null;
+  if(preparada){
+    return {
+      base64:preparada.base64, bytes:preparada.bytes,
+      ancho:preparada.ancho, alto:preparada.alto,
+      previa:URL.createObjectURL(base64ABlob(preparada.base64))
+    };
+  }
+
+  const url=urlImagenExistente(plato.imagen);
+  if(!url)return null;
+  const r=await fetch(url,{cache:'no-store'});
+  if(!r.ok)return null;
+  const blob=await r.blob();
+  const previa=URL.createObjectURL(blob);
+  const {ancho,alto}=await medirImagen(previa);
+  return { base64:await blobABase64(blob), bytes:blob.size, ancho, alto, previa };
 }
 
-/* ---------- Sucesos de la ventana ---------- */
-$('#imgArchivo').addEventListener('change',async(ev)=>{
-  const archivo=ev.target.files[0];
-  if(!archivo)return;
-  errorImagen('');
-  $('#btnGuardarImagen').disabled=true;
-  try{
-    if(recorte.mapa)recorte.mapa.close?.();
-    recorte.mapa=await leerArchivoImagen(archivo);
-    recorte.zoom=1;
-    // Empieza centrada: lo normal es que interese la parte del medio.
-    const s=escalaBase();
-    recorte.tx=(PREVIA_ANCHO-recorte.mapa.width*s)/2;
-    recorte.ty=(previaAlto()-recorte.mapa.height*s)/2;
-    $('#imgZoom').value=1;
-    $('#recorte').hidden=false;
-    pintarRecorte();
-    $('#btnGuardarImagen').disabled=false;
-  }catch(e){
-    recorte.mapa=null;
-    $('#recorte').hidden=true;
-    errorImagen(e.message);
-  }
-});
-
-$('#imgZoom').addEventListener('input',(ev)=>{
-  if(!recorte.mapa)return;
-  const previo=recorte.zoom;
-  recorte.zoom=Number(ev.target.value)||1;
-  // Mantiene el centro del marco al acercar o alejar.
-  const factor=recorte.zoom/previo, alto=previaAlto();
-  recorte.tx=PREVIA_ANCHO/2-(PREVIA_ANCHO/2-recorte.tx)*factor;
-  recorte.ty=alto/2-(alto/2-recorte.ty)*factor;
-  pintarRecorte();
-});
-
-(function arrastrarRecorte(){
-  const lienzo=$('#imgLienzo');
-  const aLienzo=(ev)=>{
-    const r=lienzo.getBoundingClientRect();
-    return {x:ev.clientX*PREVIA_ANCHO/r.width, y:ev.clientY*previaAlto()/r.height};
-  };
-  lienzo.addEventListener('pointerdown',(ev)=>{
-    if(!recorte.mapa)return;
-    recorte.arrastrando=true;
-    const p=aLienzo(ev); recorte.ultX=p.x; recorte.ultY=p.y;
-    lienzo.setPointerCapture(ev.pointerId);
+/* El tamaño de la foto, solo para poder enseñarlo bajo la miniatura. */
+function medirImagen(url){
+  return new Promise((listo)=>{
+    const img=new Image();
+    img.onload=()=>listo({ancho:img.naturalWidth,alto:img.naturalHeight});
+    img.onerror=()=>listo({ancho:0,alto:0});
+    img.src=url;
   });
-  lienzo.addEventListener('pointermove',(ev)=>{
-    if(!recorte.arrastrando)return;
-    const p=aLienzo(ev);
-    recorte.tx+=p.x-recorte.ultX; recorte.ty+=p.y-recorte.ultY;
-    recorte.ultX=p.x; recorte.ultY=p.y;
-    pintarRecorte();
-  });
-  const soltar=(ev)=>{
-    if(!recorte.arrastrando)return;
-    recorte.arrastrando=false;
-    try{lienzo.releasePointerCapture(ev.pointerId);}catch{}
-  };
-  lienzo.addEventListener('pointerup',soltar);
-  lienzo.addEventListener('pointercancel',soltar);
-})();
-
-$('#btnGuardarImagen').addEventListener('click',guardarImagenRecortada);
-$('#btnQuitarImagen').addEventListener('click',quitarImagen);
-$('#btnRecuperarImagen').addEventListener('click',recuperarImagen);
-$('#btnCerrarImagen').addEventListener('click',cerrarModalImagen);
-$('#modalImagen').addEventListener('click',(ev)=>{if(ev.target.id==='modalImagen')cerrarModalImagen();});
-document.addEventListener('keydown',(ev)=>{if(ev.key==='Escape'&&!$('#modalImagen').hidden)cerrarModalImagen();});
+}

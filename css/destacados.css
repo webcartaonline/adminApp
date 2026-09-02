@@ -1,0 +1,54 @@
+/* =========================================================
+   ETIQUETAS Y ALERTAS
+   El apartado que sale dentro del recuadro del grupo (su
+   alerta) y dentro de la ficha de cada plato (sus
+   etiquetas). Los dos se ven igual a propósito: son la
+   misma idea, cambia dónde se pintan en la carta.
+   ========================================================= */
+
+.destacados{margin-top:14px;padding-top:14px;border-top:1px solid var(--linea)}
+.destacados__cabecera{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.destacados__cabecera .campo__etiqueta{margin-right:auto}
+
+/* Cada alerta o etiqueta, en su propia tarjetita hundida */
+.destacado{margin-top:10px;padding:12px;border:1px solid var(--linea);
+  border-radius:var(--radio-m);background:var(--velo)}
+.destacado__cabecera{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.destacado__cabecera .chips{margin-top:0}
+.destacado__botones{display:flex;align-items:center;gap:4px;margin-left:auto}
+.destacado .campo__pista{margin:-4px 0 10px}
+
+/* Los dos juegos de botones de color, uno al lado del otro cuando cabe */
+.colorines{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  margin-top:4px}
+.colorines__juego{display:flex;flex-direction:column;gap:5px}
+.colorines .chips{margin-top:0;align-items:center}
+
+/* La rueda de color del navegador, encajada con el resto de controles */
+.rueda{width:38px;height:30px;padding:2px;flex:0 0 auto;
+  border:1px solid var(--linea-fuerte);border-radius:var(--radio-s);
+  background:var(--velo);cursor:pointer}
+.rueda::-webkit-color-swatch-wrapper{padding:0}
+.rueda::-webkit-color-swatch{border:none;border-radius:6px}
+.rueda::-moz-color-swatch{border:none;border-radius:6px}
+
+/* La muestra: el mismo fondo oscuro de la carta, con la pieza encima,
+   para ver de verdad cómo va a quedar. */
+.previa-destacado{margin-top:12px;padding:14px;border-radius:var(--radio-m);
+  border:1px solid var(--linea);display:flex;justify-content:center;overflow:hidden}
+.previa-destacado__pieza{max-width:100%;overflow-wrap:anywhere;text-align:center}
+
+/* Igual que en la carta: la etiqueta va en versalitas y a pelo; la
+   alerta, con letra normal. */
+.previa-destacado__pieza--etiqueta{display:inline-block;padding:3px 10px;border-radius:999px;
+  font-size:.67rem;font-weight:600;line-height:1.55;letter-spacing:.09em;text-transform:uppercase}
+.previa-destacado__pieza--alerta{display:inline-block;padding:4px 12px;border-radius:999px;
+  font-size:.72rem;font-weight:500;line-height:1.45}
+
+/* Móvil: los controles se apilan y los botones de la tarjeta bajan a
+   su propia línea, para que no se aplasten. */
+@media(max-width:600px){
+  .destacado{padding:10px}
+  .destacado__botones{margin-left:0;width:100%;justify-content:flex-end}
+  .colorines{grid-template-columns:1fr}
+}
