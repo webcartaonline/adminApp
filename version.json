@@ -1,10 +1,11 @@
 {
-  "version": "6.8.5",
+  "version": "6.9.0",
   "fecha": "2026-09-04",
-  "titulo": "Avisos en la parte de abajo",
+  "titulo": "Dónde va la barra y los alérgenos",
   "cambios": [
-    "Los avisos ahora aparecen pegados al borde inferior de la pantalla, siempre a la vista",
-    "Se cierran solos pasados unos segundos",
+    "Nuevo apartado «Disposición» dentro de los ajustes de la página",
+    "Puedes elegir si la barra de secciones se apoya arriba o abajo de la foto de cada sección",
+    "Puedes elegir si el filtro de alérgenos va al final de la página o arriba, debajo de la foto de la sección",
     "Recuerda que las actualizaciones te ayudan a tener una mejor experiencia y a nosotros a proporcionártela"
   ]
 }

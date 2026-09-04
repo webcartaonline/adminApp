@@ -355,6 +355,33 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
         </div>
       </section>
 
+      <!-- ===== Disposición ===== -->
+      <section class="bloque">
+        <h3 class="bloque__titulo">Disposición</h3>
+        <p class="bloque__nota">Dos detalles de cómo se coloca la carta. Puedes dejarlos como
+          están; cámbialos solo si prefieres otra distribución.</p>
+
+        <span class="campo__etiqueta">Barra de secciones</span>
+        <div class="apariencia__texto-modos" id="aparBarra" role="group"
+             aria-label="Dónde se apoya la barra de secciones">
+          <button class="chip" type="button" data-valor="inferior" aria-pressed="true">Pegada abajo de la foto</button>
+          <button class="chip" type="button" data-valor="superior" aria-pressed="false">Pegada arriba de la foto</button>
+        </div>
+        <p class="bloque__nota">La barra donde el cliente elige las secciones se apoya sobre la
+          foto de cada sección. Ponla <b>arriba</b> si no quieres que la foto de la portada quede
+          pegada a la de la sección.</p>
+
+        <span class="campo__etiqueta">Filtro de alérgenos</span>
+        <div class="apariencia__texto-modos" id="aparAlergenos" role="group"
+             aria-label="Dónde aparece el filtro de alérgenos">
+          <button class="chip" type="button" data-valor="abajo" aria-pressed="true">Al final de la página</button>
+          <button class="chip" type="button" data-valor="arriba" aria-pressed="false">Arriba, debajo de la foto de la sección</button>
+        </div>
+        <p class="bloque__nota">Es la lista plegable donde el cliente marca lo que quiere evitar.
+          Normalmente va al final de la página; súbela <b>arriba</b> si prefieres que se vea nada
+          más entrar en cada sección.</p>
+      </section>
+
       <!-- ===== Fuentes ===== -->
       <section class="bloque">
         <h3 class="bloque__titulo">Fuentes (las letras)</h3>

@@ -25,6 +25,8 @@ function aparienciaDeFabrica(){
     identidad:{ titulo:'', eslogan:{ es:'', en:'' }, logo:'',
                 fondo:{ imagen:'', foco:'centro' } },
     fuentes:{ titulo:null, texto:null },
+    // Colocación de la barra de secciones y del filtro de alérgenos.
+    pagina:{ barra:'inferior', alergenos:'abajo' },
     pie:{ bloques:[], redes:{ tiktok:'', instagram:'', x:'', youtube:'', facebook:'', snapchat:'' } }
   };
 }
@@ -232,6 +234,7 @@ async function cargarPagina(){
         eslogan:{...base.identidad.eslogan,...(guardada?.identidad?.eslogan||{})},
         fondo:{...base.identidad.fondo,...(guardada?.identidad?.fondo||{})}},
       fuentes:{...base.fuentes,...(guardada?.fuentes||{})},
+      pagina:normalizarPagina(guardada?.pagina),
       pie:{
         bloques:Array.isArray(guardada?.pie?.bloques)?guardada.pie.bloques:[],
         redes:{...base.pie.redes,...(guardada?.pie?.redes||{})}
@@ -291,7 +294,47 @@ function volcarCampos(){
   pintarFuenteCampo('texto');
   pintarBloquesPie();
   pintarRedesPie();
+  pintarColocacion();
 }
+
+/* =========================================================
+   DISPOSICIÓN: BARRA Y ALÉRGENOS
+   Dos elecciones sencillas, cada una con dos opciones. Se
+   guardan en apariencia.json → "pagina" y la carta las lee
+   de ahí. Cada opción admite solo dos valores; ante
+   cualquier otra cosa, se queda con la de siempre.
+   ========================================================= */
+function normalizarPagina(p){
+  return {
+    barra:     p?.barra==='superior' ? 'superior' : 'inferior',
+    alergenos: p?.alergenos==='arriba' ? 'arriba' : 'abajo'
+  };
+}
+
+/* Deja marcada, dentro de un grupo de botones, la opción elegida. */
+function marcarSegmento(idGrupo,valor){
+  document.querySelectorAll(`#${idGrupo} .chip`).forEach((b)=>{
+    b.setAttribute('aria-pressed',String(b.dataset.valor===valor));
+  });
+}
+function pintarColocacion(){
+  marcarSegmento('aparBarra',apar.datos.pagina.barra);
+  marcarSegmento('aparAlergenos',apar.datos.pagina.alergenos);
+}
+
+/* Al pulsar una opción se apunta en los datos y se marca en pantalla. */
+$('#aparBarra').addEventListener('click',(ev)=>{
+  const b=ev.target.closest('.chip'); if(!b)return;
+  apar.datos.pagina.barra=b.dataset.valor==='superior'?'superior':'inferior';
+  marcarSegmento('aparBarra',apar.datos.pagina.barra);
+  marcarSucio();
+});
+$('#aparAlergenos').addEventListener('click',(ev)=>{
+  const b=ev.target.closest('.chip'); if(!b)return;
+  apar.datos.pagina.alergenos=b.dataset.valor==='arriba'?'arriba':'abajo';
+  marcarSegmento('aparAlergenos',apar.datos.pagina.alergenos);
+  marcarSucio();
+});
 
 /* =========================================================
    PIE DE PÁGINA: MENSAJES
