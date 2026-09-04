@@ -52,10 +52,30 @@
   .barra__acciones{gap:8px}
   .barra__acciones .btn{padding:8px 13px;font-size:.78rem}
 }
-/* Pantallas muy estrechas (360 px y menos): los botones de acción
-   ocupan el ancho a partes iguales en vez de desbordar. */
-@media(max-width:380px){
-  .barra__acciones{display:grid;grid-template-columns:1fr 1fr}
-  .barra__acciones .btn{width:100%}
-  .barra__acciones .espera{grid-column:1 / -1}
+
+/* Cuando empiezan a no caber los botones, en lugar de apilarlos unos
+   sobre otros, la fila se convierte en una TIRA que se desliza de lado
+   con el dedo, igual que la barra de secciones de la carta. Así siempre
+   se ven todos en una sola línea, por muchos que haya.
+
+   El truco: se deja de partir la fila (nowrap), se permite el arrastre
+   horizontal (overflow-x), se esconde la barra de desplazamiento y cada
+   botón se niega a encogerse (flex:none) para que se lean enteros.
+   Los márgenes laterales negativos hacen que la tira llegue de borde a
+   borde de la barra, y el relleno devuelve el aire al primero y al
+   último botón. */
+@media(max-width:560px){
+  .barra__acciones{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    margin-inline:-15px;
+    padding-inline:15px;
+    /* deja un pelín de aire abajo para que el arrastre no tape el foco */
+    scroll-padding-inline:15px;
+  }
+  .barra__acciones::-webkit-scrollbar{display:none}
+  .barra__acciones>.btn,
+  .barra__acciones .espera{flex:0 0 auto}
 }

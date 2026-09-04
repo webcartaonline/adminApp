@@ -18,6 +18,83 @@
    ========================================================= */
 (function(){
 
+/* =========================================================
+   BORRADOR PARA LA VISTA PREVIA
+   Cada cambio en la apariencia se guarda en el cajón del
+   navegador (Almacen), organizado por cliente, para que la
+   vista previa del editor pueda enseñar la página con los
+   cambios SIN publicar: colores, título, eslogan, pie, redes,
+   disposición… y también la portada, el logotipo y las fuentes
+   nuevas que todavía no se han subido.
+
+   El JSON (todo lo que no son archivos) se guarda con un
+   pequeño retardo, para no escribir en el cajón en cada tecla.
+   Los archivos (fotos y fuentes) se guardan cuando se eligen y
+   se borran cuando se quitan.
+
+   Si el navegador no tuviera este cajón, todo esto falla en
+   silencio: los ajustes siguen funcionando igual y la vista
+   previa simplemente mostrará lo último publicado.
+   ========================================================= */
+function tipoPorExtension(ruta){
+  const e=String(ruta||'').split('.').pop().toLowerCase();
+  return ({
+    jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', webp:'image/webp',
+    svg:'image/svg+xml', gif:'image/gif',
+    woff2:'font/woff2', woff:'font/woff', ttf:'font/ttf', otf:'font/otf'
+  })[e]||'application/octet-stream';
+}
+
+let relojBorrador=null;
+function guardarBorradorApariencia(){
+  clearTimeout(relojBorrador);
+  relojBorrador=setTimeout(()=>{
+    if(!apar.datos)return;
+    try{
+      Almacen.guardar('apariencia',{
+        cliente:clienteActual(),
+        datos:JSON.parse(JSON.stringify(apar.datos)),
+        fecha:Date.now()
+      });
+    }catch{/* sin cajón: la vista previa usará lo publicado */}
+  },350);
+}
+
+/* Un archivo (foto o fuente) pendiente de subir, para que la vista
+   previa lo enseñe antes de publicarlo. Se guarda con la misma clave
+   (la ruta en el repositorio) que luego busca la vista previa. */
+function guardarArchivoBorrador(ruta,base64){
+  if(!ruta||!base64)return;
+  try{Almacen.guardar('imagenes',{clave:`${clienteActual()}::${ruta}`,base64,tipo:tipoPorExtension(ruta)});}
+  catch{/* sin cajón */}
+}
+function borrarArchivoBorrador(ruta){
+  if(!ruta)return;
+  try{Almacen.borrar('imagenes',`${clienteActual()}::${ruta}`);}catch{}
+}
+
+/* Borra TODOS los archivos pendientes de este cliente. Se usa al cargar
+   o al publicar: en ese momento no queda nada sin subir, así que el
+   cajón debe quedar limpio para que no enseñe una foto vieja. En este
+   cajón solo hay archivos de la apariencia (portada, logo, fuentes);
+   las fotos de la carta van por otro sitio, así que esto no las toca. */
+async function limpiarArchivosDeCliente(){
+  const prefijo=`${clienteActual()}::`;
+  try{
+    const todos=await Almacen.listar('imagenes');
+    await Promise.all((todos||[])
+      .filter(x=>String(x.clave).startsWith(prefijo))
+      .map(x=>Almacen.borrar('imagenes',x.clave)));
+  }catch{/* sin cajón */}
+}
+
+/* Deja el borrador como si no hubiera nada sin publicar. */
+async function limpiarBorradorApariencia(){
+  clearTimeout(relojBorrador);
+  try{await Almacen.borrar('apariencia',clienteActual());}catch{}
+  await limpiarArchivosDeCliente();
+}
+
 /* ---------- Cómo es un apariencia.json recién estrenado ---------- */
 function aparienciaDeFabrica(){
   return {
@@ -266,6 +343,7 @@ async function cargarPagina(){
     pintarPrevia();
     pintarEstadoPagina('Al día','bien');
     refrescarBotonPublicar();
+    limpiarBorradorApariencia();   // recién cargado: nada sin publicar
   }catch(e){
     pintarEstadoPagina('No se ha podido cargar','falta');
     avisar(`No se han podido traer los ajustes de la página: ${e.message}`,'error');
@@ -449,6 +527,7 @@ function marcarSucio(){
   apar.sucio=true;
   pintarEstadoPagina('Cambios sin publicar','falta');
   refrescarBotonPublicar();
+  guardarBorradorApariencia();   // que la vista previa vea el cambio
 }
 function pintarEstadoPagina(texto,tipo){
   const e=$('#estadoPagina');
@@ -500,12 +579,14 @@ async function guardarLogoPreparado(preparado){
 
   apuntarSiSobra(apar.publicado.logo,ruta);
   apar.logoPendiente={ruta,base64:await blobABase64(preparado.blob)};
+  guardarArchivoBorrador(ruta,apar.logoPendiente.base64);
   apar.datos.identidad.logo=`${ruta}?v=${marcaDeTiempo()}`;
   pintarLogoCampo(); pintarPrevia(); marcarSucio();
 }
 
 function quitarLogo(){
   apuntarSiSobra(apar.publicado.logo,'');
+  if(apar.logoPendiente)borrarArchivoBorrador(apar.logoPendiente.ruta);
   apar.logoPendiente=null;
   if(apar.previas.logo){URL.revokeObjectURL(apar.previas.logo);delete apar.previas.logo;}
   apar.datos.identidad.logo='';
@@ -613,12 +694,14 @@ async function guardarFondoPreparado(preparado){
 
   apuntarSiSobra(apar.publicado.fondo,ruta);
   apar.fondoPendiente={ruta,base64:await blobABase64(preparado.blob)};
+  guardarArchivoBorrador(ruta,apar.fondoPendiente.base64);
   apar.datos.identidad.fondo.imagen=`${ruta}?v=${marcaDeTiempo()}`;
   pintarFondoCampo(); pintarPrevia(); marcarSucio();
 }
 
 function quitarFondo(){
   apuntarSiSobra(apar.publicado.fondo,'');
+  if(apar.fondoPendiente)borrarArchivoBorrador(apar.fondoPendiente.ruta);
   apar.fondoPendiente=null;
   if(apar.previas.fondo){URL.revokeObjectURL(apar.previas.fondo);delete apar.previas.fondo;}
   apar.datos.identidad.fondo={imagen:'',foco:FOCO_DEFECTO};
@@ -644,6 +727,7 @@ async function elegirFuente(clave,archivo){
   const ruta=`fuentes/${clave}.${extension}`;
   apuntarSiSobra(apar.publicado.fuentes[clave],ruta);
   apar.fuentesPendientes[clave]={ruta,base64:await blobABase64(archivo)};
+  guardarArchivoBorrador(ruta,apar.fuentesPendientes[clave].base64);
   apar.datos.fuentes[clave]={archivo:`${ruta}?v=${marcaDeTiempo()}`,nombre:archivo.name};
   pintarFuenteCampo(clave);
   previsualizarFuente(clave,archivo);
@@ -651,6 +735,7 @@ async function elegirFuente(clave,archivo){
 }
 function quitarFuente(clave){
   apuntarSiSobra(apar.publicado.fuentes[clave],'');
+  if(apar.fuentesPendientes[clave])borrarArchivoBorrador(apar.fuentesPendientes[clave].ruta);
   delete apar.fuentesPendientes[clave];
   apar.datos.fuentes[clave]=null;
   pintarFuenteCampo(clave);
@@ -761,6 +846,7 @@ async function publicarPagina(){
 
     empezarEsperaPagina();
     pintarEstadoPagina('Al día','bien');
+    limpiarBorradorApariencia();   // ya está todo publicado
     avisar('Publicado. La página se actualiza en un par de minutos; mientras se despliega, publicar queda bloqueado.','bien');
   }catch(e){
     pintarEstadoPagina('Cambios sin publicar','falta');

@@ -38,6 +38,14 @@ async function traer(){
       }
     }catch{/* sin estadísticas: no pasa nada */}
     refrescarBotonEstadisticas();
+
+    // Además de la carta, ponemos al día los archivos de la plantilla
+    // (los que hacen falta para la vista previa). Solo se descarga lo que
+    // ha cambiado. Si algo falla aquí, la carta ya está cargada: la vista
+    // previa quedará no disponible, pero no se estropea nada.
+    try{ await sincronizarPlantilla(a,cab); }
+    catch(e){ console.warn('Vista previa no disponible:',e.message); }
+    if(typeof refrescarBotonVistaPrevia==='function')refrescarBotonVistaPrevia();
   }catch(e){avisar(`No se ha podido traer la carta: ${e.message}`,'error');}
 }
 

@@ -15,7 +15,7 @@
    automáticamente la ventana con lo que ha cambiado.
    ========================================================= */
 
-const VERSION = '6.9.0';
+const VERSION = '7.10.0';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
@@ -38,6 +38,7 @@ const ARCHIVOS = [
   './css/apariencia.css',
   './js/config.js',
   './js/utiles.js',
+  './js/almacen.js',
   './js/imagen-comprimir.js',
   './js/estado.js',
   './js/tema.js',
@@ -53,6 +54,7 @@ const ARCHIVOS = [
   './js/imagenes.js',
   './js/imagen-recorte.js',
   './js/github.js',
+  './js/plantilla.js',
   './js/vista.js',
   './js/vista-arbol.js',
   './js/vista-editor.js',
@@ -62,6 +64,9 @@ const ARCHIVOS = [
   './js/sucesos.js',
   './js/version.js',
   './js/app.js',
+  './vista-previa/vista-previa.css',
+  './vista-previa/vista-previa.js',
+  './vista-previa/puente.js',
   './img/icono-192.png',
   './img/icono-512.png',
   './img/icono-180.png',

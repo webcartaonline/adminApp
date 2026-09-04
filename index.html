@@ -48,6 +48,7 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <link rel="stylesheet" href="css/estadisticas.css">
 <link rel="stylesheet" href="css/imagenes.css">
 <link rel="stylesheet" href="css/version.css">
+<link rel="stylesheet" href="vista-previa/vista-previa.css">
 </head>
 <body>
 
@@ -69,6 +70,8 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
          un «Cannot GET /ajustes». -->
     <a class="btn btn--claro" id="btnAjustes" href="ajustes.html">Ajustes</a>
     <button class="btn btn--claro" id="btnCargar" type="button">Traer de GitHub</button>
+    <button class="btn btn--claro" id="btnVistaPrevia" type="button" disabled
+            title="Trae la carta primero">Vista previa</button>
     <button class="btn btn--claro" id="btnEstadisticas" type="button" hidden>Estadísticas</button>
     <button class="btn btn--principal" id="btnPublicar" type="button" disabled>Publicar cambios</button>
 
@@ -203,6 +206,7 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
      anteriores. Si añades uno nuevo, colócalo en su sitio. -->
 <script src="js/config.js"></script>
 <script src="js/utiles.js"></script>
+<script src="js/almacen.js"></script>
 <script src="js/imagen-comprimir.js"></script>
 <script src="js/estado.js"></script>
 <script src="js/tema.js"></script>
@@ -214,6 +218,7 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <script src="js/imagenes.js"></script>
 <script src="js/imagen-recorte.js"></script>
 <script src="js/github.js"></script>
+<script src="js/plantilla.js"></script>
 <script src="js/vista.js"></script>
 <script src="js/vista-arbol.js"></script>
 <script src="js/vista-editor.js"></script>
@@ -223,5 +228,6 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <script src="js/sucesos.js"></script>
 <script src="js/version.js"></script>
 <script src="js/app.js"></script>
+<script src="vista-previa/vista-previa.js"></script>
 </body>
 </html>

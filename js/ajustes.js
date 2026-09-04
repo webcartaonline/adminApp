@@ -25,3 +25,12 @@ function guardarSitio(s){try{localStorage.setItem(CLAVE_SITIO,JSON.stringify(s))
 /* Pone el rótulo «Editor de …» con el nombre guardado. En las
    páginas que no tienen ese rótulo, solo cambia el título. */
 function aplicarNombreGuardado(){aplicarNombreEditor(leerAjustes().nombre);}
+
+/* Identificador del cliente: cuenta + repositorio + rama. Sirve para
+   que la copia de la plantilla y los borradores de la vista previa de
+   un local nunca se mezclen con los de otro. Lo usan las DOS páginas
+   (el editor y los ajustes), por eso vive aquí, en lo compartido. */
+function clienteActual(a){
+  a=a||leerAjustes();
+  return `${a.owner||''}/${a.repo||''}/${a.rama||'main'}`;
+}

@@ -1,11 +1,12 @@
 {
-  "version": "6.9.0",
+  "version": "7.10.0",
   "fecha": "2026-09-04",
-  "titulo": "Dónde va la barra y los alérgenos",
+  "titulo": "Vista previa antes de publicar",
   "cambios": [
-    "Nuevo apartado «Disposición» dentro de los ajustes de la página",
-    "Puedes elegir si la barra de secciones se apoya arriba o abajo de la foto de cada sección",
-    "Puedes elegir si el filtro de alérgenos va al final de la página o arriba, debajo de la foto de la sección",
+    "Nuevo botón «Vista previa»: mira cómo quedará tu carta con los cambios antes de publicarlos",
+    "La vista previa muestra la página real con tus cambios sin publicar, incluidas las fotos que aún no has subido",
+    "En el móvil, cuando hay muchos botones arriba, la fila se desliza de lado en vez de amontonarse",
+    "Al «Traer de GitHub» el editor comprueba solo si tu página se ha actualizado y se pone al día",
     "Recuerda que las actualizaciones te ayudan a tener una mejor experiencia y a nosotros a proporcionártela"
   ]
 }
