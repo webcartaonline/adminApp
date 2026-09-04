@@ -131,11 +131,24 @@ body{margin:0;background:var(--fondo) fixed;background-color:var(--marfil);
 :focus-visible{outline:2px solid var(--acento-1);outline-offset:2px}
 ::selection{background:var(--acento-tenue)}
 
-/* Franja de aviso bajo la barra superior */
-.mensaje{padding:11px 20px;font-size:.85rem;font-weight:500}
-.mensaje--info{background:var(--acento-tenue);color:var(--acento-texto)}
-.mensaje--bien{background:rgba(16,185,129,.14);color:var(--verde-hondo)}
-.mensaje--error{background:rgba(239,68,68,.14);color:var(--aviso)}
+/* Franja de aviso bajo la barra superior.
+   Fondos sólidos y texto blanco: antes eran casi transparentes y, con la
+   sombra de la barra encima, apenas se leían. */
+.mensaje{padding:12px 20px;font-size:.85rem;font-weight:600}
+.mensaje--info{background:#4361EE;color:#FFFFFF}
+.mensaje--bien{background:#0A7D52;color:#FFFFFF}
+.mensaje--error{background:#C62B2B;color:#FFFFFF}
+
+/* El aviso de la página (publicar, subir imagen, etc.) va fijo, pegado al
+   borde inferior de la pantalla: se ve siempre, esté donde esté el cliente,
+   tanto en ordenador como en el móvil. Fondo opaco y por encima del resto
+   para que se lea bien. El relleno de abajo respeta la franja de los móviles
+   con barra o botón de inicio en pantalla, para que el texto no quede tapado.
+   Se estiliza por su id para no afectar al aviso de error del recuadro de
+   imágenes, que comparte la clase .mensaje pero vive dentro de una ventana. */
+#mensaje{position:fixed;left:0;right:0;bottom:0;z-index:21;margin:0;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  box-shadow:0 -10px 26px rgba(20,26,50,.20)}
 
 /* Recuadro punteado para "aquí todavía no hay nada" */
 .vacio{padding:44px 22px;text-align:center;color:var(--tinta-suave);font-size:.86rem;

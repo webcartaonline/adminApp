@@ -1,10 +1,10 @@
 {
-  "version": "6.8.1",
-  "fecha": "2026-09-02",
-  "titulo": "Mejora de estilo y eficiencia",
+  "version": "6.8.5",
+  "fecha": "2026-09-04",
+  "titulo": "Avisos en la parte de abajo",
   "cambios": [
-    "Se ha mejorado la forma en la que se distribuyen las tarjetas donde se editan las etiquetas",
-    "Se ha mejorado la eficiencia de la aplicación",
-    "Recuerda que las actualizaciones te ayudan a tener una mejor experiencia y a nosotros a proporcionartela"
+    "Los avisos ahora aparecen pegados al borde inferior de la pantalla, siempre a la vista",
+    "Se cierran solos pasados unos segundos",
+    "Recuerda que las actualizaciones te ayudan a tener una mejor experiencia y a nosotros a proporcionártela"
   ]
 }

@@ -32,13 +32,21 @@ function base64ABlob(base64,tipo='image/jpeg'){
   return new Blob([bytes],{type:tipo});
 }
 
-/* Franja de aviso bajo la barra superior. */
+/* Franja de aviso bajo la barra superior.
+   Los avisos con resultado ("bien" y "error") se ocultan solos pasados
+   unos segundos. Los de estado en marcha ("info", como "Publicando…") se
+   quedan hasta que el propio proceso los sustituye por el resultado.
+   Se guarda el temporizador para poder cancelarlo: si llega un aviso nuevo
+   antes de tiempo, el reloj anterior no debe ocultar el mensaje reciente. */
+let avisoReloj=null;
 function avisar(txt,tipo='info'){
   const m=$('#mensaje');
   m.textContent=txt;
   m.className=`mensaje mensaje--${tipo}`;
   m.hidden=false;
-  if(tipo==='bien')setTimeout(()=>m.hidden=true,6000);
+  clearTimeout(avisoReloj);
+  const segundos = tipo==='error' ? 9 : (tipo==='bien' ? 6 : 0);
+  if(segundos>0) avisoReloj=setTimeout(()=>{m.hidden=true;},segundos*1000);
 }
 
 /* Deja el texto seguro para meterlo dentro del HTML. */
