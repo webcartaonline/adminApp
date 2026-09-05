@@ -71,7 +71,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
       </span>
       <span class="apartado__texto">
         <span class="apartado__titulo">Conexión con la página</span>
-        <span class="apartado__pista">La clave de acceso y el archivo de la carta que se publica.</span>
+        <span class="apartado__pista">La clave de acceso y la información de la carta que se publica.</span>
       </span>
       <span class="apartado__estado" id="estadoConexion">—</span>
       <span class="apartado__flecha" aria-hidden="true">
@@ -82,7 +82,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 
     <div class="apartado__cuerpo" id="cuerpoConexion" hidden>
       <p class="apartado__nota">Estos datos se guardan solo en este navegador, nunca en la
-        aplicación. Por eso varios locales pueden usar la misma dirección web sin mezclarse.</p>
+        aplicación. Para llevar la misma configuración a otro dispositivo exporta los ajustes</p>
 
       <label class="campo campo--clave">
         <span class="campo__etiqueta">Token de acceso (API key)</span>
@@ -90,8 +90,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
           <input type="password" id="cfgToken" autocomplete="off" spellcheck="false">
           <button class="btn btn--suave btn--mini" id="btnVerToken" type="button" aria-pressed="false">Ver</button>
         </span>
-        <span class="campo__pista">Token de permisos limitados (Contents: Read and write) solo para este
-          repositorio. Se guarda en este navegador y no viaja a ningún otro sitio.</span>
+        <span class="campo__pista">Token de permisos (Read and write) no lo comparta con nadie, este código es el que le perimte editar la carta, cualquiera que lo tenga, tendrá acceso a ella.</span>
       </label>
 
       <div class="ajustes__rejilla">
@@ -139,8 +138,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
         <label class="campo">
           <span class="campo__etiqueta">Nombre</span>
           <input type="text" id="cfgNombre" autocomplete="off">
-          <span class="campo__pista">Aparece en el título como «Editor de …». Útil para reconocer de un
-            vistazo en qué local estás si gestionas varios.</span>
+          <span class="campo__pista">Aparece en el título como «Editor de …».</span>
         </label>
         <p class="bloque__ejemplo">Se verá así: <b id="nombreEjemplo">Editor de la carta</b></p>
         <div class="ajustes__acciones">
@@ -170,7 +168,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
             <input type="color" id="colorC2" value="#4C86FF"></label>
         </div>
 
-        <span class="campo__etiqueta">Combinaciones hechas</span>
+        <span class="campo__etiqueta">Combinaciones sugeridas</span>
         <div class="color__sugerencias" id="colorSugerencias">
           <button class="color__sugerencia" type="button" title="Violeta y azul (original)"
                   data-color-1="#7A5CFB" data-color-2="#4C86FF"
@@ -213,7 +211,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
       </span>
       <span class="apartado__texto">
         <span class="apartado__titulo">Exportar e importar</span>
-        <span class="apartado__pista">Guardar los ajustes en un archivo y volver a ponerlos en otro navegador.</span>
+        <span class="apartado__pista">Guardar los ajustes en un archivo o importarlos desde otro navegador.</span>
       </span>
       <span class="apartado__flecha" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
@@ -238,9 +236,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
           <button class="chip" id="btnIncluirToken" type="button" aria-pressed="false">Incluir el token de acceso</button>
         </div>
         <p class="bloque__aviso" id="copiaAvisoToken" hidden>
-          Con el token dentro, quien abra el archivo puede publicar cambios en la página. Guárdalo
-          donde nadie más lo vea y no lo mandes por correo ni por mensajería. Sin él, el archivo es
-          inofensivo, pero al importarlo habrá que volver a pegar el token a mano.</p>
+          Con el token dentro, quien abra el archivo puede ver la el token (la clave) que permite leer y escribir en la carta. Si decide añadir el token no comparta este archivo con nadie, cualquiera que use el token podrá acceder a la carta y modificarla.</p>
 
         <div class="ajustes__acciones">
           <button class="btn btn--principal" id="btnExportar" type="button">Descargar archivo de ajustes</button>
@@ -305,8 +301,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 
       <section class="bloque">
         <h3 class="bloque__titulo">Web con la que conecta</h3>
-        <p class="bloque__nota">Es la página que se actualiza al pulsar «Publicar cambios».
-          Se intenta averiguar sola a partir de GitHub; si no acierta, escríbela a mano.</p>
+        <p class="bloque__nota">Es la página que se actualiza al pulsar «Publicar cambios».</p>
 
         <dl class="ficha">
           <div class="ficha__fila">
@@ -315,7 +310,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
           <div class="ficha__fila">
             <dt>Dirección</dt>
             <dd><a class="ficha__enlace" id="fichaSitioUrl" target="_blank" rel="noopener noreferrer"
-                   aria-disabled="true">Sin averiguar todavía</a></dd>
+                   aria-disabled="true">Sin dirección todavía</a></dd>
           </div>
           <div class="ficha__fila">
             <dt>Repositorio</dt><dd id="fichaRepo">Sin configurar</dd>
@@ -332,7 +327,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 
         <div class="ajustes__acciones">
           <button class="btn btn--principal" id="btnGuardarSitio" type="button">Guardar</button>
-          <button class="btn btn--suave" id="btnDetectarSitio" type="button">Averiguar desde GitHub</button>
+          <button class="btn btn--suave" id="btnDetectarSitio" type="button">Averiguar</button>
         </div>
       </section>
     </div>

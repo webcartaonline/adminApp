@@ -1,12 +1,9 @@
 {
-  "version": "8.0.0",
+  "version": "8.0.1",
   "fecha": "2026-09-04",
-  "titulo": "Vista previa antes de publicar",
+  "titulo": "Mejora de rendimiento y estabilidad",
   "cambios": [
-    "Nuevo botón «Vista previa»: mira cómo quedará tu carta con los cambios antes de publicarlos",
-    "La vista previa muestra la página real con tus cambios sin publicar, incluidas las fotos que aún no has subido",
-    "En el móvil, cuando hay muchos botones arriba, la fila se desliza de lado en vez de amontonarse",
-    "Al «Traer de GitHub» el editor comprueba solo si tu página se ha actualizado y se pone al día",
+    "Se a mejorado el rendimiento y la estabilidad de la aplicación.",
     "Recuerda que las actualizaciones te ayudan a tener una mejor experiencia y a nosotros a proporcionártela"
   ]
 }

@@ -14,7 +14,7 @@ function rutaEstadisticas(ruta){
 async function traer(){
   const a=leerAjustes();
   if(!a.owner||!a.repo||!a.ruta){avisar('Faltan datos de conexión. Entra en «Ajustes» y complétalos.','error');return;}
-  avisar('Trayendo la carta de GitHub…');
+  avisar('Cargando la carta…');
   const cab={'Accept':'application/vnd.github+json',...(a.token?{'Authorization':`Bearer ${a.token}`}:{})};
   const url=`https://api.github.com/repos/${a.owner}/${a.repo}/contents/${a.ruta}?ref=${a.rama||'main'}`;
   try{
@@ -22,7 +22,7 @@ async function traer(){
     if(r.status===404)throw new Error('No existe ese archivo. Revisa la ruta y la rama.');
     if(r.status===401)throw new Error('El token no es válido o ha caducado.');
     if(r.status===403)throw new Error('El token no tiene permiso sobre este repositorio.');
-    if(!r.ok)throw new Error(`GitHub respondió ${r.status}.`);
+    if(!r.ok)throw new Error(`Servidor respondió ${r.status}.`);
     const cuerpo=await r.json();
     cargarDatos(JSON.parse(deBase64(cuerpo.content)));
     estado.sha=cuerpo.sha;
@@ -106,12 +106,12 @@ async function borrarImagenDelRepo(a,cab,ruta,mensaje){
   const url=`https://api.github.com/repos/${a.owner}/${a.repo}/contents/${ruta}`;
   const previo=await fetch(`${url}?ref=${a.rama||'main'}`,{headers:cab,cache:'no-store'});
   if(previo.status===404)return 'no-existia';
-  if(!previo.ok)throw new Error(`GitHub respondió ${previo.status}`);
+  if(!previo.ok)throw new Error(`Servidor respondió ${previo.status}`);
   const sha=(await previo.json()).sha;
   const r=await fetch(url,{method:'DELETE',headers:cab,body:JSON.stringify({
     message:`${mensaje} (borrar imagen)`,sha,branch:a.rama||'main'
   })});
-  if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.message||`GitHub respondió ${r.status}`);}
+  if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.message||`Servidor respondió ${r.status}`);}
   return 'borrada';
 }
 

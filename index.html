@@ -55,8 +55,8 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <div class="barra">
   <div class="barra__cabecera">
     <div class="barra__marca">
-      <div class="barra__titulo">Editor de <span id="marcaNombre" data-nombre-editor>la carta</span></div>
-      <div class="barra__sub">Panel del local</div>
+      <div class="barra__titulo">Editor de <span id="marcaNombre" data-nombre-editor>carta</span></div>
+      <div class="barra__sub">Administra tu página carta online</div>
     </div>
     <button class="btn btn--tema" id="btnTema" type="button" aria-pressed="false">Modo oscuro</button>
   </div>
@@ -69,9 +69,9 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
          solo la entienden algunos servidores, y al probar en local da
          un «Cannot GET /ajustes». -->
     <a class="btn btn--claro" id="btnAjustes" href="ajustes.html">Ajustes</a>
-    <button class="btn btn--claro" id="btnCargar" type="button">Traer de GitHub</button>
+    <button class="btn btn--claro" id="btnCargar" type="button">Cargar carta</button>
     <button class="btn btn--claro" id="btnAjustesPagina" type="button"
-            title="Colores, portada, fuentes, pie y redes de la carta">Ajustes de la página</button>
+            title="Colores, portada, fuentes, pie y redes de la carta">Ajustes de la carta</button>
     <button class="btn btn--claro" id="btnVistaPrevia" type="button" disabled
             title="Trae la carta primero">Vista previa</button>
     <button class="btn btn--claro" id="btnEstadisticas" type="button" hidden>Estadísticas</button>
@@ -84,7 +84,7 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
       <div class="espera__globo" id="esperaGlobo" hidden role="dialog"
            aria-label="Por qué se bloquea el botón de publicar">
         <b>¿Por qué hay que esperar?</b>
-        <p>Cuando publicas, GitHub tarda un par de minutos en montar y subir la web
+        <p>Cuando publicas, el servidor tarda un par de minutos en montar y subir la web
            con los cambios nuevos. Si publicas otra vez antes de que termine, los dos
            despliegues se pisan: el primero se queda a medias y el segundo puede
            salir incompleto o con las fotos antiguas.</p>
@@ -137,7 +137,7 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
        title="Arrastra para ajustar el ancho del panel"></div>
 
   <section class="zona" id="zona">
-    <p class="vacio">Trae la carta de GitHub o abre un archivo para empezar.</p>
+    <p class="vacio">Presiona el botón de arriba "Cargar carta" para mostrar los datos actuales de la carta.</p>
   </section>
 </div>
 
@@ -171,7 +171,8 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
            aria-label="Zona importante de la foto"></div>
       <p class="campo__pista">Según el ancho de la pantalla, la franja de la carta queda
         más baja o más estrecha de lo que has encuadrado y la foto se recorta un poco.
-        Marca la casilla donde está lo que no se puede perder.
+        Marca la casilla donde está lo que no se puede perder, para mantener siempre visible
+        esa zona de la imagen.
         Ahora mismo: <b id="focoNombre">Centro</b>.</p>
     </div>
 

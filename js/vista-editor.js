@@ -51,7 +51,7 @@ function bloqueImagen(tipo,obj,{vacio=''}={}){
 
 function pintarZona(){
   const zona=$('#zona');
-  if(!estado.datos){zona.innerHTML='<p class="vacio">Trae la carta de GitHub o abre un archivo para empezar.</p>';return;}
+  if(!estado.datos){zona.innerHTML='<p class="vacio">Presiona el botón de arriba "Cargar carta" para mostrar los datos actuales de la carta..</p>';return;}
   const sec=seccionActual();
   if(!sec){zona.innerHTML='<p class="vacio">Elige una sección en la izquierda, o añade una nueva.</p>';return;}
   const gru=grupoActual();

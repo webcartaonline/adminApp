@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ajustes de la página</title>
+<title>Ajustes de la carta</title>
 
 <!-- El mismo arranque de tema y color que el editor, para que la ventana
      tenga el mismo aspecto y no parpadee. -->
@@ -31,9 +31,8 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 <body data-pagina="pagina">
 
 <main class="pagina-ventana">
-  <p class="apartado__nota">Estos ajustes no se guardan aquí sueltos: se quedan preparados
-    junto al resto de cambios y se publican todos a la vez con el botón «Publicar cambios»
-    del editor. La miniatura de abajo enseña en vivo cómo quedará la portada.</p>
+  <p class="apartado__nota">Estos ajustes se publican todos a la vez con el botón «Publicar cambios»
+    del editor. La miniatura de abajo enseña una vista previa de cómo quedará la carta.</p>
 
   <!-- Portada en miniatura: refleja al momento todo lo de esta ventana. -->
   <div class="previa-carta" id="previaCarta" aria-hidden="true">
@@ -60,7 +59,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
     <h3 class="bloque__titulo">Colores</h3>
     <p class="bloque__nota">El color <b>principal</b> tiñe los títulos, las líneas, los degradados
       y los detalles de la carta. El color de <b>fondo</b> es el de toda la página. El resto de
-      tonos (bordes, textos apagados…) se calculan solos para que siempre queden a juego.</p>
+      tonos (bordes, textos apagados…) se calculan solos para que siempre sean visibles.</p>
 
     <div class="color__ruedas">
       <label class="color__rueda"><span class="campo__etiqueta">Color principal</span>
@@ -71,7 +70,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 
     <span class="campo__etiqueta">Color del texto</span>
     <div class="apariencia__texto-modos">
-      <button class="chip" id="aparTextoAuto" type="button" aria-pressed="true">Automático (blanco o negro, el que mejor se lea)</button>
+      <button class="chip" id="aparTextoAuto" type="button" aria-pressed="true">Automático (blanco o negro, el más legible)</button>
       <button class="chip" id="aparTextoManual" type="button" aria-pressed="false">Elegirlo yo</button>
     </div>
     <div class="color__ruedas" id="aparTextoRueda" hidden>
@@ -135,7 +134,8 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
     <p class="bloque__nota">Una foto detrás del título, el eslogan y el logotipo. La carta la
       oscurece un poco sola, para que el texto se lea encima. Como la portada es alta y estrecha
       en el móvil y baja y ancha en el ordenador, la foto se recorta según la pantalla: marca en
-      la cuadrícula qué parte no se puede perder.</p>
+      la cuadrícula qué parte de la imagen es la importante para evitar que se corte sin importar
+      el ancho o el alto de la pantalla.</p>
 
     <div class="apariencia__fondo-fila">
       <div class="apariencia__fondo-marco">
@@ -168,8 +168,8 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
     <span class="campo__etiqueta">Barra de secciones</span>
     <div class="apariencia__texto-modos" id="aparBarra" role="group"
          aria-label="Dónde se apoya la barra de secciones">
-      <button class="chip" type="button" data-valor="inferior" aria-pressed="true">Pegada abajo de la foto</button>
-      <button class="chip" type="button" data-valor="superior" aria-pressed="false">Pegada arriba de la foto</button>
+      <button class="chip" type="button" data-valor="inferior" aria-pressed="true">Pegada bajo la foto</button>
+      <button class="chip" type="button" data-valor="superior" aria-pressed="false">Pegada sobre la foto</button>
     </div>
     <p class="bloque__nota">La barra donde el cliente elige las secciones se apoya sobre la
       foto de cada sección. Ponla <b>arriba</b> si no quieres que la foto de la portada quede

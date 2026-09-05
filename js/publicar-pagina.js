@@ -33,18 +33,18 @@ async function subirArchivoRepo(a,cab,ruta,base64,mensaje){
   })});
   if(r.status===401)throw new Error('El token no es válido o ha caducado.');
   if(r.status===403)throw new Error('El token no tiene permiso de escritura.');
-  if(r.status===409)throw new Error(`${ruta} cambió mientras editabas; vuelve a traer de GitHub.`);
-  if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.message||`GitHub respondió ${r.status}.`);}
+  if(r.status===409)throw new Error(`${ruta} cambió mientras editabas; vuelve a cargar la carta.`);
+  if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.message||`Servidor respondió ${r.status}.`);}
 }
 async function borrarArchivoRepo(a,cab,ruta,mensaje){
   const url=`https://api.github.com/repos/${a.owner}/${a.repo}/contents/${ruta}`;
   const previo=await fetch(`${url}?ref=${a.rama||'main'}`,{headers:cab,cache:'no-store'});
   if(previo.status===404)return;
-  if(!previo.ok)throw new Error(`GitHub respondió ${previo.status}`);
+  if(!previo.ok)throw new Error(`Servidor respondió ${previo.status}`);
   const sha=(await previo.json()).sha;
   const r=await fetch(url,{method:'DELETE',headers:cab,
     body:JSON.stringify({message:`${mensaje} (borrar archivo)`,sha,branch:a.rama||'main'})});
-  if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.message||`GitHub respondió ${r.status}`);}
+  if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.message||`Servidor respondió ${r.status}`);}
 }
 
 /* apariencia.json vive en la misma carpeta que carta.json. */
