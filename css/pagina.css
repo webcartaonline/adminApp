@@ -1,0 +1,24 @@
+/* =========================================================
+   VENTANA DE AJUSTES DE LA PÁGINA (contenido)
+   Solo la caja que centra el contenido dentro del marco. El
+   resto del aspecto viene de los CSS que ya se reutilizan
+   (ajustes.css, apariencia.css, color.css).
+   ========================================================= */
+body[data-pagina="pagina"]{ background:var(--fondo, #0b1220); }
+
+.pagina-ventana{
+  max-width:760px;
+  margin:0 auto;
+  padding:22px clamp(14px,4vw,28px) 64px;
+}
+
+/* El rótulo de estado ("Cambios sin publicar" / "Al día") junto al
+   botón de descartar. */
+.apariencia__estado{
+  align-self:center;
+  font-size:.82rem;
+  font-weight:600;
+  color:var(--tinta-suave, #8a94a6);
+}
+.apariencia__estado.apartado__estado--bien{ color:var(--verde, #2f9e6f); }
+.apariencia__estado.apartado__estado--falta{ color:var(--ambar-oscuro, #b6801f); }

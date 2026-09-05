@@ -37,7 +37,6 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 <link rel="stylesheet" href="css/ajustes.css">
 <link rel="stylesheet" href="css/color.css">
 <link rel="stylesheet" href="css/version.css">
-<link rel="stylesheet" href="css/apariencia.css">
 </head>
 <body data-pagina="ajustes">
 
@@ -202,256 +201,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
     </div>
   </article>
 
-  <!-- ============ 3. Ajustes de la página ============
-       La personalización de la carta que ven los clientes del negocio.
-       A diferencia del resto de apartados, esto NO se guarda en el
-       navegador: se publica en la página, igual que la carta.
-       La lógica vive en js/pagina-apariencia.js. -->
-  <article class="apartado" id="apPagina">
-    <button class="apartado__cabecera" type="button" aria-expanded="false" aria-controls="cuerpoPagina">
-      <span class="apartado__icono" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-             stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5Z"/>
-          <path d="M4 9.5h16"/><path d="M8 13.5h8"/><path d="M8 16.5h5"/>
-        </svg>
-      </span>
-      <span class="apartado__texto">
-        <span class="apartado__titulo">Ajustes de la página</span>
-        <span class="apartado__pista">Los colores, el nombre, el logotipo y las letras de la carta que ven tus clientes.</span>
-      </span>
-      <span class="apartado__estado" id="estadoPagina">—</span>
-      <span class="apartado__flecha" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-             stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-      </span>
-    </button>
-
-    <div class="apartado__cuerpo" id="cuerpoPagina" hidden>
-      <p class="apartado__nota">Estos ajustes no se quedan en este navegador: al pulsar
-        «Publicar en la página» se suben a tu carta, igual que cuando publicas un precio nuevo.
-        La miniatura de aquí abajo enseña cómo quedará la portada.</p>
-
-      <!-- Portada en miniatura: refleja en vivo todo lo de este apartado. -->
-      <div class="previa-carta" id="previaCarta" aria-hidden="true">
-        <img class="previa-carta__fondo" id="previaFondo" alt="" hidden>
-        <div class="previa-carta__halo"></div>
-        <p class="previa-carta__lema" id="previaLema" hidden></p>
-        <div class="previa-carta__marca">
-          <img class="previa-carta__logo" id="previaLogo" alt="" hidden>
-          <h3 class="previa-carta__nombre" id="previaNombre">Nombre del negocio</h3>
-        </div>
-        <div class="previa-carta__pie">
-          <span class="previa-carta__plato">Tosta de aguacate</span>
-          <span class="previa-carta__precio">7,90 €</span>
-        </div>
-        <p class="previa-carta__nota">Así se verán los platos, los precios y el texto de tu carta.</p>
-      </div>
-      <div class="ajustes__acciones">
-        <button class="btn btn--suave btn--mini" id="btnAparRecargar" type="button">Volver a traer lo publicado</button>
-      </div>
-
-      <!-- ===== Colores ===== -->
-      <section class="bloque">
-        <h3 class="bloque__titulo">Colores</h3>
-        <p class="bloque__nota">El color <b>principal</b> tiñe los títulos, las líneas, los degradados
-          y los detalles de la carta. El color de <b>fondo</b> es el de toda la página. El resto de
-          tonos (bordes, textos apagados…) se calculan solos para que siempre queden a juego.</p>
-
-        <div class="color__ruedas">
-          <label class="color__rueda"><span class="campo__etiqueta">Color principal</span>
-            <input type="color" id="aparColorPrincipal" value="#E9B44C"></label>
-          <label class="color__rueda"><span class="campo__etiqueta">Color de fondo</span>
-            <input type="color" id="aparColorFondo" value="#12100E"></label>
-        </div>
-
-        <span class="campo__etiqueta">Color del texto</span>
-        <div class="apariencia__texto-modos">
-          <button class="chip" id="aparTextoAuto" type="button" aria-pressed="true">Automático (blanco o negro, el que mejor se lea)</button>
-          <button class="chip" id="aparTextoManual" type="button" aria-pressed="false">Elegirlo yo</button>
-        </div>
-        <div class="color__ruedas" id="aparTextoRueda" hidden>
-          <label class="color__rueda"><span class="campo__etiqueta">Color del texto</span>
-            <input type="color" id="aparColorTexto" value="#F4EFE7"></label>
-        </div>
-
-        <div class="ajustes__acciones">
-          <button class="btn btn--peligro" id="btnAparColoresOriginales" type="button">Restaurar los colores originales</button>
-        </div>
-      </section>
-
-      <!-- ===== Nombre y eslogan ===== -->
-      <section class="bloque">
-        <h3 class="bloque__titulo">Nombre y eslogan</h3>
-        <label class="campo">
-          <span class="campo__etiqueta">Título de la página</span>
-          <input type="text" id="aparTitulo" autocomplete="off">
-          <span class="campo__pista">Es el nombre grande de la portada. Si tu logotipo ya lleva el
-            nombre dentro, deja este campo vacío y en la portada saldrá solo el logotipo.</span>
-        </label>
-        <div class="ajustes__rejilla">
-          <label class="campo"><span class="campo__etiqueta">Eslogan (español)</span>
-            <input type="text" id="aparEsloganEs" autocomplete="off"></label>
-          <label class="campo"><span class="campo__etiqueta">Eslogan (inglés, opcional)</span>
-            <input type="text" id="aparEsloganEn" autocomplete="off"></label>
-        </div>
-        <p class="bloque__nota">El eslogan es la frase pequeña que aparece encima del título.
-          Déjalo vacío si no quieres que salga.</p>
-      </section>
-
-      <!-- ===== Logotipo ===== -->
-      <section class="bloque">
-        <h3 class="bloque__titulo">Logotipo</h3>
-        <p class="bloque__nota">Vale cualquier forma: apaisado, cuadrado o redondo. La carta lo
-          encaja en la portada sin recortarlo ni deformarlo. Con título y logotipo salen los dos
-          juntos; sin título, el logotipo ocupa la portada él solo; y sin logotipo, sale solo el título.</p>
-
-        <div class="apariencia__logo-fila">
-          <div class="apariencia__logo-marco">
-            <img id="aparLogoImg" alt="Logotipo actual" hidden>
-            <span class="apariencia__logo-vacio" id="aparLogoVacio">Sin logotipo</span>
-          </div>
-          <div class="apariencia__logo-datos">
-            <label class="campo">
-              <span class="campo__etiqueta">Imagen del logotipo</span>
-              <input type="file" id="aparLogoArchivo" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif">
-              <span class="campo__pista">Mejor un PNG o un SVG con fondo transparente. Si la imagen
-                es enorme se encoge sola antes de subirla.</span>
-            </label>
-            <div class="ajustes__acciones">
-              <button class="btn btn--peligro btn--mini" id="btnAparLogoQuitar" type="button" hidden>Quitar el logotipo</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== Fondo de la portada ===== -->
-      <section class="bloque">
-        <h3 class="bloque__titulo">Fondo de la portada</h3>
-        <p class="bloque__nota">Una foto detrás del título, el eslogan y el logotipo. La carta la
-          oscurece un poco sola, para que el texto se lea encima. Como la portada es alta y estrecha
-          en el móvil y baja y ancha en el ordenador, la foto se recorta según la pantalla: marca en
-          la cuadrícula qué parte no se puede perder.</p>
-
-        <div class="apariencia__fondo-fila">
-          <div class="apariencia__fondo-marco">
-            <img id="aparFondoImg" alt="Fondo actual de la portada" hidden>
-            <span class="apariencia__fondo-vacio" id="aparFondoVacio">Sin foto de fondo</span>
-            <div class="foco-rejilla" id="aparFondoRejilla" role="group"
-                 aria-label="Zona importante de la foto" hidden></div>
-          </div>
-          <div class="apariencia__fondo-datos">
-            <label class="campo">
-              <span class="campo__etiqueta">Foto de la portada</span>
-              <input type="file" id="aparFondoArchivo" accept="image/png,image/jpeg,image/webp">
-              <span class="campo__pista">Mejor una foto apaisada y bien iluminada. Si es enorme se
-                encoge sola antes de subirla.</span>
-            </label>
-            <p class="campo__pista" id="aparFondoFocoRotulo"></p>
-            <div class="ajustes__acciones">
-              <button class="btn btn--peligro btn--mini" id="btnAparFondoQuitar" type="button" hidden>Quitar la foto</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== Disposición ===== -->
-      <section class="bloque">
-        <h3 class="bloque__titulo">Disposición</h3>
-        <p class="bloque__nota">Dos detalles de cómo se coloca la carta. Puedes dejarlos como
-          están; cámbialos solo si prefieres otra distribución.</p>
-
-        <span class="campo__etiqueta">Barra de secciones</span>
-        <div class="apariencia__texto-modos" id="aparBarra" role="group"
-             aria-label="Dónde se apoya la barra de secciones">
-          <button class="chip" type="button" data-valor="inferior" aria-pressed="true">Pegada abajo de la foto</button>
-          <button class="chip" type="button" data-valor="superior" aria-pressed="false">Pegada arriba de la foto</button>
-        </div>
-        <p class="bloque__nota">La barra donde el cliente elige las secciones se apoya sobre la
-          foto de cada sección. Ponla <b>arriba</b> si no quieres que la foto de la portada quede
-          pegada a la de la sección.</p>
-
-        <span class="campo__etiqueta">Filtro de alérgenos</span>
-        <div class="apariencia__texto-modos" id="aparAlergenos" role="group"
-             aria-label="Dónde aparece el filtro de alérgenos">
-          <button class="chip" type="button" data-valor="abajo" aria-pressed="true">Al final de la página</button>
-          <button class="chip" type="button" data-valor="arriba" aria-pressed="false">Arriba, debajo de la foto de la sección</button>
-        </div>
-        <p class="bloque__nota">Es la lista plegable donde el cliente marca lo que quiere evitar.
-          Normalmente va al final de la página; súbela <b>arriba</b> si prefieres que se vea nada
-          más entrar en cada sección.</p>
-      </section>
-
-      <!-- ===== Fuentes ===== -->
-      <section class="bloque">
-        <h3 class="bloque__titulo">Fuentes (las letras)</h3>
-        <p class="bloque__nota">Si el negocio tiene su propia letra, súbela aquí y la carta la usará.
-          Una para el título grande y otra para el resto del texto; puedes cambiar solo una de las
-          dos. Valen los archivos WOFF2, WOFF, TTF y OTF.</p>
-
-        <div class="ajustes__rejilla">
-          <div>
-            <label class="campo">
-              <span class="campo__etiqueta">Fuente del título</span>
-              <input type="file" id="aparFuenteTitulo" accept=".woff2,.woff,.ttf,.otf">
-            </label>
-            <p class="apariencia__fuente-estado" id="aparFuenteTituloEstado">Ahora mismo se usa la letra de serie de la carta.</p>
-            <div class="ajustes__acciones">
-              <button class="btn btn--peligro btn--mini" id="btnAparFuenteTituloQuitar" type="button" hidden>Volver a la letra de serie</button>
-            </div>
-          </div>
-          <div>
-            <label class="campo">
-              <span class="campo__etiqueta">Fuente del resto del texto</span>
-              <input type="file" id="aparFuenteTexto" accept=".woff2,.woff,.ttf,.otf">
-            </label>
-            <p class="apariencia__fuente-estado" id="aparFuenteTextoEstado">Ahora mismo se usa la letra de serie de la carta.</p>
-            <div class="ajustes__acciones">
-              <button class="btn btn--peligro btn--mini" id="btnAparFuenteTextoQuitar" type="button" hidden>Volver a la letra de serie</button>
-            </div>
-          </div>
-        </div>
-        <p class="bloque__nota">Para leer bien en el móvil, la del texto conviene que sea una letra
-          sencilla; las muy decorativas lucen más solo en el título.</p>
-      </section>
-
-      <!-- ===== Mensajes del pie de página ===== -->
-      <section class="bloque">
-        <h3 class="bloque__titulo">Mensajes del pie de página</h3>
-        <p class="bloque__nota">Textos que salen al final de la carta: horarios, avisos,
-          agradecimientos, direcciones… Cada mensaje lleva un título y un texto, y puedes añadir
-          tantos como quieras (o ninguno).</p>
-
-        <div class="pie-bloques" id="aparPieBloques"></div>
-
-        <div class="ajustes__acciones">
-          <button class="btn btn--suave" id="btnAparPieAnadir" type="button">+ Añadir un mensaje</button>
-        </div>
-      </section>
-
-      <!-- ===== Redes sociales ===== -->
-      <section class="bloque">
-        <h3 class="bloque__titulo">Redes sociales</h3>
-        <p class="bloque__nota">Pega el enlace de las redes que quieras enseñar y su icono aparecerá
-          abajo del todo de la carta, pintado con tu color principal. Las que dejes en blanco no
-          salen. Los enlaces se abren en una pestaña nueva.</p>
-
-        <!-- Las seis redes con su icono y su campo de enlace. Las pinta
-             js/pagina-apariencia.js para no repetir aquí seis veces lo mismo. -->
-        <div class="redes" id="aparPieRedes"></div>
-      </section>
-
-      <!-- ===== Publicar ===== -->
-      <div class="apariencia__publicar">
-        <button class="btn btn--principal" id="btnPublicarPagina" type="button" disabled>Publicar en la página</button>
-        <span class="apariencia__espera" id="aparEspera" hidden>Desplegando… 2:00</span>
-      </div>
-      <p class="apartado__nota">Mientras la página se despliega (unos dos minutos), este botón y el de
-        «Publicar cambios» del editor quedan bloqueados a la vez: es la misma espera para los dos.</p>
-    </div>
-  </article>
-
-  <!-- ============ 4. Exportar e importar ============ -->
+  <!-- ============ 3. Exportar e importar ============ -->
   <article class="apartado" id="apCopia">
     <button class="apartado__cabecera" type="button" aria-expanded="false" aria-controls="cuerpoCopia">
       <span class="apartado__icono" aria-hidden="true">
@@ -595,7 +345,6 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
      anteriores. Si añades uno nuevo, colócalo en su sitio. -->
 <script src="js/config.js"></script>
 <script src="js/utiles.js"></script>
-<script src="js/almacen.js"></script>
 <script src="js/imagen-comprimir.js"></script>
 <script src="js/tema.js"></script>
 <script src="js/ajustes.js"></script>
@@ -603,7 +352,6 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 <script src="js/color-ui.js"></script>
 <script src="js/version.js"></script>
 <script src="js/pagina-ajustes.js"></script>
-<script src="js/pagina-apariencia.js"></script>
 <script src="js/copia-ajustes.js"></script>
 </body>
 </html>

@@ -45,6 +45,24 @@ function tipoPorExtension(ruta){
   })[e]||'application/octet-stream';
 }
 
+/* Deja los datos listos para guardarse/publicarse, sin tocar lo que el
+   cliente está escribiendo: recorta espacios, tira los mensajes de pie
+   vacíos y ordena los enlaces de redes. (Antes esto se hacía al publicar;
+   ahora se publica desde el editor, así que se hace aquí, sobre una copia.) */
+function datosNormalizados(){
+  const d=JSON.parse(JSON.stringify(apar.datos));
+  d.identidad.titulo=String(d.identidad.titulo||'').trim();
+  d.identidad.eslogan.es=String(d.identidad.eslogan.es||'').trim();
+  d.identidad.eslogan.en=String(d.identidad.eslogan.en||'').trim();
+  d.pie.bloques=(d.pie.bloques||[])
+    .map(b=>({titulo:String(b.titulo||'').trim(),texto:String(b.texto||'').trim()}))
+    .filter(b=>b.titulo||b.texto);
+  for(const clave of Object.keys(d.pie.redes||{})){
+    d.pie.redes[clave]=normalizarEnlace(d.pie.redes[clave]);
+  }
+  return d;
+}
+
 let relojBorrador=null;
 function guardarBorradorApariencia(){
   clearTimeout(relojBorrador);
@@ -53,7 +71,8 @@ function guardarBorradorApariencia(){
     try{
       Almacen.guardar('apariencia',{
         cliente:clienteActual(),
-        datos:JSON.parse(JSON.stringify(apar.datos)),
+        datos:datosNormalizados(),
+        porBorrar:apar.porBorrar.slice(),
         fecha:Date.now()
       });
     }catch{/* sin cajón: la vista previa usará lo publicado */}
@@ -339,15 +358,61 @@ async function cargarPagina(){
     apar.cargada=true; apar.sucio=false;
     apar.logoPendiente=null; apar.fondoPendiente=null;
     apar.fuentesPendientes={}; apar.porBorrar=[];
+
+    // Si había cambios sin publicar guardados (de esta sesión o de otra
+    // anterior), se restauran encima de lo publicado para no perderlos.
+    // «Descartar y volver a traer» pone apar.forzarPublicado y los ignora.
+    if(!apar.forzarPublicado) await restaurarBorrador(a);
+    apar.forzarPublicado=false;
+
     volcarCampos();
     pintarPrevia();
-    pintarEstadoPagina('Al día','bien');
-    refrescarBotonPublicar();
-    limpiarBorradorApariencia();   // recién cargado: nada sin publicar
+    pintarEstadoPagina(apar.sucio?'Cambios sin publicar':'Al día', apar.sucio?'falta':'bien');
   }catch(e){
     pintarEstadoPagina('No se ha podido cargar','falta');
     avisar(`No se han podido traer los ajustes de la página: ${e.message}`,'error');
   }finally{apar.cargando=false;}
+}
+
+/* ---------- Restaurar cambios sin publicar ----------
+   Lee del cajón del navegador lo que se estaba editando y lo vuelve a
+   dejar en pantalla: los datos, los archivos que sobran por borrar y las
+   vistas de las imágenes y fuentes que aún no se han subido. Así, aunque
+   se recargue la app, no se pierde nada y la ventana enseña lo mismo que
+   verá la vista previa y lo que publicará el editor. */
+async function restaurarBorrador(a){
+  let b=null;
+  try{ b=await Almacen.leer('apariencia',clienteActual(a)); }catch{}
+  if(!b||!b.datos) return;
+  apar.datos=b.datos;
+  apar.porBorrar=Array.isArray(b.porBorrar)?b.porBorrar.slice():[];
+  apar.sucio=true;
+  await restaurarImagenPendiente(a,'logo');
+  await restaurarImagenPendiente(a,'fondo');
+  await restaurarFuentePendiente(a,'titulo');
+  await restaurarFuentePendiente(a,'texto');
+}
+async function restaurarImagenPendiente(a,cual){
+  const ruta=cual==='logo'
+    ? sinVersion(apar.datos.identidad.logo)
+    : sinVersion(apar.datos.identidad.fondo.imagen);
+  if(!ruta) return;
+  let img=null;
+  try{ img=await Almacen.leer('imagenes',`${clienteActual(a)}::${ruta}`); }catch{}
+  if(!img||!img.base64) return;               // ya estaba publicada: nada que restaurar
+  const url=`data:${img.tipo||'image/jpeg'};base64,${img.base64}`;
+  apar.previas[cual]=url;
+  if(cual==='logo') apar.logoPendiente={ruta,base64:img.base64};
+  else              apar.fondoPendiente={ruta,base64:img.base64};
+}
+async function restaurarFuentePendiente(a,clave){
+  const f=apar.datos.fuentes[clave];
+  if(!f||!f.archivo) return;
+  const ruta=sinVersion(f.archivo);
+  let arch=null;
+  try{ arch=await Almacen.leer('imagenes',`${clienteActual(a)}::${ruta}`); }catch{}
+  if(!arch||!arch.base64) return;
+  apar.fuentesPendientes[clave]={ruta,base64:arch.base64};
 }
 
 function sinVersion(ruta){return String(ruta||'').split('?')[0];}
@@ -526,16 +591,12 @@ function pintarFuenteCampo(clave){
 function marcarSucio(){
   apar.sucio=true;
   pintarEstadoPagina('Cambios sin publicar','falta');
-  refrescarBotonPublicar();
-  guardarBorradorApariencia();   // que la vista previa vea el cambio
+  guardarBorradorApariencia();   // se guarda para la vista previa y para publicar
 }
 function pintarEstadoPagina(texto,tipo){
   const e=$('#estadoPagina');
   e.textContent=texto;
   e.className=`apartado__estado${tipo==='bien'?' apartado__estado--bien':tipo==='falta'?' apartado__estado--falta':''}`;
-}
-function refrescarBotonPublicar(){
-  $('#btnPublicarPagina').disabled=!apar.cargada||!apar.sucio||enEsperaPagina();
 }
 
 /* =========================================================
@@ -745,169 +806,22 @@ function quitarFuente(clave){
 
 /* =========================================================
    PUBLICAR
-   Primero los archivos (logo y fuentes), después el
-   apariencia.json, y al final se borra lo que sobra. En ese
-   orden a propósito: la página nunca queda apuntando a un
-   archivo que no exista.
+   Esta ventana ya NO publica por su cuenta. Cada cambio se guarda en el
+   cajón del navegador (guardarBorradorApariencia) y es el botón
+   «Publicar cambios» del editor el que sube la apariencia junto con la
+   carta, de una sola vez. Ver js/publicar-pagina.js y js/github.js.
    ========================================================= */
-async function subirAlRepo(ruta,base64,mensaje){
-  const a=leerAjustes();
-  const url=`https://api.github.com/repos/${a.owner}/${a.repo}/contents/${ruta}`;
-  const cab={...cabecerasGitHub(),'Content-Type':'application/json'};
-  let sha=null;
-  try{
-    const previo=await fetch(`${url}?ref=${a.rama||'main'}`,{headers:cab,cache:'no-store'});
-    if(previo.ok)sha=(await previo.json()).sha;
-  }catch{/* si no existe, se crea */}
-  const r=await fetch(url,{method:'PUT',headers:cab,body:JSON.stringify({
-    message:mensaje,content:base64,branch:a.rama||'main',...(sha?{sha}:{})
-  })});
-  if(r.status===401)throw new Error('El token no es válido o ha caducado.');
-  if(r.status===403)throw new Error('El token no tiene permiso de escritura.');
-  if(r.status===409)throw new Error(`${ruta} cambió mientras editabas; vuelve a abrir este apartado.`);
-  if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.message||`GitHub respondió ${r.status}.`);}
-}
-async function borrarDelRepo(ruta,mensaje){
-  const a=leerAjustes();
-  const url=`https://api.github.com/repos/${a.owner}/${a.repo}/contents/${ruta}`;
-  const cab={...cabecerasGitHub(),'Content-Type':'application/json'};
-  const previo=await fetch(`${url}?ref=${a.rama||'main'}`,{headers:cab,cache:'no-store'});
-  if(previo.status===404)return;
-  if(!previo.ok)throw new Error(`GitHub respondió ${previo.status}`);
-  const sha=(await previo.json()).sha;
-  const r=await fetch(url,{method:'DELETE',headers:cab,
-    body:JSON.stringify({message:`${mensaje} (borrar archivo)`,sha,branch:a.rama||'main'})});
-  if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.message||`GitHub respondió ${r.status}`);}
-}
-
-async function publicarPagina(){
-  if(enEsperaPagina()){
-    avisar('Aún se está desplegando la publicación anterior. En cuanto acabe la cuenta atrás podrás publicar.','error');
-    return;
-  }
-  const a=leerAjustes();
-  if(!a.token){avisar('Hace falta el token de acceso para publicar. Está en el apartado «Conexión con la página».','error');return;}
-  if(!apar.cargada)return;
-
-  const mensaje='chore(apariencia): ajustes de la página';
-  $('#btnPublicarPagina').disabled=true;
-  pintarEstadoPagina('Publicando…');
-  try{
-    // Lo escrito en los campos, tal cual está, sin espacios de más.
-    apar.datos.identidad.titulo=$('#aparTitulo').value.trim();
-    apar.datos.identidad.eslogan.es=$('#aparEsloganEs').value.trim();
-    apar.datos.identidad.eslogan.en=$('#aparEsloganEn').value.trim();
-    // Los mensajes en blanco no viajan, y los enlaces quedan bien formados.
-    apar.datos.pie.bloques=apar.datos.pie.bloques
-      .map(b=>({titulo:String(b.titulo||'').trim(),texto:String(b.texto||'').trim()}))
-      .filter(b=>b.titulo||b.texto);
-    for(const clave of Object.keys(apar.datos.pie.redes)){
-      apar.datos.pie.redes[clave]=normalizarEnlace(apar.datos.pie.redes[clave]);
-    }
-    volcarCampos();   // la pantalla enseña lo que de verdad se publica
-
-    // 1) El logotipo, si hay uno nuevo.
-    if(apar.logoPendiente){
-      avisar('Subiendo el logotipo…');
-      await subirAlRepo(apar.logoPendiente.ruta,apar.logoPendiente.base64,`${mensaje} (logotipo)`);
-      apar.logoPendiente=null;
-    }
-    // 2) La foto de fondo de la portada, si hay una nueva.
-    if(apar.fondoPendiente){
-      avisar('Subiendo la foto de la portada…');
-      await subirAlRepo(apar.fondoPendiente.ruta,apar.fondoPendiente.base64,`${mensaje} (portada)`);
-      apar.fondoPendiente=null;
-    }
-    // 3) Las fuentes nuevas.
-    for(const clave of Object.keys(apar.fuentesPendientes)){
-      avisar(`Subiendo la fuente ${clave==='titulo'?'del título':'del texto'}…`);
-      const f=apar.fuentesPendientes[clave];
-      await subirAlRepo(f.ruta,f.base64,`${mensaje} (fuente)`);
-      delete apar.fuentesPendientes[clave];
-    }
-    // 4) El propio apariencia.json.
-    avisar('Publicando los ajustes de la página…');
-    apar.datos.actualizado=new Date().toISOString();
-    await subirAlRepo(rutaJunto('apariencia.json'),aBase64(JSON.stringify(apar.datos,null,2)),mensaje);
-
-    // 5) Y lo que ya no usa nadie. Si un borrado falla, no es grave:
-    //    queda apuntado y se reintenta en la siguiente publicación.
-    const fallos=[];
-    for(const ruta of [...apar.porBorrar]){
-      try{await borrarDelRepo(ruta,mensaje);apar.porBorrar=apar.porBorrar.filter(x=>x!==ruta);}
-      catch{fallos.push(ruta);}
-    }
-
-    apar.publicado.logo=sinVersion(apar.datos.identidad.logo);
-    apar.publicado.fondo=sinVersion(apar.datos.identidad.fondo.imagen);
-    apar.publicado.fuentes.titulo=sinVersion(apar.datos.fuentes.titulo?.archivo);
-    apar.publicado.fuentes.texto=sinVersion(apar.datos.fuentes.texto?.archivo);
-    apar.sucio=fallos.length>0;
-
-    empezarEsperaPagina();
-    pintarEstadoPagina('Al día','bien');
-    limpiarBorradorApariencia();   // ya está todo publicado
-    avisar('Publicado. La página se actualiza en un par de minutos; mientras se despliega, publicar queda bloqueado.','bien');
-  }catch(e){
-    pintarEstadoPagina('Cambios sin publicar','falta');
-    if(!enEsperaPagina())refrescarBotonPublicar();
-    avisar(`No se ha podido publicar: ${e.message}`,'error');
-  }
-}
-
-/* =========================================================
-   ESPERA COMPARTIDA CON EL EDITOR
-   Se usa la misma llave del navegador (CLAVE_ESPERA) que el
-   botón de publicar del editor: los dos despliegues no
-   pueden pisarse porque los dos botones miran el mismo
-   reloj. Publicar aquí bloquea allí, y al revés.
-   ========================================================= */
-let finEsperaPagina=0, relojEsperaPagina=null;
-
-function enEsperaPagina(){return finEsperaPagina>Date.now();}
-function esperaEnMarcha(){
-  try{
-    const v=Number(localStorage.getItem(CLAVE_ESPERA))||0;
-    return (v>Date.now()&&v-Date.now()<=MS_ESPERA)?v:0;
-  }catch{return 0;}
-}
-function empezarEsperaPagina(hasta){
-  finEsperaPagina=hasta||Date.now()+MS_ESPERA;
-  try{localStorage.setItem(CLAVE_ESPERA,String(finEsperaPagina));}catch{}
-  $('#aparEspera').hidden=false;
-  refrescarBotonPublicar();
-  pintarEsperaPagina();
-  clearInterval(relojEsperaPagina);
-  relojEsperaPagina=setInterval(pintarEsperaPagina,250);
-}
-function pintarEsperaPagina(){
-  const resta=finEsperaPagina-Date.now();
-  if(resta<=0){terminarEsperaPagina();return;}
-  const seg=Math.ceil(resta/1000);
-  $('#aparEspera').textContent=`Desplegando… ${Math.floor(seg/60)}:${String(seg%60).padStart(2,'0')}`;
-}
-function terminarEsperaPagina(){
-  clearInterval(relojEsperaPagina);relojEsperaPagina=null;finEsperaPagina=0;
-  try{localStorage.removeItem(CLAVE_ESPERA);}catch{}
-  $('#aparEspera').hidden=true;
-  refrescarBotonPublicar();
-}
-/* Si se publica desde el editor en otra pestaña, aquí también se
-   entera y bloquea el botón (y al revés). */
-window.addEventListener('storage',(ev)=>{
-  if(ev.key!==CLAVE_ESPERA)return;
-  const v=esperaEnMarcha();
-  if(v)empezarEsperaPagina(v);
-});
 
 /* =========================================================
    CONEXIONES CON LA PANTALLA
    ========================================================= */
-// Al abrir el apartado por primera vez se trae lo guardado.
-$('#apPagina').querySelector('.apartado__cabecera').addEventListener('click',()=>{
-  if($('#apPagina').classList.contains('apartado--abierto')&&!apar.cargada&&!apar.cargando)cargarPagina();
+// «Descartar y volver a traer lo publicado»: tira los cambios sin
+// publicar (borra el borrador) y recarga lo que hay en el repositorio.
+$('#btnAparRecargar').addEventListener('click',async()=>{
+  await limpiarBorradorApariencia();
+  apar.forzarPublicado=true;
+  cargarPagina();
 });
-$('#btnAparRecargar').addEventListener('click',cargarPagina);
 
 // Colores
 $('#aparColorPrincipal').addEventListener('input',()=>{apar.datos.colores.principal=$('#aparColorPrincipal').value;pintarPrevia();marcarSucio();});
@@ -962,10 +876,9 @@ $('#aparFuenteTexto').addEventListener('change',(ev)=>{elegirFuente('texto',ev.t
 $('#btnAparFuenteTituloQuitar').addEventListener('click',()=>quitarFuente('titulo'));
 $('#btnAparFuenteTextoQuitar').addEventListener('click',()=>quitarFuente('texto'));
 
-// Publicar
-$('#btnPublicarPagina').addEventListener('click',publicarPagina);
-
-// Si al abrir esta página había una cuenta atrás en marcha, se retoma.
-{const pendiente=esperaEnMarcha();if(pendiente)empezarEsperaPagina(pendiente);}
+// La ventana es un documento dedicado: en cuanto carga, trae la
+// apariencia (o restaura lo que estabas editando). Si falta la conexión,
+// cargarPagina lo avisa por su cuenta.
+cargarPagina();
 
 })();

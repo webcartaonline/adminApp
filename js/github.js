@@ -170,13 +170,26 @@ async function publicar(){
         rescatarDeLaPapelera(ruta);
       }catch{fallos.push(ruta);}
     }
+    // 3.5) Los ajustes de la página sin publicar (colores, portada, pie,
+    //      fuentes…) se suben en la misma tanda, si los hay. Si fallan, la
+    //      carta ya está publicada igualmente: el borrador se guarda y se
+    //      reintenta en la siguiente publicación.
+    let aparPublicada=false, aparFallo='';
+    try{
+      const res=await publicarApariencia(a,cab,mensaje,(t)=>avisar(t));
+      aparPublicada=res.publicado;
+    }catch(e){ aparFallo=e.message; }
+
     empezarEspera();
+    if(typeof refrescarBotonVistaPrevia==='function')refrescarBotonVistaPrevia();
     const extra=borradas?` Se han borrado ${borradas} foto${borradas===1?'':'s'} que ya no se usaba${borradas===1?'':'n'}.`:'';
+    const extraApar=aparPublicada?' También se han actualizado los ajustes de la página.':'';
+    const avisoApar=aparFallo?` Los ajustes de la página no se han podido publicar (${aparFallo}); se reintentarán la próxima vez.`:'';
     if(fallos.length){
       estado.sucio=true;   // para poder reintentar el borrado en la siguiente publicación
-      avisar(`Publicado.${extra} No se han podido borrar ${fallos.length} foto${fallos.length===1?'':'s'} sobrante${fallos.length===1?'':'s'}; se reintentará la próxima vez que publiques.`,'bien');
+      avisar(`Publicado.${extra}${extraApar} No se han podido borrar ${fallos.length} foto${fallos.length===1?'':'s'} sobrante${fallos.length===1?'':'s'}; se reintentará la próxima vez que publiques.${avisoApar}`,'bien');
     }else{
-      avisar(`Publicado.${extra} La carta se actualiza en un par de minutos. Mientras se despliega, el botón de publicar queda bloqueado.`,'bien');
+      avisar(`Publicado.${extra}${extraApar} La carta se actualiza en un par de minutos. Mientras se despliega, el botón de publicar queda bloqueado.${avisoApar}`,'bien');
     }
   }catch(e){if(!enEspera())$('#btnPublicar').disabled=false;avisar(`No se ha podido publicar: ${e.message}`,'error');}
 }

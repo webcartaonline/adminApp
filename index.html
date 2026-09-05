@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Editor de la carta</title>
+<title>Editor de carta</title>
 
 <script>
 /* Fija el tema antes de pintar, para que no haya parpadeo de color.
@@ -69,7 +69,9 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
          solo la entienden algunos servidores, y al probar en local da
          un «Cannot GET /ajustes». -->
     <a class="btn btn--claro" id="btnAjustes" href="ajustes.html">Ajustes</a>
-    <button class="btn btn--claro" id="btnCargar" type="button">Traer de Página</button>
+    <button class="btn btn--claro" id="btnCargar" type="button">Traer de GitHub</button>
+    <button class="btn btn--claro" id="btnAjustesPagina" type="button"
+            title="Colores, portada, fuentes, pie y redes de la carta">Ajustes de la página</button>
     <button class="btn btn--claro" id="btnVistaPrevia" type="button" disabled
             title="Trae la carta primero">Vista previa</button>
     <button class="btn btn--claro" id="btnEstadisticas" type="button" hidden>Estadísticas</button>
@@ -135,7 +137,7 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
        title="Arrastra para ajustar el ancho del panel"></div>
 
   <section class="zona" id="zona">
-    <p class="vacio">Pulsa el botón de arriba "Traer página".</p>
+    <p class="vacio">Trae la carta de GitHub o abre un archivo para empezar.</p>
   </section>
 </div>
 
@@ -219,6 +221,7 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <script src="js/imagen-recorte.js"></script>
 <script src="js/github.js"></script>
 <script src="js/plantilla.js"></script>
+<script src="js/publicar-pagina.js"></script>
 <script src="js/vista.js"></script>
 <script src="js/vista-arbol.js"></script>
 <script src="js/vista-editor.js"></script>
@@ -229,5 +232,6 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <script src="js/version.js"></script>
 <script src="js/app.js"></script>
 <script src="vista-previa/vista-previa.js"></script>
+<script src="js/ventana-pagina.js"></script>
 </body>
 </html>
