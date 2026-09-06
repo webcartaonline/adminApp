@@ -1,9 +1,9 @@
 {
-  "version": "8.0.2",
+  "version": "8.2.1",
   "fecha": "2026-09-04",
-  "titulo": "Mejora de rendimiento y estabilidad",
+  "titulo": "Mejora de la experiencia de usuario",
   "cambios": [
-    "Se a mejorado el rendimiento y la estabilidad de la aplicación.",
+    "Ahora los ajustes de la carta están más claros",
     "Recuerda que las actualizaciones te ayudan a tener una mejor experiencia y a nosotros a proporcionártela"
   ]
 }
