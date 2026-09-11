@@ -1,9 +1,9 @@
 {
-  "version": "8.2.5",
+  "version": "8.2.6",
   "fecha": "2026-09-04",
   "titulo": "Mejora de la experiencia de usuario",
   "cambios": [
-    "Ahora los ajustes de la carta están más claros",
+    "Se a cambiado la rama de producción, ahora pasa a sser deploy y no main",
     "Recuerda que las actualizaciones te ayudan a tener una mejor experiencia y a nosotros a proporcionártela"
   ]
 }
