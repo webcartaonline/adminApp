@@ -1,9 +1,10 @@
 {
-  "version": "8.2.7",
+  "version": "8.2.6",
   "fecha": "2026-09-04",
-  "titulo": "Mejora de la experiencia de usuario",
+  "titulo": "Éxito rotundo",
   "cambios": [
-    "Comprobación de que no se ha subido nada a la rama deploy",
+    "Regreso a antes de la prueba",
+    "Todo silió bien",
     "Recuerda que las actualizaciones te ayudan a tener una mejor experiencia y a nosotros a proporcionártela"
   ]
 }
