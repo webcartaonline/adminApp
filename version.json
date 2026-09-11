@@ -1,9 +1,9 @@
 {
-  "version": "8.2.6",
+  "version": "8.2.7",
   "fecha": "2026-09-04",
   "titulo": "Mejora de la experiencia de usuario",
   "cambios": [
-    "Se a cambiado la rama de producción, ahora pasa a sser deploy y no main",
+    "Comprobación de que no se ha subido nada a la rama deploy",
     "Recuerda que las actualizaciones te ayudan a tener una mejor experiencia y a nosotros a proporcionártela"
   ]
 }
