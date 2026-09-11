@@ -1,9 +1,9 @@
 {
-  "version": "8.4.0",
+  "version": "8.4.1",
   "fecha": "2026-09-11",
-  "titulo": "Icono del navegador (favicon) personalizable",
+  "titulo": "Arreglo: publicar cambios de solo apariencia",
   "cambios": [
-    "En «Ajustes de la página» ya puedes subir el icono que aparece en la pestaña del navegador, junto al logotipo. Vale PNG, SVG, ICO, JPG o WebP",
-    "El icono se sube tal cual si es ligero y se encoge solo si viene enorme; se ve en la pestaña una vez publicados los cambios"
+    "Ahora, si cambias algo solo en «Ajustes de la página» (colores, posición de los alérgenos, pie, redes, icono…), el botón «Publicar cambios» se enciende igual que con los cambios de la carta",
+    "Si dejas ajustes sin publicar y vuelves más tarde, el botón sale ya encendido nada más abrir la aplicación"
   ]
 }

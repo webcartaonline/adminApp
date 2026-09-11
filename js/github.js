@@ -178,6 +178,7 @@ async function publicar(){
     try{
       const res=await publicarApariencia(a,cab,mensaje,(t)=>avisar(t));
       aparPublicada=res.publicado;
+      if(res.publicado)estado.aparienciaSucia=false;   // ya está publicada, nada pendiente
     }catch(e){ aparFallo=e.message; }
 
     empezarEspera();

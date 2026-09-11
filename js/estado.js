@@ -16,6 +16,7 @@ const estado = {
   vista:'editor',            // 'editor' | 'estadisticas'
   seccionActiva:null, grupoActivo:null,
   sucio:false,               // ¿hay cambios sin publicar?
+  aparienciaSucia:false,     // ¿hay cambios de «Ajustes de la página» sin publicar?
   imagenesPendientes:{},     // ruta en el repo -> {base64, bytes, ancho, alto, previa}
   imagenesPorBorrar:[],      // rutas en el repo que hay que borrar al publicar
   imagenesHuerfanas:new Set(),// rutas que siguen en el repo pero la carta ya no usa
@@ -28,6 +29,16 @@ const estado = {
 function marcarSucio(){
   estado.sucio=true;
   if(!enEspera())$('#btnPublicar').disabled=false;
+}
+
+/* Lo mismo, pero para los cambios de «Ajustes de la página». Esa ventana
+   vive en un marco aparte y avisa por mensajes cuando tiene (o deja de
+   tener) cambios sin publicar. El botón de publicar se enciende si hay
+   cambios EN CUALQUIERA de los dos sitios: la carta o la apariencia. */
+function marcarAparienciaSucia(sucia){
+  estado.aparienciaSucia=!!sucia;
+  if(enEspera())return;                 // la espera manda; ya lo gestiona espera.js
+  $('#btnPublicar').disabled=!(estado.sucio||estado.aparienciaSucia);
 }
 
 /* ---------- Accesores ---------- */

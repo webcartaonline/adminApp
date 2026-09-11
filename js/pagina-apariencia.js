@@ -370,6 +370,7 @@ async function cargarPagina(){
     volcarCampos();
     pintarPrevia();
     pintarEstadoPagina(apar.sucio?'Cambios sin publicar':'Al día', apar.sucio?'falta':'bien');
+    avisarAlPadre(apar.sucio);   // que el editor sepa si hay cambios que publicar
   }catch(e){
     pintarEstadoPagina('No se ha podido cargar','falta');
     avisar(`No se han podido traer los ajustes de la página: ${e.message}`,'error');
@@ -607,6 +608,15 @@ function marcarSucio(){
   apar.sucio=true;
   pintarEstadoPagina('Cambios sin publicar','falta');
   guardarBorradorApariencia();   // se guarda para la vista previa y para publicar
+  avisarAlPadre(true);           // que el editor encienda «Publicar cambios»
+}
+
+/* Esta ventana vive en un marco aparte, dentro del editor. El botón
+   «Publicar cambios» está FUERA, en el editor, así que la única forma de
+   decirle si aquí hay cambios sin publicar es mandarle un mensaje. */
+function avisarAlPadre(hayCambios){
+  try{ window.parent.postMessage({fuente:'ajustes-pagina',sucio:!!hayCambios},'*'); }
+  catch{/* si por lo que sea no se puede, el editor lo detecta al arrancar */}
 }
 function pintarEstadoPagina(texto,tipo){
   const e=$('#estadoPagina');
@@ -901,6 +911,7 @@ function quitarFuente(clave){
 // publicar (borra el borrador) y recarga lo que hay en el repositorio.
 $('#btnAparRecargar').addEventListener('click',async()=>{
   await limpiarBorradorApariencia();
+  avisarAlPadre(false);          // ya no queda apariencia sin publicar
   apar.forzarPublicado=true;
   cargarPagina();
 });

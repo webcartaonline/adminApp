@@ -42,7 +42,7 @@ function terminarEspera(){
   $('#esperaGlobo').hidden=true;
   $('#btnEsperaAyuda').setAttribute('aria-expanded','false');
   $('#btnPublicar').title='';
-  if(estado.sucio)$('#btnPublicar').disabled=false;
+  if(estado.sucio||estado.aparienciaSucia)$('#btnPublicar').disabled=false;
 }
 
 /* Globo de ayuda "¿por qué hay que esperar?" */

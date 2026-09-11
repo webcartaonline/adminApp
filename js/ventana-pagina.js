@@ -87,4 +87,13 @@
   /* ---------- Arranque ---------- */
   const boton = $('#btnAjustesPagina');
   if (boton) boton.addEventListener('click', abrir);
+
+  /* La ventana de ajustes (el marco de dentro) avisa por mensajes cuando
+     tiene o deja de tener cambios sin publicar. Se lo pasamos al editor
+     para que encienda o apague «Publicar cambios». */
+  window.addEventListener('message', (ev) => {
+    const d = ev.data;
+    if (!d || d.fuente !== 'ajustes-pagina') return;
+    if (typeof marcarAparienciaSucia === 'function') marcarAparienciaSucia(d.sucio);
+  });
 })();
