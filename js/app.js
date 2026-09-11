@@ -15,8 +15,9 @@ aplicarNombreGuardado();
 estado.itemCopiado=leerCopiaGuardada();
 
 // Si en una sesión anterior quedaron cambios de «Ajustes de la página»
-// sin publicar, el botón de publicar debe salir ya encendido, sin tener
-// que abrir la ventana de ajustes.
+// sin publicar, se apunta para que el botón de publicar se encienda en
+// cuanto se traiga la carta (nunca antes: sin la carta no se puede
+// publicar). Ver sincronizarBotonPublicar() en estado.js.
 if(typeof hayAparienciaPendiente==='function'){
   hayAparienciaPendiente().then((hay)=>{ if(hay)marcarAparienciaSucia(true); }).catch(()=>{});
 }

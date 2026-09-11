@@ -1,9 +1,9 @@
 {
-  "version": "8.4.1",
+  "version": "8.4.2",
   "fecha": "2026-09-11",
-  "titulo": "Arreglo: publicar cambios de solo apariencia",
+  "titulo": "El botón de publicar espera a que traigas la carta",
   "cambios": [
-    "Ahora, si cambias algo solo en «Ajustes de la página» (colores, posición de los alérgenos, pie, redes, icono…), el botón «Publicar cambios» se enciende igual que con los cambios de la carta",
-    "Si dejas ajustes sin publicar y vuelves más tarde, el botón sale ya encendido nada más abrir la aplicación"
+    "El botón «Publicar cambios» ya no se enciende al abrir la aplicación antes de traer la carta: se activa solo cuando la carta está cargada y hay algo que publicar",
+    "Así se evita darle a publicar por error antes de tener los datos actualizados"
   ]
 }

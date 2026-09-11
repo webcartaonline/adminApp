@@ -24,21 +24,30 @@ const estado = {
   itemCopiado:null           // copia de un ítem, lista para pegar en otro grupo
 };
 
-/* Marca que hay cambios pendientes y desbloquea el botón de publicar
-   (salvo que estemos dentro de los 2 minutos de espera). */
+/* El botón «Publicar cambios» se enciende SOLO si se cumplen tres cosas:
+   no estamos en la espera de después de publicar, la carta está cargada
+   (sin ella no hay nada que publicar y publicar daría error) y hay algo
+   pendiente, sea de la carta o de «Ajustes de la página». Un único sitio
+   decide esto para que los dos estados nunca se descuadren. */
+function sincronizarBotonPublicar(){
+  if(enEspera())return;   // durante la espera manda espera.js: el botón queda bloqueado
+  const hayCambios=estado.sucio||estado.aparienciaSucia;
+  $('#btnPublicar').disabled=!(estado.datos&&hayCambios);
+}
+
+/* Marca que hay cambios de la carta sin publicar y refresca el botón. */
 function marcarSucio(){
   estado.sucio=true;
-  if(!enEspera())$('#btnPublicar').disabled=false;
+  sincronizarBotonPublicar();
 }
 
 /* Lo mismo, pero para los cambios de «Ajustes de la página». Esa ventana
    vive en un marco aparte y avisa por mensajes cuando tiene (o deja de
-   tener) cambios sin publicar. El botón de publicar se enciende si hay
-   cambios EN CUALQUIERA de los dos sitios: la carta o la apariencia. */
+   tener) cambios sin publicar. El botón se enciende si hay cambios en
+   CUALQUIERA de los dos sitios, pero nunca antes de traer la carta. */
 function marcarAparienciaSucia(sucia){
   estado.aparienciaSucia=!!sucia;
-  if(enEspera())return;                 // la espera manda; ya lo gestiona espera.js
-  $('#btnPublicar').disabled=!(estado.sucio||estado.aparienciaSucia);
+  sincronizarBotonPublicar();
 }
 
 /* ---------- Accesores ---------- */

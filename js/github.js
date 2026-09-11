@@ -68,7 +68,9 @@ function cargarDatos(datos){
   if(estado.seccionActiva)estado.expandidas.add(estado.seccionActiva);
   estado.grupoActivo=null;
   estado.vista='editor';
-  $('#btnPublicar').disabled=true;
+  // Ya hay carta cargada: el botón se decide con la regla de siempre
+  // (enciende solo si hay algo pendiente de la carta o de la apariencia).
+  sincronizarBotonPublicar();
   pintarTodo();
 }
 
