@@ -128,6 +128,34 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
     </div>
   </section>
 
+  <!-- ===== Icono del navegador (favicon) ===== -->
+  <section class="bloque">
+    <h3 class="bloque__titulo">Icono del navegador</h3>
+    <p class="bloque__nota">Es el iconito que sale en la pestaña del navegador, al lado del
+      nombre de la página. Mejor una imagen cuadrada y sencilla (un símbolo o la inicial del
+      negocio), porque se ve muy pequeña. Vale PNG, SVG, ICO, JPG o WebP; si es enorme se
+      encoge sola. Solo lo verás en la pestaña una vez publicados los cambios.</p>
+
+    <div class="apariencia__favicon-fila">
+      <div class="apariencia__favicon-marco">
+        <img id="aparFaviconImg" alt="Icono actual del navegador" hidden>
+        <span class="apariencia__favicon-vacio" id="aparFaviconVacio">Sin icono</span>
+      </div>
+      <div class="apariencia__favicon-datos">
+        <label class="campo">
+          <span class="campo__etiqueta">Imagen del icono</span>
+          <input type="file" id="aparFaviconArchivo"
+                 accept="image/png,image/svg+xml,image/x-icon,image/vnd.microsoft.icon,.ico,image/jpeg,image/webp">
+          <span class="campo__pista">Lo ideal es un cuadrado con fondo transparente (PNG o SVG).
+            Si no pones ninguno, la pestaña sale con el icono de siempre del navegador.</span>
+        </label>
+        <div class="ajustes__acciones">
+          <button class="btn btn--peligro btn--mini" id="btnAparFaviconQuitar" type="button" hidden>Quitar el icono</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== Fondo de la portada ===== -->
   <section class="bloque">
     <h3 class="bloque__titulo">Fondo de la portada</h3>

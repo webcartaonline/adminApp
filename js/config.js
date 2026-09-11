@@ -91,6 +91,16 @@ const FONDO_PESO_INTACTO = 900*1024;
 const FONDO_PESO_MAX     = 15*1024*1024;
 const FONDO_CALIDAD      = 0.90;
 
+/* ---------- Icono del navegador (favicon) ----------
+   El iconito que sale en la pestaña del navegador. Se ve diminuto,
+   así que no necesita ser grande: se sube tal cual mientras no se
+   pase, y si viene enorme se encoge a un tamaño de sobra. Los SVG y
+   los ICO no se tocan: pesan poquísimo y se ven perfectos. */
+const FAVICON_LADO_MAX     = 256;          // px del lado mayor; de sobra para la pestaña
+const FAVICON_PESO_INTACTO = 100*1024;     // hasta aquí, se sube sin tocar
+const FAVICON_PESO_MAX     = 5*1024*1024;  // más que esto no se acepta
+const FAVICON_CALIDAD      = 0.92;         // solo se usa si hay que reducirlo
+
 /* ---------- Zona importante de la foto ----------
    Las franjas de sección y grupo ocupan todo el ancho de la pantalla,
    así que según la pantalla quedan más bajas o más estrechas de lo que

@@ -109,6 +109,29 @@
 .apariencia__logo-vacio{ font-size:.72rem; color:var(--tinta-suave); text-align:center; }
 .apariencia__logo-datos{ flex:1 1 220px; min-width:0; }
 
+/* ---------- Icono del navegador (favicon) ----------
+   Misma fila que el logotipo, pero el marco es cuadrado y pequeño,
+   como se verá el icono de verdad en la pestaña. */
+.apariencia__favicon-fila{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  margin:10px 0 14px;
+}
+.apariencia__favicon-marco{
+  flex:none; width:84px; height:84px;
+  display:grid; place-items:center;
+  padding:8px;
+  border:1px dashed var(--linea-fuerte); border-radius:var(--radio-s);
+  background:
+    conic-gradient(var(--velo) 25%, transparent 0 50%, var(--velo) 0 75%, transparent 0)
+    0 0/16px 16px;              /* cuadritos suaves: se aprecia la transparencia */
+}
+.apariencia__favicon-marco img{
+  max-width:100%; max-height:100%;
+  width:auto; height:auto; object-fit:contain; display:block;
+}
+.apariencia__favicon-vacio{ font-size:.72rem; color:var(--tinta-suave); text-align:center; }
+.apariencia__favicon-datos{ flex:1 1 220px; min-width:0; }
+
 /* ---------- Foto de la portada ----------
    Misma fila que el logotipo (marco a la izquierda, campos a la
    derecha), pero el marco es apaisado y la foto lo llena entero,
@@ -228,5 +251,6 @@
 @media(max-width:460px){
   .apariencia__publicar .btn{ flex:1 1 auto; }
   .apariencia__logo-fila{ align-items:flex-start; }
+  .apariencia__favicon-fila{ align-items:flex-start; }
   .apariencia__fondo-marco{ width:100%; }
 }

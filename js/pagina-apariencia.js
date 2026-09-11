@@ -40,7 +40,7 @@ function tipoPorExtension(ruta){
   const e=String(ruta||'').split('.').pop().toLowerCase();
   return ({
     jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', webp:'image/webp',
-    svg:'image/svg+xml', gif:'image/gif',
+    svg:'image/svg+xml', gif:'image/gif', ico:'image/x-icon',
     woff2:'font/woff2', woff:'font/woff', ttf:'font/ttf', otf:'font/otf'
   })[e]||'application/octet-stream';
 }
@@ -118,7 +118,7 @@ async function limpiarBorradorApariencia(){
 function aparienciaDeFabrica(){
   return {
     colores:{ principal:'#E9B44C', fondo:'#12100E', texto:'auto' },
-    identidad:{ titulo:'', eslogan:{ es:'', en:'' }, logo:'',
+    identidad:{ titulo:'', eslogan:{ es:'', en:'' }, logo:'', favicon:'',
                 fondo:{ imagen:'', foco:'centro' } },
     fuentes:{ titulo:null, texto:null },
     // Colocación de la barra de secciones y del filtro de alérgenos.
@@ -155,10 +155,11 @@ const apar={
   datos:null,             // el apariencia.json que se está editando
   sucio:false,            // ¿hay cambios sin publicar?
   logoPendiente:null,     // {ruta, base64} esperando a subirse
+  faviconPendiente:null,  // el icono de la pestaña, esperando a subirse
   fondoPendiente:null,    // la foto de la portada, esperando a subirse
   fuentesPendientes:{},   // clave -> {ruta, base64}
   porBorrar:[],           // archivos del repositorio que ya sobran
-  publicado:{ logo:'', fondo:'', fuentes:{ titulo:'', texto:'' } }, // lo que hay ahora en el repo
+  publicado:{ logo:'', favicon:'', fondo:'', fuentes:{ titulo:'', texto:'' } }, // lo que hay ahora en el repo
   previas:{}              // URLs locales de vista previa, para liberarlas
 };
 
@@ -351,12 +352,13 @@ async function cargarPagina(){
     // Se apunta qué archivos hay publicados ahora, para poder borrar
     // los que sobren si se cambian o se quitan.
     apar.publicado.logo=sinVersion(apar.datos.identidad.logo);
+    apar.publicado.favicon=sinVersion(apar.datos.identidad.favicon);
     apar.publicado.fondo=sinVersion(apar.datos.identidad.fondo.imagen);
     apar.publicado.fuentes.titulo=sinVersion(apar.datos.fuentes.titulo?.archivo);
     apar.publicado.fuentes.texto=sinVersion(apar.datos.fuentes.texto?.archivo);
 
     apar.cargada=true; apar.sucio=false;
-    apar.logoPendiente=null; apar.fondoPendiente=null;
+    apar.logoPendiente=null; apar.faviconPendiente=null; apar.fondoPendiente=null;
     apar.fuentesPendientes={}; apar.porBorrar=[];
 
     // Si había cambios sin publicar guardados (de esta sesión o de otra
@@ -388,22 +390,24 @@ async function restaurarBorrador(a){
   apar.porBorrar=Array.isArray(b.porBorrar)?b.porBorrar.slice():[];
   apar.sucio=true;
   await restaurarImagenPendiente(a,'logo');
+  await restaurarImagenPendiente(a,'favicon');
   await restaurarImagenPendiente(a,'fondo');
   await restaurarFuentePendiente(a,'titulo');
   await restaurarFuentePendiente(a,'texto');
 }
 async function restaurarImagenPendiente(a,cual){
-  const ruta=cual==='logo'
-    ? sinVersion(apar.datos.identidad.logo)
-    : sinVersion(apar.datos.identidad.fondo.imagen);
+  const ruta=cual==='logo'    ? sinVersion(apar.datos.identidad.logo)
+            :cual==='favicon' ? sinVersion(apar.datos.identidad.favicon)
+            :                   sinVersion(apar.datos.identidad.fondo.imagen);
   if(!ruta) return;
   let img=null;
   try{ img=await Almacen.leer('imagenes',`${clienteActual(a)}::${ruta}`); }catch{}
   if(!img||!img.base64) return;               // ya estaba publicada: nada que restaurar
   const url=`data:${img.tipo||'image/jpeg'};base64,${img.base64}`;
   apar.previas[cual]=url;
-  if(cual==='logo') apar.logoPendiente={ruta,base64:img.base64};
-  else              apar.fondoPendiente={ruta,base64:img.base64};
+  if(cual==='logo')         apar.logoPendiente={ruta,base64:img.base64};
+  else if(cual==='favicon') apar.faviconPendiente={ruta,base64:img.base64};
+  else                      apar.fondoPendiente={ruta,base64:img.base64};
 }
 async function restaurarFuentePendiente(a,clave){
   const f=apar.datos.fuentes[clave];
@@ -433,6 +437,7 @@ function volcarCampos(){
   $('#aparEsloganEn').value=d.identidad.eslogan.en;
   pintarFondoCampo();
   pintarLogoCampo();
+  pintarFaviconCampo();
   pintarFuenteCampo('titulo');
   pintarFuenteCampo('texto');
   pintarBloquesPie();
@@ -578,6 +583,16 @@ function pintarLogoCampo(){
   $('#btnAparLogoQuitar').hidden=!hay;
 }
 
+function pintarFaviconCampo(){
+  const hay=!!apar.datos.identidad.favicon;
+  const origen=apar.previas.favicon||(hay?rutaPublica(apar.datos.identidad.favicon):'');
+  const img=$('#aparFaviconImg');
+  if(origen){ img.src=origen; img.hidden=false; }
+  else{ img.hidden=true; img.removeAttribute('src'); }
+  $('#aparFaviconVacio').hidden=!!origen;
+  $('#btnAparFaviconQuitar').hidden=!hay;
+}
+
 function pintarFuenteCampo(clave){
   const f=apar.datos.fuentes[clave];
   const estado=$(clave==='titulo'?'#aparFuenteTituloEstado':'#aparFuenteTextoEstado');
@@ -652,6 +667,73 @@ function quitarLogo(){
   if(apar.previas.logo){URL.revokeObjectURL(apar.previas.logo);delete apar.previas.logo;}
   apar.datos.identidad.logo='';
   pintarLogoCampo(); pintarPrevia(); marcarSucio();
+}
+
+/* =========================================================
+   ICONO DEL NAVEGADOR (FAVICON)
+   El iconito de la pestaña. Funciona igual que el logotipo:
+   se acepta cualquier imagen y se sube tal cual mientras no
+   sea enorme; solo se encoge si se pasa de tamaño. Los SVG y
+   los ICO ni se miran, se suben tal cual. No aparece en la
+   miniatura de esta ventana porque el icono solo se ve en la
+   pestaña del navegador, y eso solo pasa una vez publicado.
+   ========================================================= */
+const POLITICA_FAVICON = {
+  ladoMax:FAVICON_LADO_MAX,
+  pesoIntacto:FAVICON_PESO_INTACTO,
+  calidad:FAVICON_CALIDAD,
+  conservarTransparencia:true     // casi todos los iconos llevan fondo transparente
+};
+
+/* ¿Es un formato que se sube tal cual, sin abrirlo ni tocarlo? */
+function faviconTalCual(archivo){
+  return archivo.type==='image/svg+xml'
+      || archivo.type==='image/x-icon'
+      || archivo.type==='image/vnd.microsoft.icon'
+      || /\.ico$/i.test(archivo.name);
+}
+function extensionFaviconTalCual(archivo){
+  return archivo.type==='image/svg+xml' ? 'svg' : 'ico';
+}
+
+async function elegirFavicon(archivo){
+  if(!archivo)return;
+  if(archivo.size>FAVICON_PESO_MAX){
+    avisar('Ese archivo pesa demasiado. Prueba con una imagen de menos de 5 MB.','error');return;
+  }
+  try{
+    const preparado=faviconTalCual(archivo)
+      ? {blob:archivo,extension:extensionFaviconTalCual(archivo),tocada:false,ancho:0,alto:0}
+      : await prepararImagenIntacta(archivo,POLITICA_FAVICON);
+
+    await guardarFaviconPreparado(preparado);
+    avisar(`Icono listo. ${resumenDeImagen(preparado)}`,'bien');
+  }catch{
+    avisar('No se ha podido leer esa imagen. Prueba con un PNG, SVG, ICO, JPG o WebP.','error');
+  }
+}
+
+/* Deja el icono preparado para subirse y refresca la pantalla. */
+async function guardarFaviconPreparado(preparado){
+  const ruta=`img/favicon.${preparado.extension}`;
+
+  if(apar.previas.favicon)URL.revokeObjectURL(apar.previas.favicon);
+  apar.previas.favicon=URL.createObjectURL(preparado.blob);
+
+  apuntarSiSobra(apar.publicado.favicon,ruta);
+  apar.faviconPendiente={ruta,base64:await blobABase64(preparado.blob)};
+  guardarArchivoBorrador(ruta,apar.faviconPendiente.base64);
+  apar.datos.identidad.favicon=`${ruta}?v=${marcaDeTiempo()}`;
+  pintarFaviconCampo(); marcarSucio();
+}
+
+function quitarFavicon(){
+  apuntarSiSobra(apar.publicado.favicon,'');
+  if(apar.faviconPendiente)borrarArchivoBorrador(apar.faviconPendiente.ruta);
+  apar.faviconPendiente=null;
+  if(apar.previas.favicon){URL.revokeObjectURL(apar.previas.favicon);delete apar.previas.favicon;}
+  apar.datos.identidad.favicon='';
+  pintarFaviconCampo(); marcarSucio();
 }
 
 /* =========================================================
@@ -858,6 +940,10 @@ $('#btnAparColoresOriginales').addEventListener('click',()=>{
 // Logotipo
 $('#aparLogoArchivo').addEventListener('change',(ev)=>{elegirLogo(ev.target.files[0]);ev.target.value='';});
 $('#btnAparLogoQuitar').addEventListener('click',quitarLogo);
+
+// Icono del navegador (favicon)
+$('#aparFaviconArchivo').addEventListener('change',(ev)=>{elegirFavicon(ev.target.files[0]);ev.target.value='';});
+$('#btnAparFaviconQuitar').addEventListener('click',quitarFavicon);
 
 // Fondo de la portada
 montarRejillaFoco();

@@ -1,9 +1,9 @@
 {
-  "version": "8.3.0",
+  "version": "8.4.0",
   "fecha": "2026-09-11",
-  "titulo": "Los ajustes de la página, en una ventana",
+  "titulo": "Icono del navegador (favicon) personalizable",
   "cambios": [
-    "Los ajustes de la página se abren ahora como una ventana que flota sobre la pantalla, con su propia cabecera, en vez de ocupar todo como la vista previa",
-    "Se cierra pulsando fuera de la ventana, además del botón de cerrar"
+    "En «Ajustes de la página» ya puedes subir el icono que aparece en la pestaña del navegador, junto al logotipo. Vale PNG, SVG, ICO, JPG o WebP",
+    "El icono se sube tal cual si es ligero y se encoge solo si viene enorme; se ve en la pestaña una vez publicados los cambios"
   ]
 }
