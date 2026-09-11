@@ -19,7 +19,12 @@
 /* Fila de botones al pie de un recuadro */
 .acc{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 
-.ficha-item{padding:16px;margin-bottom:12px;border:1px solid var(--linea);border-radius:var(--radio-m);
+/* Cada ficha lleva una franja de color en su borde superior (a juego con
+   el naranja cálido ya reservado en la paleta) para que, al bajar por una
+   lista larga de ítems, el ojo detecte enseguida dónde acaba uno y
+   empieza el siguiente sin necesidad de leer el contenido. */
+.ficha-item{padding:16px;margin-bottom:24px;border:1px solid var(--linea);
+  border-top:3px solid var(--naranja);border-radius:var(--radio-m);
   background:var(--marfil)}
 /* El precio y la fila de botones se ponen en línea, pero en pantallas
    estrechas no caben (precio + Foto/Copiar/▲/▼/Eliminar suman más que el
@@ -33,6 +38,6 @@
 /* Móvil: las tarjetas se ciñen un poco para ganar ancho útil. */
 @media(max-width:600px){
   .bloque{padding:16px;border-radius:var(--radio-m)}
-  .ficha-item{padding:14px}
+  .ficha-item{padding:14px;margin-bottom:18px}
   .bloque__acciones{margin-left:0;width:100%}
 }

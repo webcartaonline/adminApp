@@ -1,10 +1,9 @@
 {
-  "version": "8.2.6",
-  "fecha": "2026-09-04",
-  "titulo": "Éxito rotundo",
+  "version": "8.3.0",
+  "fecha": "2026-09-11",
+  "titulo": "Los ajustes de la página, en una ventana",
   "cambios": [
-    "Regreso a antes de la prueba",
-    "Todo silió bien",
-    "Recuerda que las actualizaciones te ayudan a tener una mejor experiencia y a nosotros a proporcionártela"
+    "Los ajustes de la página se abren ahora como una ventana que flota sobre la pantalla, con su propia cabecera, en vez de ocupar todo como la vista previa",
+    "Se cierra pulsando fuera de la ventana, además del botón de cerrar"
   ]
 }

@@ -86,3 +86,68 @@ html.vp-abierta, html.vp-abierta body { overflow: hidden; }
   .vp__cerrar span { display: none; }
   .vp__cerrar { padding: 9px; }
 }
+
+/* =========================================================
+   VENTANA DE «AJUSTES DE LA PÁGINA» (modificador vp--ajustes)
+   La Vista previa ocupa toda la pantalla, porque su fin es ver
+   la carta a lo grande. Los ajustes, en cambio, son un cuadro
+   de diálogo: por eso esta variante NO llega a los bordes y se
+   pinta como una ventana que flota sobre un fondo atenuado,
+   con una cabecera clara distinta del degradado de la Vista
+   previa.
+   ========================================================= */
+
+/* La capa deja de ser el propio lienzo y pasa a ser el fondo atenuado:
+   centra la ventana y le deja aire por los cuatro lados. */
+.vp--ajustes {
+  background: rgba(9, 12, 26, .55);
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 4vw, 40px);
+  padding-top: max(clamp(12px, 4vw, 40px), env(safe-area-inset-top));
+}
+
+/* La caja que flota: ancho contenido, esquinas redondeadas y sombra.
+   El alto es fijo (el hueco que deja el margen), no automático: así el
+   marco de dentro sabe contra qué medir su «100%» y ocupa todo el alto en
+   vez de quedarse en su tamaño mínimo. Si el contenido no cabe, se
+   desplaza dentro del propio marco. */
+.vp--ajustes .vp__ventana {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 720px;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--radio, 18px);
+  background: var(--fondo, #0b1220);
+  border: 1px solid var(--linea-fuerte, rgba(255, 255, 255, .15));
+  box-shadow: var(--sombra-alta, 0 30px 80px rgba(0, 0, 0, .5));
+}
+
+/* Cabecera clara de cuadro de diálogo, en vez del degradado a todo color:
+   así se distingue de un vistazo de la ventana de Vista previa. */
+.vp--ajustes .vp__barra {
+  background: var(--marfil-alto, #fff);
+  color: var(--tinta, #1B2233);
+  border-bottom: 1px solid var(--linea, rgba(23, 29, 45, .10));
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(var(--blur, 16px));
+  backdrop-filter: blur(var(--blur, 16px));
+  /* Ya no pega al borde superior de la pantalla, así que no necesita
+     reservar sitio para la muesca del móvil. */
+  padding-top: 12px;
+}
+.vp--ajustes .vp__punto {
+  background: var(--grad, #7A5CFB);
+  box-shadow: var(--glow, 0 10px 30px rgba(76, 134, 255, .30));
+}
+.vp--ajustes .vp__sub { color: var(--tinta-suave, #5B6478); opacity: 1; }
+
+/* El botón de cerrar, sobre fondo claro, con los tonos del editor. */
+.vp--ajustes .vp__cerrar {
+  border-color: var(--linea-fuerte, rgba(23, 29, 45, .17));
+  background: var(--velo, rgba(255, 255, 255, .55));
+  color: var(--tinta, #1B2233);
+}
+.vp--ajustes .vp__cerrar:hover { background: var(--pastilla, rgba(23, 29, 45, .06)); }

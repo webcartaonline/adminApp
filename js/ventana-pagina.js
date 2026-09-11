@@ -17,29 +17,39 @@
   function crearCapa() {
     if (capa) return capa;
     capa = document.createElement('div');
-    capa.className = 'vp';
+    /* «vp--ajustes» la distingue de la Vista previa: esta no ocupa toda la
+       pantalla, sino que flota como una ventana sobre un fondo atenuado. */
+    capa.className = 'vp vp--ajustes';
     capa.hidden = true;
+    /* Todo va dentro de «vp__ventana»: es la caja que flota, con sus esquinas
+       redondeadas y su sombra, separada de los bordes de la pantalla. */
     capa.innerHTML = `
-      <div class="vp__barra">
-        <div class="vp__marca">
-          <span class="vp__punto" aria-hidden="true"></span>
-          <div class="vp__rotulos">
-            <span class="vp__titulo">Ajustes de la página</span>
-            <span class="vp__sub">Se publican con «Publicar cambios»</span>
+      <div class="vp__ventana">
+        <div class="vp__barra">
+          <div class="vp__marca">
+            <span class="vp__punto" aria-hidden="true"></span>
+            <div class="vp__rotulos">
+              <span class="vp__titulo">Ajustes de la página</span>
+              <span class="vp__sub">Se publican con «Publicar cambios»</span>
+            </div>
           </div>
+          <button class="vp__cerrar" type="button" aria-label="Cerrar los ajustes de la página">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            <span>Cerrar</span>
+          </button>
         </div>
-        <button class="vp__cerrar" type="button" aria-label="Cerrar los ajustes de la página">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
-          <span>Cerrar</span>
-        </button>
-      </div>
-      <div class="vp__lienzo">
-        <iframe class="vp__marco" title="Ajustes de la página"
-                referrerpolicy="no-referrer"></iframe>
+        <div class="vp__lienzo">
+          <iframe class="vp__marco" title="Ajustes de la página"
+                  referrerpolicy="no-referrer"></iframe>
+        </div>
       </div>`;
     document.body.appendChild(capa);
     capa.querySelector('.vp__cerrar').addEventListener('click', cerrar);
+    /* Al pulsar fuera de la caja (en el fondo atenuado de alrededor) se cierra,
+       como en cualquier ventana. Solo cuenta el clic en el propio fondo, no el
+       que cae dentro de la ventana. */
+    capa.addEventListener('click', (ev) => { if (ev.target === capa) cerrar(); });
     return capa;
   }
 
