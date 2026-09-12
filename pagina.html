@@ -157,7 +157,9 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
   </section>
 
   <!-- ===== Fondo de la portada ===== -->
-  <section class="bloque">
+  <!-- Es una «imagen decorativa»: los planes que no la incluyen (Básico)
+       no ven este apartado. Lo esconde pagina-apariencia.js según el plan. -->
+  <section class="bloque" id="bloqueFondoPortada" hidden>
     <h3 class="bloque__titulo">Fondo de la portada</h3>
     <p class="bloque__nota">Una foto detrás del título, el eslogan y el logotipo. La carta la
       oscurece un poco sola, para que el texto se lea encima. Como la portada es alta y estrecha
@@ -274,6 +276,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 <p class="mensaje" id="mensaje" hidden></p>
 
 <script src="js/config.js"></script>
+<script src="js/licencia.js"></script>
 <script src="js/utiles.js"></script>
 <script src="js/almacen.js"></script>
 <script src="js/ajustes.js"></script>

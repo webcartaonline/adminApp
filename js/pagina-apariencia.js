@@ -338,6 +338,14 @@ async function cargarPagina(){
       }
     };
 
+    /* El fondo de la portada es una «imagen decorativa»: solo lo enseñan
+       los planes que las incluyen. El plan lo dice la propia carta, en
+       negocio.licencia. Si la carta no se pudo traer o su licencia no es
+       válida, se deja escondido (más vale quedarse corto). */
+    const permiteDecorativas=permisosDePlan(planDeLicencia(carta?.negocio?.licencia)).imagenesDecorativas;
+    const secFondo=$('#bloqueFondoPortada');
+    if(secFondo)secFondo.hidden=!permiteDecorativas;
+
     /* Primera vez (sin título ni logo configurados): se rellena con lo
        que la carta enseña hoy. Así lo que ves en los campos es
        exactamente lo que hay en la portada, y publicar no cambia nada

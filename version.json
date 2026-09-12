@@ -1,9 +1,11 @@
 {
-  "version": "8.4.2",
-  "fecha": "2026-09-11",
-  "titulo": "El botón de publicar espera a que traigas la carta",
+  "version": "9.0.0",
+  "fecha": "2026-09-12",
+  "titulo": "El editor se adapta al plan del cliente",
   "cambios": [
-    "El botón «Publicar cambios» ya no se enciende al abrir la aplicación antes de traer la carta: se activa solo cuando la carta está cargada y hay algo que publicar",
-    "Así se evita darle a publicar por error antes de tener los datos actualizados"
+    "Cada carta lleva ahora una licencia (negocio.licencia) que indica el plan contratado: Estático, Básico o Completo",
+    "El plan Básico oculta las notas y etiquetas y las imágenes decorativas (fondo de portada, de secciones y de grupos); mantiene la foto de cada plato",
+    "Los planes Completo y Estático muestran todas las opciones; el Estático avisa «Para poder publicar, cambia a un plan superior» al intentar publicar, porque es solo de demostración",
+    "Si una carta no trae una licencia válida, el editor no la abre y no guarda nada de ella en memoria"
   ]
 }

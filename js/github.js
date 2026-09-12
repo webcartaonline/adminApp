@@ -24,7 +24,10 @@ async function traer(){
     if(r.status===403)throw new Error('El token no tiene permiso sobre este repositorio.');
     if(!r.ok)throw new Error(`Servidor respondió ${r.status}.`);
     const cuerpo=await r.json();
-    cargarDatos(JSON.parse(deBase64(cuerpo.content)));
+    // Sin una licencia válida, cargarDatos no guarda nada y avisa: aquí
+    // se corta el resto (sha, estadísticas, vista previa) para no dejar
+    // en memoria ninguna traza de una carta que no se puede abrir.
+    if(!cargarDatos(JSON.parse(deBase64(cuerpo.content))))return;
     estado.sha=cuerpo.sha;
     avisar('Carta cargada. Ya puedes editarla.','bien');
 
@@ -50,6 +53,14 @@ async function traer(){
 }
 
 function cargarDatos(datos){
+  // La licencia es lo primero: si no la reconocemos, no se guarda NADA
+  // de esta carta en memoria y se avisa del porqué. Devolvemos false
+  // para que quien nos llamó (traer) sepa que no ha podido abrirse.
+  if(!licenciaValida(datos)){
+    avisar('No se ha podido traer la carta: le falta la licencia o el código no es válido. Contacta con WebCartaOnline.','error');
+    return false;
+  }
+  estado.licencia=resolverLicencia(datos);
   estado.datos=datos;
   estado.sucio=false;
   liberarImagenesPendientes();
@@ -72,6 +83,7 @@ function cargarDatos(datos){
   // (enciende solo si hay algo pendiente de la carta o de la apariencia).
   sincronizarBotonPublicar();
   pintarTodo();
+  return true;
 }
 
 function refrescarBotonEstadisticas(){
@@ -118,6 +130,12 @@ async function borrarImagenDelRepo(a,cab,ruta,mensaje){
 }
 
 async function publicar(){
+  // Los planes sin acceso a publicar (el Estático, que no tiene KEY de
+  // GitHub) pueden trastear con todo el editor, pero no aplicar cambios.
+  if(estado.datos&&!puedePublicar()){
+    avisar('Para poder publicar, cambia a un plan superior.','error');
+    return;
+  }
   if(enEspera()){
     const seg=Math.ceil((finEspera-Date.now())/1000);
     avisar(`Aún se está desplegando la publicación anterior. Podrás volver a publicar en ${Math.floor(seg/60)}:${String(seg%60).padStart(2,'0')}.`,'error');

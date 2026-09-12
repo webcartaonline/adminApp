@@ -56,20 +56,23 @@ function pintarZona(){
   if(!sec){zona.innerHTML='<p class="vacio">Elige una sección en la izquierda, o añade una nueva.</p>';return;}
   const gru=grupoActual();
 
-  const imagenSeccion=bloqueImagen('seccion',sec,{
+  // Los fondos de sección y de grupo son «imágenes decorativas»: solo
+  // los enseñan los planes que las incluyen (Completo y Estático).
+  const imagenSeccion=puedeImagenesDecorativas()?bloqueImagen('seccion',sec,{
     vacio:'Esta sección no tiene imagen. La carta se verá igual que siempre, solo con el título.'
-  });
-  const imagenGrupo=gru?bloqueImagen('grupo',gru,{
+  }):'';
+  const imagenGrupo=(gru&&puedeImagenesDecorativas())?bloqueImagen('grupo',gru,{
     vacio:'Este grupo no tiene imagen. En la carta se verá el título en cursiva de siempre.'
   }):'';
 
-  // Los botones de foto solo existen si esta carta lleva fotos.
-  const btnImagenSeccion=hayImagenes()
+  // Los botones de foto solo existen si esta carta lleva fotos Y el plan
+  // permite estas imágenes decorativas.
+  const btnImagenSeccion=hayImagenes()&&puedeImagenesDecorativas()
     ? `<span class="bloque__acciones">
          <button class="btn btn--suave" data-imagen-seccion="1" type="button">Imagen</button>
        </span>`
     : '';
-  const btnImagenGrupo=hayImagenes()
+  const btnImagenGrupo=hayImagenes()&&puedeImagenesDecorativas()
     ? `<span class="bloque__acciones">
          <button class="btn btn--suave" data-imagen-grupo="1" type="button">Imagen</button>
        </span>`
@@ -94,7 +97,7 @@ function pintarZona(){
       </h2>
       <div class="par-idiomas">${camposTexto('gru-nombre',gru.nombre,'Nombre')}</div>
       ${imagenGrupo}
-      ${bloqueAlerta(gru)}
+      ${puedeEtiquetas()?bloqueAlerta(gru):''}
       <div class="acc">
         <button class="btn btn--suave" data-nuevo-item="1" type="button">Añadir ítem</button>
         <button class="btn btn--suave" data-pegar-item="1" type="button"
@@ -118,7 +121,9 @@ function pintarZona(){
 
 function pintarItem(item,indice,total){
   const puestos=new Set(item.alergenos??[]);
-  const miniatura=bloqueImagen('item',item);
+  // La foto del plato («imagen de ítem») la incluyen todos los planes de
+  // pago; solo se oculta si el plan no la contempla.
+  const miniatura=puedeImagenItem()?bloqueImagen('item',item):'';
   return `
   <article class="ficha-item" data-indice="${indice}">
     <div class="ficha-item__cabecera">
@@ -127,7 +132,7 @@ function pintarItem(item,indice,total){
         <input type="number" step="0.05" min="0" data-item-precio value="${Number(item.precio)||0}">
       </div>
       <div class="ficha-item__botones">
-        ${hayImagenes()?'<button class="btn btn--suave btn--mini" data-item-imagen type="button">Foto</button>':''}
+        ${hayImagenes()&&puedeImagenItem()?'<button class="btn btn--suave btn--mini" data-item-imagen type="button">Foto</button>':''}
         <button class="btn btn--suave btn--mini" data-item-copiar type="button"
                 title="Copiar este ítem entero para pegarlo en otro grupo o sección">Copiar</button>
         <button class="mover" data-item-subir ${indice===0?'disabled':''}>▲</button>
@@ -145,6 +150,6 @@ function pintarItem(item,indice,total){
           aria-pressed="${puestos.has(a)}">${ETIQUETAS[a]}</button>`).join('')}
       </div>
     </div>
-    ${bloqueEtiquetas(item)}
+    ${puedeEtiquetas()?bloqueEtiquetas(item):''}
   </article>`;
 }
