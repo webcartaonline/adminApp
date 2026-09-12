@@ -15,7 +15,7 @@
    automáticamente la ventana con lo que ha cambiado.
    ========================================================= */
 
-const VERSION = '9.0.0';
+const VERSION = '9.1.0';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
@@ -37,6 +37,7 @@ const ARCHIVOS = [
   './css/version.css',
   './css/apariencia.css',
   './css/pagina.css',
+  './css/pdf.css',
   './js/config.js',
   './js/licencia.js',
   './js/utiles.js',
@@ -59,6 +60,14 @@ const ARCHIVOS = [
   './js/plantilla.js',
   './js/publicar-pagina.js',
   './js/ventana-pagina.js',
+  './vendor/jspdf.umd.min.js',
+  './vendor/html2canvas.min.js',
+  './js/pdf-config.js',
+  './js/pdf-datos.js',
+  './js/pdf-maqueta.js',
+  './js/pdf-paginado.js',
+  './js/pdf-generar.js',
+  './js/pdf-ventana.js',
   './js/vista.js',
   './js/vista-arbol.js',
   './js/vista-editor.js',

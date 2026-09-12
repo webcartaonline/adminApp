@@ -1,11 +1,11 @@
 {
-  "version": "9.0.0",
+  "version": "9.1.0",
   "fecha": "2026-09-12",
-  "titulo": "El editor se adapta al plan del cliente",
+  "titulo": "Ya puedes descargar la carta en PDF",
   "cambios": [
-    "Cada carta lleva ahora una licencia (negocio.licencia) que indica el plan contratado: Estático, Básico o Completo",
-    "El plan Básico oculta las notas y etiquetas y las imágenes decorativas (fondo de portada, de secciones y de grupos); mantiene la foto de cada plato",
-    "Los planes Completo y Estático muestran todas las opciones; el Estático avisa «Para poder publicar, cambia a un plan superior» al intentar publicar, porque es solo de demostración",
-    "Si una carta no trae una licencia válida, el editor no la abre y no guarda nada de ella en memoria"
+    "Nuevo botón «Descargar PDF» arriba: crea un PDF de tu carta, con los mismos colores y estilo, listo para imprimir",
+    "Puedes elegir el tamaño de papel (A4, A5, A3, alargado o tamaño Carta), la orientación y los márgenes",
+    "Puedes decidir si el PDF lleva portada, y si muestra las fotos de las secciones, los grupos y los platos",
+    "Si tu carta está en varios idiomas, eliges en cuál sale el PDF"
   ]
 }

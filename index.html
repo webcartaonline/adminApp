@@ -49,6 +49,7 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <link rel="stylesheet" href="css/imagenes.css">
 <link rel="stylesheet" href="css/version.css">
 <link rel="stylesheet" href="vista-previa/vista-previa.css">
+<link rel="stylesheet" href="css/pdf.css">
 </head>
 <body>
 
@@ -69,6 +70,8 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
          solo la entienden algunos servidores, y al probar en local da
          un «Cannot GET /ajustes». -->
     <a class="btn btn--claro" id="btnAjustes" href="ajustes.html">Ajustes</a>
+    <button class="btn btn--claro" id="btnPdf" type="button"
+            title="Descargar la carta publicada en PDF para imprimir">Descargar PDF</button>
     <button class="btn btn--claro" id="btnCargar" type="button">Cargar carta</button>
     <button class="btn btn--claro" id="btnAjustesPagina" type="button"
             title="Colores, portada, fuentes, pie y redes de la carta">Ajustes de la carta</button>
@@ -235,5 +238,18 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <script src="js/app.js"></script>
 <script src="vista-previa/vista-previa.js"></script>
 <script src="js/ventana-pagina.js"></script>
+
+<!-- Descargar la carta en PDF. Las dos primeras líneas son los motores
+     (guardados dentro de la app para funcionar sin conexión); las demás,
+     la función en sí. El orden importa: config -> datos -> maqueta ->
+     paginado -> generar -> ventana. -->
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="vendor/html2canvas.min.js"></script>
+<script src="js/pdf-config.js"></script>
+<script src="js/pdf-datos.js"></script>
+<script src="js/pdf-maqueta.js"></script>
+<script src="js/pdf-paginado.js"></script>
+<script src="js/pdf-generar.js"></script>
+<script src="js/pdf-ventana.js"></script>
 </body>
 </html>
