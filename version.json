@@ -1,11 +1,8 @@
 {
-  "version": "9.1.0",
+  "version": "9.1.1",
   "fecha": "2026-09-12",
-  "titulo": "Ya puedes descargar la carta en PDF",
+  "titulo": "Mejora de rendiminento y estabilidad",
   "cambios": [
-    "Nuevo botón «Descargar PDF» arriba: crea un PDF de tu carta, con los mismos colores y estilo, listo para imprimir",
-    "Puedes elegir el tamaño de papel (A4, A5, A3, alargado o tamaño Carta), la orientación y los márgenes",
-    "Puedes decidir si el PDF lleva portada, y si muestra las fotos de las secciones, los grupos y los platos",
-    "Si tu carta está en varios idiomas, eliges en cuál sale el PDF"
+    "Se ha mejorado la estabilidad y el rendimiento"
   ]
 }
