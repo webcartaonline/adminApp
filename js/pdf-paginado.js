@@ -3,8 +3,7 @@
    Reparte las unidades (portada, secciones, grupos, platos,
    pie) en hojas del tamaño de papel elegido, de modo que:
      · ningún plato quede partido entre dos páginas,
-     · las columnas y las páginas queden EQUILIBRADAS, para
-       que no aparezca un plato suelto en una hoja casi vacía,
+     · se aprovechen las columnas que caben en el ancho,
      · el estilo y las proporciones se mantengan igual sea
        cual sea el tamaño de papel.
    ========================================================= */
@@ -69,8 +68,9 @@ function pdfCrearMedidor(colores) {
   };
 }
 
-/* Crea una hoja vacía con márgenes y sus columnas. */
-function pdfCrearHoja(M, bandaEl) {
+/* Crea una hoja vacía con su zona de contenido (respetando los
+   márgenes) y sus columnas. */
+function pdfCrearHoja(M, bandaEl, bandaAlto) {
   const hoja = pdfCrear('div', 'pdf-hoja');
   hoja.style.width = M.anchoPx + 'px';
   hoja.style.height = M.altoPx + 'px';
@@ -78,6 +78,7 @@ function pdfCrearHoja(M, bandaEl) {
   hoja.style.paddingBottom = M.margenPx.abajo + 'px';
   hoja.style.paddingLeft = M.margenPx.izquierda + 'px';
   hoja.style.paddingRight = M.margenPx.derecha + 'px';
+
   if (bandaEl) hoja.appendChild(bandaEl);
 
   const cols = pdfCrear('div', 'pdf-columnas');
@@ -90,217 +91,122 @@ function pdfCrearHoja(M, bandaEl) {
     columnas.push(c);
   }
   hoja.appendChild(cols);
-  return { hoja, columnas };
+
+  return {
+    hoja, columnas,
+    usado: new Array(M.columnas).fill(0),
+    altoCol: M.contAltoPx - (bandaAlto || 0),
+    ponerPie(pieEl) { hoja.appendChild(pieEl); }
+  };
 }
 
-/* Una hoja «suelta» (portada, banda sola o pie) con los márgenes puestos. */
-function pdfHojaSimple(M, claseExtra) {
-  const hoja = pdfCrear('div', 'pdf-hoja' + (claseExtra ? ' ' + claseExtra : ''));
-  hoja.style.width = M.anchoPx + 'px';
-  hoja.style.height = M.altoPx + 'px';
-  if (!claseExtra) {
-    hoja.style.paddingTop = M.margenPx.arriba + 'px';
-    hoja.style.paddingBottom = M.margenPx.abajo + 'px';
-    hoja.style.paddingLeft = M.margenPx.izquierda + 'px';
-    hoja.style.paddingRight = M.margenPx.derecha + 'px';
-  }
-  return hoja;
-}
-
-/* =========================================================
-   REPARTO
-   ========================================================= */
-
-const PDF_TOL = 1.5;          // holgura de un pixel y pico al comparar alturas
-const PDF_HUECO_VACIO = 0.55; // por debajo de este llenado, una cola se considera «vacía»
-
-/* Reparte una lista de piezas en tramos que no superen «tope», sin
-   cortar ninguna y sin dejar una cabecera (de grupo o de sección)
-   suelta al final: la cabecera se lleva SIEMPRE su primera pieza
-   siguiente al mismo tramo. Con «objetivo» se busca además que los
-   tramos queden parejos (equilibrados), sin pasar del tope.
-   Devuelve tramos con índices LOCALES a la lista recibida. */
-function pdfRepartir(piezas, tope, objetivo) {
-  const tramos = [];
-  let t = -1;
-  const nuevo = () => { t++; tramos[t] = { idx: [], alto: 0 }; };
-  const juntaConSiguiente = i =>
-    (piezas[i].tipo === 'grupo' || piezas[i].tipo === 'banda') &&
-    piezas[i + 1] && piezas[i + 1].tipo === 'item';
-  nuevo();
-
-  for (let i = 0; i < piezas.length; i++) {
-    const par = juntaConSiguiente(i);
-    const necesita = piezas[i].alto + (par ? piezas[i + 1].alto : 0);
-    const vacio = tramos[t].idx.length === 0;
-
-    if (!vacio) {
-      const noCabe = tramos[t].alto + necesita > tope + PDF_TOL;
-      const pasaObjetivo = objetivo && tramos[t].alto + piezas[i].alto > objetivo + PDF_TOL;
-      if (noCabe || pasaObjetivo) nuevo();
-    }
-
-    tramos[t].idx.push(i); tramos[t].alto += piezas[i].alto;
-    if (par) { tramos[t].idx.push(i + 1); tramos[t].alto += piezas[i + 1].alto; i++; }
-  }
-  return tramos;
-}
-
-/* Reequilibra los DOS últimos tramos cuando el último quedó casi
-   vacío: reparte su contenido a partes iguales para que no quede una
-   pieza sola en una hoja (o columna) desierta. */
-function pdfEquilibrarCola(tramos, piezas, tope) {
-  if (tramos.length < 2) return tramos;
-  const ultimo = tramos[tramos.length - 1];
-  if (ultimo.alto >= tope * PDF_HUECO_VACIO) return tramos;
-
-  const dos = tramos.splice(tramos.length - 2, 2);
-  const indices = dos[0].idx.concat(dos[1].idx);
-  const sub = indices.map(g => piezas[g]);
-  const total = sub.reduce((s, p) => s + p.alto, 0);
-  const reparto = pdfRepartir(sub, tope, total / 2);
-  reparto.forEach(tr => tramos.push({ idx: tr.idx.map(l => indices[l]), alto: tr.alto }));
-  return tramos;
-}
-
-/* Nº de columnas necesario, redondeado a páginas completas para no
-   dejar columnas vacías sueltas al final. */
-function pdfColumnasObjetivo(minimas, porPagina, totalPiezas) {
-  let n = Math.ceil(minimas / porPagina) * porPagina;
-  n = Math.min(n, totalPiezas);   // no más columnas que piezas
-  return Math.max(n, minimas);
-}
-
+/* Reparte y devuelve la lista de hojas ya montadas. */
 function pdfPaginar(unidades, M, colores) {
   const med = pdfCrearMedidor(colores);
-  const medirCol = el => med.medir(el, M.colAnchoPx, med.cajaCol);
-  const medirFull = el => med.medir(el, M.contAnchoPx, med.cajaFull);
+  const TOL = 1.5;                 // holgura de un pixel y pico al comparar alturas
+  const paginas = [];
+  let pag = null;
+  let col = 0;
 
-  // Separar en portada / secciones / pie.
-  let portada = null, pie = null;
-  const secciones = [];
-  let actual = null;
-  for (const u of unidades) {
-    if (u.tipo === 'portada') { portada = u; continue; }
-    if (u.tipo === 'pie') { pie = u; continue; }
-    if (u.tipo === 'seccion') { actual = { banda: u, bloques: [] }; secciones.push(actual); continue; }
-    if (!actual) { actual = { banda: null, bloques: [] }; secciones.push(actual); }
-    actual.bloques.push(u);
+  function abrirPagina(bandaUnidad) {
+    let bandaEl = null, bandaAlto = 0;
+    if (bandaUnidad) {
+      bandaAlto = med.medir(bandaUnidad.el, M.contAnchoPx, med.cajaFull);
+      bandaEl = bandaUnidad.el;
+    }
+    pag = pdfCrearHoja(M, bandaEl, bandaAlto ? bandaAlto : 0);
+    col = 0;
+    paginas.push(pag);
+    return pag;
   }
 
-  const paginas = [];        // elementos .pdf-hoja, en orden
-  const registro = [];       // {hoja, hueco, ponerPie} para colocar el pie al final
+  function alturaLibre() { return pag.altoCol - pag.usado[col]; }
 
-  function apuntar(hoja, hueco) {
-    paginas.push(hoja);
-    registro.push({ hoja, hueco, ponerPie: el => hoja.appendChild(el) });
+  function avanzarColumna() {
+    col++;
+    if (col >= M.columnas) abrirPagina(null);   // página de continuación, sin banda
   }
 
-  function hojaConColumnas(bandaU, bandaAlto, columnasPiezas) {
-    const { hoja, columnas } = pdfCrearHoja(M, bandaU ? bandaU.el : null);
-    let maxAlto = 0;
-    columnasPiezas.forEach((tramo, k) => {
-      if (!tramo) return;
-      tramo.idx.forEach(bi => columnas[k].appendChild(tramo.piezas[bi].u.el));
-      maxAlto = Math.max(maxAlto, tramo.alto);
-    });
-    apuntar(hoja, M.contAltoPx - (bandaAlto || 0) - maxAlto);
+  // Coloca un bloque en la columna actual; si no cabe, salta de
+  // columna o de página. Si es más alto que una columna entera, se
+  // pone solo y se acepta (caso extremo y raro).
+  function colocar(el, alto) {
+    if (!pag) abrirPagina(null);
+    if (alto > pag.altoCol) {
+      if (pag.usado[col] > 0) avanzarColumna();
+      pag.columnas[col].appendChild(el);
+      pag.usado[col] = pag.altoCol;              // esa columna queda cerrada
+      return;
+    }
+    while (alto > alturaLibre() + TOL) avanzarColumna();
+    pag.columnas[col].appendChild(el);
+    pag.usado[col] += alto;
   }
 
-  // ---------- Portada ----------
-  if (portada) {
-    const hoja = pdfHojaSimple(M, 'pdf-hoja--portada');
-    hoja.appendChild(portada.el);
-    paginas.push(hoja);
-  }
+  for (let i = 0; i < unidades.length; i++) {
+    const u = unidades[i];
 
-  // ---------- Secciones ----------
-  if (M.multicolumna) {
-    for (const sec of secciones) colocarSeccionColumnas(sec);
-  } else {
-    colocarUnaColumna(secciones);
-  }
+    if (u.tipo === 'portada') {
+      // La portada ocupa su propia hoja, a sangre completa.
+      const hoja = pdfCrear('div', 'pdf-hoja pdf-hoja--portada');
+      hoja.style.width = M.anchoPx + 'px';
+      hoja.style.height = M.altoPx + 'px';
+      hoja.appendChild(u.el);
+      paginas.push({ hoja, columnas: [], usado: [], altoCol: 0, ponerPie() {} });
+      pag = null;                                // la siguiente sección abre hoja nueva
+      continue;
+    }
 
-  // ---------- Pie ----------
-  if (pie) {
-    const h = medirFull(pie.el);
-    const ultima = registro[registro.length - 1];
-    if (ultima && h <= ultima.hueco) {
-      ultima.ponerPie(pie.el);
-    } else {
-      const hoja = pdfHojaSimple(M);
-      hoja.appendChild(pie.el);
-      paginas.push(hoja);
+    if (u.tipo === 'seccion') {
+      if (M.multicolumna) { abrirPagina(u); continue; }
+      // Una columna: la banda es un bloque más, pero no debe quedarse
+      // sola al final de la página; se mira que quepa con lo que sigue.
+      const h = med.medir(u.el, M.colAnchoPx, med.cajaCol);
+      const sig = unidades[i + 1];
+      const hSig = sig && sig.tipo !== 'portada' ? med.medir(sig.el, M.colAnchoPx, med.cajaCol) : 0;
+      if (!pag) abrirPagina(null);
+      if (h + hSig > alturaLibre() + TOL) { avanzarColumna(); }
+      colocar(u.el, h);
+      continue;
+    }
+
+    if (u.tipo === 'grupo') {
+      const h = med.medir(u.el, M.colAnchoPx, med.cajaCol);
+      // El título de grupo no debe quedar huérfano: tiene que caber con
+      // su primer plato en la misma columna.
+      const sig = unidades[i + 1];
+      const hSig = (sig && sig.tipo === 'item') ? med.medir(sig.el, M.colAnchoPx, med.cajaCol) : 0;
+      if (!pag) abrirPagina(null);
+      if (h + hSig > alturaLibre() + TOL && (pag.usado[col] > 0 || col < M.columnas - 1)) {
+        // hay sitio en otra columna/página: mover el título allí
+        if (h + hSig <= pag.altoCol) { while (h + hSig > alturaLibre() + TOL) avanzarColumna(); }
+      }
+      colocar(u.el, h);
+      continue;
+    }
+
+    if (u.tipo === 'item') {
+      const h = med.medir(u.el, M.colAnchoPx, med.cajaCol);
+      colocar(u.el, h);
+      continue;
+    }
+
+    if (u.tipo === 'pie') {
+      // El pie va a lo ancho, al final. Si cabe bajo la columna más
+      // llena de la última página, se pone ahí; si no, en una hoja nueva.
+      const h = med.medir(u.el, M.contAnchoPx, med.cajaFull);
+      if (!pag) abrirPagina(null);
+      const usadoMax = Math.max(0, ...pag.usado);
+      if (h <= pag.altoCol - usadoMax) {
+        pag.ponerPie(u.el);
+      } else {
+        abrirPagina(null);
+        pag.ponerPie(u.el);
+      }
+      continue;
     }
   }
 
   med.destruir();
-  return paginas;
-
-  /* ----- Varias columnas: cada sección empieza en hoja nueva, con su
-     banda a lo ancho, y sus platos repartidos en columnas parejas. */
-  function colocarSeccionColumnas(sec) {
-    if (!sec.bloques.length) return;
-    const bandaAlto = sec.banda ? medirFull(sec.banda.el) : 0;
-    const piezas = sec.bloques.map(b => ({ u: b, tipo: b.tipo, alto: medirCol(b.el) }));
-
-    // Altura útil de una columna en la primera hoja (con la banda encima).
-    const topePrimera = Math.max(60, M.contAltoPx - bandaAlto);
-
-    // ¿La pieza (o el par cabecera+plato) más alto cabe bajo la banda?
-    let maxNecesita = 0;
-    for (let i = 0; i < piezas.length; i++) {
-      const par = piezas[i].tipo === 'grupo' && piezas[i + 1] && piezas[i + 1].tipo === 'item';
-      maxNecesita = Math.max(maxNecesita, piezas[i].alto + (par ? piezas[i + 1].alto : 0));
-    }
-
-    // Si no cabe, la banda va en su propia hoja y las columnas usan la
-    // altura completa (así ese plato alto no se queda solo por la banda).
-    let bandaSola = false, tope = topePrimera;
-    if (maxNecesita > topePrimera) { bandaSola = true; tope = M.contAltoPx; }
-    if (bandaSola && sec.banda) {
-      const hoja = pdfHojaSimple(M);
-      hoja.appendChild(sec.banda.el);
-      apuntar(hoja, M.contAltoPx - bandaAlto);
-    }
-
-    // 1) Cuántas columnas llenando a tope.  2) Objetivo equilibrado.
-    const aTope = pdfRepartir(piezas, tope, 0);
-    const nCols = pdfColumnasObjetivo(aTope.length, M.columnas, piezas.length);
-    const total = piezas.reduce((s, p) => s + p.alto, 0);
-    let objetivo = Math.max(total / nCols, maxNecesita);
-    let cols = pdfRepartir(piezas, tope, objetivo);
-    let intentos = 0;
-    while (cols.length > nCols && intentos++ < 8) { objetivo *= 1.06; cols = pdfRepartir(piezas, tope, objetivo); }
-    if (cols.length > nCols) cols = aTope;     // seguridad: nunca peor que a tope
-    cols.forEach(c => c.piezas = piezas);
-
-    // 3) Volcar en hojas (M.columnas columnas por hoja; banda solo en la primera).
-    const bandaEnPrimera = bandaSola ? null : sec.banda;
-    const bandaAltoPrimera = bandaSola ? 0 : bandaAlto;
-    const nPaginas = Math.ceil(cols.length / M.columnas);
-    for (let p = 0; p < nPaginas; p++) {
-      const banda = p === 0 ? bandaEnPrimera : null;
-      const grupo = [];
-      for (let k = 0; k < M.columnas; k++) grupo.push(cols[p * M.columnas + k] || null);
-      hojaConColumnas(banda, p === 0 ? bandaAltoPrimera : 0, grupo);
-    }
-  }
-
-  /* ----- Una sola columna: todo seguido (las bandas son un bloque más
-     a lo ancho), repartido en páginas parejas para que la última no
-     quede con un plato suelto. */
-  function colocarUnaColumna(secciones) {
-    const flujo = [];
-    for (const sec of secciones) {
-      if (sec.banda) flujo.push({ u: sec.banda, tipo: 'banda', alto: medirFull(sec.banda.el) });
-      sec.bloques.forEach(b => flujo.push({ u: b, tipo: b.tipo, alto: medirCol(b.el) }));
-    }
-    if (!flujo.length) return;
-
-    const tope = M.contAltoPx;
-    let paginasIdx = pdfRepartir(flujo, tope, 0);
-    paginasIdx = pdfEquilibrarCola(paginasIdx, flujo, tope);
-    paginasIdx.forEach(tramo => { tramo.piezas = flujo; hojaConColumnas(null, 0, [tramo]); });
-  }
+  return paginas.map(p => p.hoja);
 }
