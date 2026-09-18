@@ -1,8 +1,13 @@
 {
-  "version": "9.1.1",
-  "fecha": "2026-09-12",
-  "titulo": "Mejora de rendiminento y estabilidad",
+  "version": "10.0.1-BETA",
+  "fecha": "2026-09-19",
+  "titulo": "Nuevo sistema de publicación (versión preliminar)",
   "cambios": [
-    "Se ha mejorado la estabilidad y el rendimiento"
+    "El editor guarda ahora los cambios en el servidor propio de WebCartaOnline, más rápido y más seguro.",
+    "Al publicar ya no hay que esperar: los cambios aparecen en la carta al momento.",
+    "Ya no se pide escribir un resumen de los cambios cada vez que se publica.",
+    "El servidor guarda una copia de seguridad de la carta cada vez que se publica.",
+    "Si la licencia está a punto de caducar, el editor avisa al cargar la carta.",
+    "Versión preliminar: la personalización de la página y la vista previa se reactivan en la próxima actualización."
   ]
 }

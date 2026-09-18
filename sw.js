@@ -15,7 +15,7 @@
    automáticamente la ventana con lo que ha cambiado.
    ========================================================= */
 
-const VERSION = '9.1.1';
+const VERSION = '10.0.1-BETA';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
@@ -56,7 +56,8 @@ const ARCHIVOS = [
   './js/espera.js',
   './js/imagenes.js',
   './js/imagen-recorte.js',
-  './js/github.js',
+  './js/nube.js',
+  './js/publicar.js',
   './js/plantilla.js',
   './js/publicar-pagina.js',
   './js/ventana-pagina.js',
