@@ -1,13 +1,23 @@
 /* =========================================================
    LICENCIA
    El plan que ha contratado el cliente decide qué puede
-   tocar dentro del editor. El plan viaja dentro del propio
-   carta.json, en negocio.licencia, como un código.
+   tocar dentro del editor.
 
-   Este archivo es el ÚNICO que conoce los códigos y qué
-   permite cada plan. Si algún día cambia un plan, o nace
-   uno nuevo, se toca aquí y en ningún otro sitio: el resto
-   del editor solo pregunta «¿puedo enseñar esto?».
+   Los permisos de verdad los manda el SERVIDOR: al cargar
+   la carta, el editor se los pregunta y los guarda en
+   estado.licencia (ver publicar.js). Así el cliente no
+   puede darse permisos a sí mismo tocando su carta, y el
+   servidor rechaza de todos modos lo que no le toca.
+
+   La tabla de abajo se conserva porque la ventana de
+   «Ajustes de la página» todavía deduce el plan por su
+   cuenta, y como referencia de qué lleva cada plan. Tiene
+   que decir LO MISMO que el archivo de licencia guardado en
+   el servidor.
+
+   Si algún día cambia un plan, o nace uno nuevo, se toca
+   aquí y en el servidor: el resto del editor solo pregunta
+   «¿puedo enseñar esto?».
    ========================================================= */
 
 /* Los códigos que identifican cada plan. Tienen que coincidir
@@ -22,20 +32,25 @@ const CODIGO_PLAN = {
 /* Qué deja ver y hacer cada plan dentro del editor:
 
      etiquetas          -> las notas del plato y la alerta del grupo
-     imagenesDecorativas-> fondo de portada, de secciones y de grupos
+     imagenesDecorativas-> fondo de portada, bandas de sección y de
+                           grupo, y las fuentes propias
+     imagenMarca        -> el logotipo de la portada y el iconito de la
+                           pestaña (img/logo.* e img/favicon.*)
      imagenItem         -> la foto que acompaña a cada plato
      idiomaExtra        -> un idioma además del principal (informativo:
                            los idiomas los declara el propio carta.json)
      publicar           -> puede aplicar de verdad los cambios en la web
 
    Regla del negocio: el ÚNICO plan que recorta cosas del editor es
-   el Básico. Completo y Estático enseñan todas las opciones; el
-   Estático, eso sí, no puede publicar porque no tiene KEY de GitHub:
-   sirve como demostración para animar a subir de plan. */
+   el Básico, que no lleva notas y alertas, ni fondos decorativos, ni
+   idiomas extra; su propia marca (logotipo e iconito) sí la puede
+   cambiar. Completo y Estático enseñan todas las opciones; el
+   Estático, eso sí, no puede publicar: sirve como demostración para
+   animar a subir de plan. */
 const PERMISOS_PLAN = {
-  estatico: { etiquetas:true,  imagenesDecorativas:true,  imagenItem:true, idiomaExtra:true,  publicar:false },
-  basico:   { etiquetas:false, imagenesDecorativas:false, imagenItem:true, idiomaExtra:false, publicar:true  },
-  completo: { etiquetas:true,  imagenesDecorativas:true,  imagenItem:true, idiomaExtra:true,  publicar:true  }
+  estatico: { etiquetas:true,  imagenesDecorativas:true,  imagenMarca:true, imagenItem:true, idiomaExtra:true,  publicar:false },
+  basico:   { etiquetas:false, imagenesDecorativas:false, imagenMarca:true, imagenItem:true, idiomaExtra:false, publicar:true  },
+  completo: { etiquetas:true,  imagenesDecorativas:true,  imagenMarca:true, imagenItem:true, idiomaExtra:true,  publicar:true  }
 };
 
 /* El nombre del plan a partir de su código, o null si el código no
@@ -48,7 +63,8 @@ function planDeLicencia(codigo){
    permite nada: mejor quedarse corto que enseñar de más. */
 function permisosDePlan(plan){
   return PERMISOS_PLAN[plan] || {
-    etiquetas:false, imagenesDecorativas:false, imagenItem:false, idiomaExtra:false, publicar:false
+    etiquetas:false, imagenesDecorativas:false, imagenMarca:false,
+    imagenItem:false, idiomaExtra:false, publicar:false
   };
 }
 
@@ -78,5 +94,6 @@ function permisoActual(nombre){
 }
 function puedeEtiquetas(){           return permisoActual('etiquetas'); }
 function puedeImagenesDecorativas(){ return permisoActual('imagenesDecorativas'); }
+function puedeImagenMarca(){         return permisoActual('imagenMarca'); }
 function puedeImagenItem(){          return permisoActual('imagenItem'); }
 function puedePublicar(){            return permisoActual('publicar'); }

@@ -5,6 +5,7 @@
   "cambios": [
     "El editor guarda ahora los cambios en el servidor propio de WebCartaOnline, más rápido y más seguro.",
     "Al publicar ya no hay que esperar: los cambios aparecen en la carta al momento.",
+    "Los planes que no incluyen imágenes decorativas ya pueden cambiar su logotipo y el iconito de la pestaña.",
     "Ya no se pide escribir un resumen de los cambios cada vez que se publica.",
     "El servidor guarda una copia de seguridad de la carta cada vez que se publica.",
     "Si la licencia está a punto de caducar, el editor avisa al cargar la carta.",
