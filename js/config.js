@@ -22,14 +22,11 @@ const NOMBRE_IDIOMA = { es:'Español', en:'English', fr:'Français', de:'Deutsch
 const CLAVE_AJUSTES        = 'editorCartaUniversal.ajustes';
 const CLAVE_TEMA           = 'editorCartaUniversal.tema';
 const CLAVE_COPIA          = 'editorCartaUniversal.itemCopiado';
-const CLAVE_ESPERA         = 'editorCartaUniversal.esperaHasta';
+const CLAVE_ESPERA         = 'editorCartaUniversal.esperaHasta';  // solo para borrarla: ya no se usa
 const CLAVE_VERSION_VISTA  = 'editorCartaUniversal.versionVista';
 const CLAVE_COLOR          = 'editorCartaUniversal.color';
 const CLAVE_PANEL_ANCHO    = 'editorCartaUniversal.panelAncho';
 const CLAVE_SITIO          = 'editorCartaUniversal.sitio';
-
-/* ---------- Espera entre publicaciones ---------- */
-const MS_ESPERA = 2*60*1000;   // 2 minutos
 
 /* ---------- Imágenes de la carta ----------
    Secciones, grupos y platos. Cada tipo tiene su propia forma y su

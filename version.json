@@ -1,10 +1,12 @@
 {
-  "version": "10.2.0-BETA",
+  "version": "11.0.0-BETA",
   "fecha": "2026-09-19",
-  "titulo": "La vista previa, de vuelta",
+  "titulo": "Tus fotos, en tu carta",
   "cambios": [
-    "La vista previa vuelve a funcionar: ya se puede ver cómo queda la carta antes de publicarla.",
-    "El editor solo se descarga el diseño de la carta cuando de verdad ha cambiado, así que carga más rápido.",
-    "Si el diseño no se puede descargar, la vista previa sigue funcionando con la última copia guardada."
+    "Las fotos que subes ya se ven en tu carta. Antes se guardaban bien, pero la carta seguía enseñando las de la plantilla.",
+    "La vista previa vuelve a enseñar las fotos que ya estaban publicadas.",
+    "La pantalla de «Ajustes» pide ahora solo dos datos, tu negocio y tu clave, y trae un botón para comprobar que la conexión funciona.",
+    "Se acabó la espera de dos minutos después de publicar: los cambios se ven al momento.",
+    "Quitado el apartado de estadísticas, que no estaba en uso."
   ]
 }

@@ -3,15 +3,10 @@
    La personalización de la carta que ven los clientes del
    negocio: colores, título, eslogan, logotipo y fuentes.
 
-   Todo se guarda en un archivo propio del repositorio,
+   Todo se guarda en un archivo propio del negocio,
    apariencia.json, separado de carta.json a propósito: así
    publicar la apariencia y publicar la carta nunca se pisan
    entre sí aunque se haga desde pantallas distintas.
-
-   La espera de dos minutos tras publicar es LA MISMA que la
-   del editor (comparten la llave guardada en el navegador):
-   publiques donde publiques, los dos botones quedan
-   bloqueados hasta que el despliegue anterior termina.
 
    Va todo dentro de una función envolvente para no dejar
    nombres sueltos que choquen con el resto del programa.
@@ -907,7 +902,7 @@ function quitarFuente(clave){
    Esta ventana ya NO publica por su cuenta. Cada cambio se guarda en el
    cajón del navegador (guardarBorradorApariencia) y es el botón
    «Publicar cambios» del editor el que sube la apariencia junto con la
-   carta, de una sola vez. Ver js/publicar-pagina.js y js/github.js.
+   carta, de una sola vez. Ver js/publicar-pagina.js y js/publicar.js.
    ========================================================= */
 
 /* =========================================================

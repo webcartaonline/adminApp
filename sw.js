@@ -15,7 +15,7 @@
    automáticamente la ventana con lo que ha cambiado.
    ========================================================= */
 
-const VERSION = '10.2.0-BETA';
+const VERSION = '11.0.0-BETA';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
@@ -31,7 +31,6 @@ const ARCHIVOS = [
   './css/arbol.css',
   './css/editor.css',
   './css/destacados.css',
-  './css/estadisticas.css',
   './css/imagenes.css',
   './css/color.css',
   './css/version.css',
@@ -53,7 +52,6 @@ const ARCHIVOS = [
   './js/pagina-apariencia.js',
   './js/copia-ajustes.js',
   './js/idiomas.js',
-  './js/espera.js',
   './js/imagenes.js',
   './js/imagen-recorte.js',
   './js/nube.js',
@@ -73,7 +71,6 @@ const ARCHIVOS = [
   './js/vista-arbol.js',
   './js/vista-editor.js',
   './js/destacados.js',
-  './js/vista-estadisticas.js',
   './js/portapapeles.js',
   './js/sucesos.js',
   './js/version.js',

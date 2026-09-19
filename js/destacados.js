@@ -61,7 +61,7 @@ function alertaDe(grupo){
    apariencia.json, al lado de carta.json.
 
    Se piden una sola vez, al abrir el editor. Si no se
-   pueden traer (sin conexión, sin token, archivo que aún no
+   pueden traer (sin conexión, sin clave, archivo que aún no
    existe), se usan los de fábrica: la vista previa se
    parecerá un poco menos, pero nada deja de funcionar.
    ========================================================= */

@@ -70,8 +70,8 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
         </svg>
       </span>
       <span class="apartado__texto">
-        <span class="apartado__titulo">Conexión con la página</span>
-        <span class="apartado__pista">La clave de acceso y la información de la carta que se publica.</span>
+        <span class="apartado__titulo">Conexión con la carta</span>
+        <span class="apartado__pista">El negocio y la clave con los que se entra a editar.</span>
       </span>
       <span class="apartado__estado" id="estadoConexion">—</span>
       <span class="apartado__flecha" aria-hidden="true">
@@ -81,33 +81,34 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
     </button>
 
     <div class="apartado__cuerpo" id="cuerpoConexion" hidden>
-      <p class="apartado__nota">Estos datos se guardan solo en este navegador, nunca en la
-        aplicación. Para llevar la misma configuración a otro dispositivo exporta los ajustes</p>
+      <p class="apartado__nota">Estos dos datos se guardan solo en este navegador, nunca en la
+        aplicación. Para llevar la misma configuración a otro dispositivo, exporta los ajustes
+        desde el apartado de abajo.</p>
 
-      <label class="campo campo--clave">
-        <span class="campo__etiqueta">Token de acceso (API key)</span>
-        <span class="campo__conboton">
-          <input type="password" id="cfgToken" autocomplete="off" spellcheck="false">
-          <button class="btn btn--suave btn--mini" id="btnVerToken" type="button" aria-pressed="false">Ver</button>
-        </span>
-        <span class="campo__pista">Token de permisos (Read and write) no lo comparta con nadie, este código es el que le perimte editar la carta, cualquiera que lo tenga, tendrá acceso a ella.</span>
+      <label class="campo">
+        <span class="campo__etiqueta">Negocio</span>
+        <input type="text" id="cfgNegocio" autocomplete="off" spellcheck="false" placeholder="mi-negocio">
+        <span class="campo__pista">El nombre corto de su negocio, el mismo que sale en la dirección
+          de su carta. En minúsculas y con guiones en lugar de espacios.</span>
       </label>
 
-      <div class="ajustes__rejilla">
-        <label class="campo"><span class="campo__etiqueta">Servicio</span>
-          <input type="text" id="cfgOwner" autocomplete="off" spellcheck="false"></label>
-        <label class="campo"><span class="campo__etiqueta">Cliente</span>
-          <input type="text" id="cfgRepo" autocomplete="off" spellcheck="false"></label>
-        <label class="campo"><span class="campo__etiqueta">Rama</span>
-          <input type="text" id="cfgRama" autocomplete="off" spellcheck="false"></label>
-        <label class="campo"><span class="campo__etiqueta">Ruta del archivo</span>
-          <input type="text" id="cfgRuta" value="carta.json" autocomplete="off" spellcheck="false"></label>
-      </div>
+      <label class="campo campo--clave">
+        <span class="campo__etiqueta">Clave</span>
+        <span class="campo__conboton">
+          <input type="password" id="cfgClave" autocomplete="off" spellcheck="false">
+          <button class="btn btn--suave btn--mini" id="btnVerClave" type="button" aria-pressed="false">Ver</button>
+        </span>
+        <span class="campo__pista">La que le hemos dado al contratar. No la comparta con nadie:
+          quien la tenga puede cambiar su carta.</span>
+      </label>
 
       <div class="ajustes__acciones">
         <button class="btn btn--principal" id="btnGuardarCfg" type="button">Guardar conexión</button>
-        <button class="btn btn--peligro" id="btnOlvidarToken" type="button">Olvidar el token</button>
+        <button class="btn btn--suave" id="btnProbarCfg" type="button">Probar la conexión</button>
+        <button class="btn btn--peligro" id="btnOlvidarClave" type="button">Olvidar la clave</button>
       </div>
+
+      <dl class="ficha" id="fichaLicencia" hidden></dl>
     </div>
   </article>
 
@@ -223,20 +224,20 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
       <p class="apartado__nota">Los ajustes se guardan solo en este navegador, así que se pierden al
         cambiar de dispositivo, al borrar los datos del navegador o al reinstalar. Aquí puedes meterlos
         todos en un archivo y volver a soltarlos donde haga falta. <b>La carta no va dentro</b>: esa
-        está en el repositorio y se trae desde el editor.</p>
+        está en el servidor y se trae desde el editor.</p>
 
       <section class="bloque">
         <h3 class="bloque__titulo">Exportar</h3>
-        <p class="bloque__nota">Se descarga un archivo <code>.json</code> con los datos de conexión
-          (servicio, cliente, rama y ruta), la web conectada, el nombre del editor, el color principal
-          y el modo claro u oscuro.</p>
+        <p class="bloque__nota">Se descarga un archivo <code>.json</code> con el negocio, el nombre
+          del editor, el color principal y el modo claro u oscuro. La clave solo va si se pide.</p>
 
         <span class="campo__etiqueta">Qué más incluir</span>
         <div class="chips">
-          <button class="chip" id="btnIncluirToken" type="button" aria-pressed="false">Incluir el token de acceso</button>
+          <button class="chip" id="btnIncluirToken" type="button" aria-pressed="false">Incluir la clave</button>
         </div>
         <p class="bloque__aviso" id="copiaAvisoToken" hidden>
-          Con el token dentro, quien abra el archivo puede ver la el token (la clave) que permite leer y escribir en la carta. Si decide añadir el token no comparta este archivo con nadie, cualquiera que use el token podrá acceder a la carta y modificarla.</p>
+          Con la clave dentro, cualquiera que abra el archivo puede entrar a la carta y cambiarla.
+          Si la incluye, no comparta este archivo con nadie.</p>
 
         <div class="ajustes__acciones">
           <button class="btn btn--principal" id="btnExportar" type="button">Descargar archivo de ajustes</button>
@@ -301,7 +302,8 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 
       <section class="bloque">
         <h3 class="bloque__titulo">Web con la que conecta</h3>
-        <p class="bloque__nota">Es la página que se actualiza al pulsar «Publicar cambios».</p>
+        <p class="bloque__nota">Es la página que se actualiza al pulsar «Publicar cambios».
+          Su dirección sale del nombre del negocio.</p>
 
         <dl class="ficha">
           <div class="ficha__fila">
@@ -313,21 +315,17 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
                    aria-disabled="true">Sin dirección todavía</a></dd>
           </div>
           <div class="ficha__fila">
-            <dt>Repositorio</dt><dd id="fichaRepo">Sin configurar</dd>
+            <dt>Negocio</dt><dd id="fichaNegocio">Sin configurar</dd>
           </div>
         </dl>
 
-        <div class="ajustes__rejilla">
-          <label class="campo"><span class="campo__etiqueta">Nombre de la web</span>
-            <input type="text" id="sitioNombre" autocomplete="off"></label>
-          <label class="campo"><span class="campo__etiqueta">Dirección web</span>
-            <input type="text" id="sitioUrl" inputmode="url" autocomplete="off" spellcheck="false"
-                   placeholder="https://…"></label>
-        </div>
+        <label class="campo"><span class="campo__etiqueta">Nombre de la web</span>
+          <input type="text" id="sitioNombre" autocomplete="off">
+          <span class="campo__pista">Solo para reconocerla aquí. La dirección se calcula sola a
+            partir del negocio.</span></label>
 
         <div class="ajustes__acciones">
           <button class="btn btn--principal" id="btnGuardarSitio" type="button">Guardar</button>
-          <button class="btn btn--suave" id="btnDetectarSitio" type="button">Averiguar</button>
         </div>
       </section>
     </div>
@@ -343,6 +341,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 <script src="js/imagen-comprimir.js"></script>
 <script src="js/tema.js"></script>
 <script src="js/ajustes.js"></script>
+<script src="js/nube.js"></script>
 <script src="js/color.js"></script>
 <script src="js/color-ui.js"></script>
 <script src="js/version.js"></script>

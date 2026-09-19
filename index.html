@@ -45,7 +45,6 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <link rel="stylesheet" href="css/arbol.css">
 <link rel="stylesheet" href="css/editor.css">
 <link rel="stylesheet" href="css/destacados.css">
-<link rel="stylesheet" href="css/estadisticas.css">
 <link rel="stylesheet" href="css/imagenes.css">
 <link rel="stylesheet" href="css/version.css">
 <link rel="stylesheet" href="vista-previa/vista-previa.css">
@@ -77,26 +76,7 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
             title="Colores, portada, fuentes, pie y redes de la carta">Ajustes de la carta</button>
     <button class="btn btn--claro" id="btnVistaPrevia" type="button" disabled
             title="Trae la carta primero">Vista previa</button>
-    <button class="btn btn--claro" id="btnEstadisticas" type="button" hidden>Estadísticas</button>
     <button class="btn btn--principal" id="btnPublicar" type="button" disabled>Publicar cambios</button>
-
-    <div class="espera" id="espera" hidden>
-      <span class="espera__reloj" id="esperaReloj" aria-live="polite">2:00</span>
-      <button class="espera__ayuda" id="btnEsperaAyuda" type="button"
-              aria-expanded="false" aria-label="¿Por qué no puedo publicar ahora?">?</button>
-      <div class="espera__globo" id="esperaGlobo" hidden role="dialog"
-           aria-label="Por qué se bloquea el botón de publicar">
-        <b>¿Por qué hay que esperar?</b>
-        <p>Cuando publicas, el servidor tarda un par de minutos en montar y subir la web
-           con los cambios nuevos. Si publicas otra vez antes de que termine, los dos
-           despliegues se pisan: el primero se queda a medias y el segundo puede
-           salir incompleto o con las fotos antiguas.</p>
-        <p>Por eso el botón se bloquea 2 minutos. Mientras tanto puedes seguir
-           editando con tranquilidad: los cambios se guardan y se publicarán todos
-           juntos en cuanto acabe la cuenta atrás.</p>
-        <button class="btn btn--suave btn--mini" id="btnEsperaCerrar" type="button">Entendido</button>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -221,7 +201,6 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <script src="js/panel.js"></script>
 <script src="js/ajustes.js"></script>
 <script src="js/idiomas.js"></script>
-<script src="js/espera.js"></script>
 <script src="js/imagenes.js"></script>
 <script src="js/imagen-recorte.js"></script>
 <script src="js/nube.js"></script>
@@ -232,7 +211,6 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <script src="js/vista-arbol.js"></script>
 <script src="js/vista-editor.js"></script>
 <script src="js/destacados.js"></script>
-<script src="js/vista-estadisticas.js"></script>
 <script src="js/portapapeles.js"></script>
 <script src="js/sucesos.js"></script>
 <script src="js/version.js"></script>

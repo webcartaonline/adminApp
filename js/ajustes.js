@@ -5,27 +5,26 @@
    todos los clientes pueden compartir la misma dirección
    web sin mezclarse.
 
-   Ahora hacen falta solo DOS datos: el nombre del negocio y
-   su clave. El resto (dónde está el servidor, en qué
-   carpeta vive cada cosa) lo sabe nube.js y va fijo en el
-   código.
+   Hacen falta solo DOS datos: el nombre del negocio y su
+   clave. El resto (dónde está el servidor, en qué carpeta
+   vive cada cosa) lo sabe nube.js y va fijo en el código.
 
    Aquí solo está lo que necesitan las DOS páginas: leer y
    escribir esos datos. La pantalla donde se rellenan vive
    en ajustes.html y la maneja js/pagina-ajustes.js.
    ========================================================= */
 
-/* ---------- Puente temporal ----------
-   La pantalla de Ajustes todavía es la de GitHub: pide «Servicio»,
-   «Cliente», «Rama», «Ruta» y «Token». Mientras se rehaga, el nombre
-   del negocio se lee del campo «Cliente» y la clave del campo «Token».
-   Así el editor ya funciona contra el servidor nuevo sin tocar esa
-   pantalla. Cuando se rehaga, se borra esta tabla y sus dos usos. */
+/* ---------- Los dos datos de la conexión ----------
+   Antes esta pantalla era la de GitHub y pedía «Servicio», «Cliente»,
+   «Rama», «Ruta» y «Token». Quien venga de aquella época todavía tiene
+   guardados aquellos nombres: el negocio donde ponía «Cliente» y la
+   clave donde ponía «Token». Se siguen leyendo para que nadie tenga
+   que volver a escribirlos, y en cuanto se guarda algo se quedan con
+   su nombre de ahora. Lo de GitHub no se guarda nunca más. */
 const CAMPOS_ANTIGUOS={cliente:'repo',clave:'token'};
 
-/* Los dos datos de arriba se calculan al leer y NO se guardan, para
-   que «Olvidar el token» siga borrando la clave de verdad. */
-const CAMPOS_DERIVADOS=Object.keys(CAMPOS_ANTIGUOS);
+/* Lo que fue de GitHub y ya no pinta nada. */
+const CAMPOS_DE_GITHUB=['owner','repo','rama','ruta','token'];
 
 function leerAjustesGuardados(){
   try{return JSON.parse(localStorage.getItem(CLAVE_AJUSTES))||{};}catch{return{};}
@@ -33,16 +32,21 @@ function leerAjustesGuardados(){
 
 function leerAjustes(){
   const guardado=leerAjustesGuardados();
-  const derivados={};
+  const dosDatos={};
   for(const [nuevo,antiguo] of Object.entries(CAMPOS_ANTIGUOS)){
-    derivados[nuevo]=String(guardado[nuevo]||guardado[antiguo]||'').trim();
+    dosDatos[nuevo]=String(guardado[nuevo]||guardado[antiguo]||'').trim();
   }
-  return {...guardado,...derivados};
+  return {...guardado,...dosDatos};
 }
 
 function guardarAjustes(a){
   const limpio={...a};
-  for(const campo of CAMPOS_DERIVADOS)delete limpio[campo];
+  for(const campo of CAMPOS_DE_GITHUB)delete limpio[campo];
+  /* Un campo vacío se borra en vez de guardarse en blanco: así
+     «Olvidar la clave» la quita de verdad. */
+  for(const campo of Object.keys(CAMPOS_ANTIGUOS)){
+    if(!String(limpio[campo]||'').trim())delete limpio[campo];
+  }
   try{localStorage.setItem(CLAVE_AJUSTES,JSON.stringify(limpio));}catch{}
 }
 

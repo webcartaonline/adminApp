@@ -5,7 +5,7 @@
    abierto a la vez para que la pantalla no se llene.
 
    Aquí no se toca la carta: solo cosas de este navegador
-   (conexión, aspecto) y la ficha informativa de la app.
+   (la conexión, el aspecto) y la ficha informativa de la app.
    ========================================================= */
 
 /* ---------- Desplegables ---------- */
@@ -34,14 +34,26 @@ APARTADOS.forEach(art=>{
   });
 });
 
-/* ---------- Conexión con GitHub ---------- */
+/* ---------- Conexión con la carta ----------
+   Dos datos y nada más: el nombre del negocio y su clave. Con eso el
+   editor ya sabe con qué carta habla, porque dónde vive el servidor
+   va fijo en el código (ver nube.js). */
+
+/* El nombre del negocio tal y como lo entiende el servidor: en
+   minúsculas, sin acentos y con guiones en lugar de espacios. Se
+   limpia aquí para que nadie se quede fuera por escribir «Fusión
+   Café» en vez de «fusion-cafe». */
+function limpiarNegocio(texto){
+  return String(texto||'').trim().toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[^a-z0-9]+/g,'-')
+    .replace(/^-+|-+$/g,'');
+}
+
 function volcarConexion(){
   const a=leerAjustes();
-  $('#cfgOwner').value=a.owner||'';
-  $('#cfgRepo').value=a.repo||'';
-  $('#cfgRama').value=a.rama||'';
-  $('#cfgRuta').value=a.ruta||'carta.json';
-  $('#cfgToken').value=a.token||'';
+  $('#cfgNegocio').value=a.cliente||'';
+  $('#cfgClave').value=a.clave||'';
   pintarEstadoConexion();
 }
 
@@ -49,7 +61,7 @@ function volcarConexion(){
    vistazo si falta algo sin tener que desplegarlo. */
 function pintarEstadoConexion(){
   const a=leerAjustes();
-  const completo=!!(a.owner&&a.repo&&a.token);
+  const completo=!!(a.cliente&&a.clave);
   const e=$('#estadoConexion');
   e.textContent=completo?'Configurada':'Falta por completar';
   e.className=`apartado__estado ${completo?'apartado__estado--bien':'apartado__estado--falta'}`;
@@ -57,33 +69,90 @@ function pintarEstadoConexion(){
 
 $('#btnGuardarCfg').addEventListener('click',()=>{
   const a=leerAjustes();
-  a.owner=$('#cfgOwner').value.trim();
-  a.repo=$('#cfgRepo').value.trim();
-  a.rama=$('#cfgRama').value.trim()||'main';
-  a.ruta=$('#cfgRuta').value.trim()||'carta.json';
-  a.token=$('#cfgToken').value.trim();
+  a.cliente=limpiarNegocio($('#cfgNegocio').value);
+  a.clave=$('#cfgClave').value.trim();
   guardarAjustes(a);
-  volcarConexion();
-  pintarFichaConexion();
-  avisar('Datos de conexión guardados en este navegador.','bien');
+  /* La dirección de la carta sale del negocio, así que se pone al día
+     sola en cuanto se guarda. */
+  guardarSitio({nombre:leerSitio().nombre||'',url:a.cliente?direccionDeLaCarta():''});
+  refrescarPantallaAjustes();
+  avisar('Conexión guardada en este navegador.','bien');
 });
 
-$('#btnOlvidarToken').addEventListener('click',()=>{
+$('#btnOlvidarClave').addEventListener('click',()=>{
   const a=leerAjustes();
-  delete a.token;
+  a.clave='';
   guardarAjustes(a);
-  $('#cfgToken').value='';
+  $('#cfgClave').value='';
+  $('#fichaLicencia').hidden=true;
   pintarEstadoConexion();
-  avisar('Token borrado de este navegador.','bien');
+  sincronizarChipToken();
+  avisar('Clave borrada de este navegador.','bien');
 });
 
-/* El token se escribe a ciegas; poder mirarlo evita medio susto. */
-$('#btnVerToken').addEventListener('click',()=>{
-  const campo=$('#cfgToken');
+/* La clave se escribe a ciegas; poder mirarla evita medio susto. */
+$('#btnVerClave').addEventListener('click',()=>{
+  const campo=$('#cfgClave');
   const oculto=campo.type==='password';
   campo.type=oculto?'text':'password';
-  $('#btnVerToken').textContent=oculto?'Ocultar':'Ver';
-  $('#btnVerToken').setAttribute('aria-pressed',String(oculto));
+  $('#btnVerClave').textContent=oculto?'Ocultar':'Ver';
+  $('#btnVerClave').setAttribute('aria-pressed',String(oculto));
+});
+
+/* ---------- Probar la conexión ----------
+   Le pregunta al servidor por la licencia de este negocio. Es la
+   forma de saber, sin salir de esta pantalla, si el negocio y la
+   clave son los buenos y qué incluye el plan contratado. */
+function filaFicha(rotulo,valor){
+  return `<div class="ficha__fila"><dt>${escapar(rotulo)}</dt><dd>${escapar(valor)}</dd></div>`;
+}
+
+const ROTULO_PERMISO={
+  etiquetas:'Notas y alertas',
+  imagenesDecorativas:'Fondo, bandas y fuentes',
+  imagenMarca:'Logotipo e iconito',
+  imagenItem:'Fotos de los platos',
+  idiomaExtra:'Idioma extra',
+  publicar:'Publicar cambios'
+};
+
+function pintarFichaLicencia(estadoLicencia){
+  const permisos=estadoLicencia.permisos||{};
+  const incluye=Object.entries(ROTULO_PERMISO)
+    .filter(([clave])=>permisos[clave]===true)
+    .map(([,rotulo])=>rotulo);
+
+  let html='';
+  html+=filaFicha('Negocio',estadoLicencia.negocio||'Sin nombre');
+  html+=filaFicha('Plan',estadoLicencia.plan||'Sin plan');
+  html+=filaFicha('Caduca',String(estadoLicencia.caduca||'').slice(0,10)||'Sin fecha');
+  const dias=Number(estadoLicencia.diasRestantes);
+  if(Number.isFinite(dias)){
+    html+=filaFicha('Quedan',dias===1?'1 día':`${dias} días`);
+  }
+  html+=filaFicha('Incluye',incluye.length?incluye.join(' · '):'Nada todavía');
+
+  const ficha=$('#fichaLicencia');
+  ficha.innerHTML=html;
+  ficha.hidden=false;
+}
+
+$('#btnProbarCfg').addEventListener('click',async()=>{
+  const boton=$('#btnProbarCfg');
+  const rotulo=boton.textContent;
+  boton.disabled=true;
+  boton.textContent='Probando…';
+  try{
+    const estadoLicencia=await leerEstadoDeLicencia();
+    pintarFichaLicencia(estadoLicencia);
+    avisar('Conexión correcta. Ya puedes volver al editor y traer la carta.','bien');
+  }catch(e){
+    $('#fichaLicencia').hidden=true;
+    avisar(`No se ha podido conectar: ${e.message}`,'error');
+  }finally{
+    boton.disabled=false;
+    boton.textContent=rotulo;
+  }
 });
 
 /* ---------- Personalización ---------- */
@@ -103,97 +172,36 @@ function pintarNombreEjemplo(){
 $('#cfgNombre').addEventListener('input',pintarNombreEjemplo);
 
 /* ---------- La web con la que conecta ----------
-   Se intenta averiguar sola. GitHub lo cuenta de dos maneras y no
-   siempre están las dos disponibles, así que se prueban en orden:
-     1. La ficha de GitHub Pages: es la buena, pero un token de
-        permisos limitados normalmente no puede leerla.
-     2. El campo «Website» del repositorio: GitHub lo rellena solo
-        cuando se activa Pages.
-     3. Y si nada de eso responde, se deduce de la cuenta y el
-        repositorio, que es como monta GitHub las direcciones.
-   El usuario siempre puede escribirla a mano: lo que escriba manda. */
-function direccionDeducida(owner,repo){
-  if(!owner||!repo)return '';
-  return repo.toLowerCase()===`${owner.toLowerCase()}.github.io`
-    ? `https://${owner.toLowerCase()}.github.io/`
-    : `https://${owner.toLowerCase()}.github.io/${repo}/`;
-}
-
-function normalizarDireccion(url){
-  const t=String(url||'').trim();
-  if(!t)return '';
-  return /^https?:\/\//i.test(t)?t:`https://${t}`;
-}
-
-async function detectarSitio(){
-  const a=leerAjustes();
-  if(!a.owner||!a.repo){
-    avisar('Primero completa la cuenta y el repositorio en «Conexión con GitHub».','error');
-    return;
-  }
-  const boton=$('#btnDetectarSitio');
-  const rotulo=boton.textContent;
-  boton.disabled=true;
-  boton.textContent='Buscando…';
-  const cab={'Accept':'application/vnd.github+json',...(a.token?{'Authorization':`Bearer ${a.token}`}:{})};
-  let url='', nombre='', de='';
-
-  try{
-    const r=await fetch(`https://api.github.com/repos/${a.owner}/${a.repo}/pages`,{headers:cab,cache:'no-store'});
-    if(r.ok){
-      const p=await r.json();
-      if(p.html_url){url=p.html_url;de='la ficha de GitHub Pages';}
-    }
-  }catch{/* se sigue probando por otro lado */}
-
-  try{
-    const r=await fetch(`https://api.github.com/repos/${a.owner}/${a.repo}`,{headers:cab,cache:'no-store'});
-    if(r.ok){
-      const repo=await r.json();
-      nombre=repo.description||repo.name||'';
-      if(!url&&repo.homepage){url=repo.homepage;de='el campo «Website» del repositorio';}
-    }
-  }catch{/* se sigue probando por otro lado */}
-
-  if(!url){url=direccionDeducida(a.owner,a.repo);de='la cuenta y el repositorio';}
-
-  $('#sitioUrl').value=url;
-  if(nombre&&!$('#sitioNombre').value.trim())$('#sitioNombre').value=nombre;
-  guardarSitio({nombre:$('#sitioNombre').value.trim(),url});
-  pintarFichaSitio();
-  boton.disabled=false;
-  boton.textContent=rotulo;
-  avisar(`Dirección averiguada a partir de ${de}. Si no es esa, cámbiala a mano.`,'bien');
-}
-
-$('#btnDetectarSitio').addEventListener('click',detectarSitio);
-
+   Ya no hay nada que averiguar: cada negocio entra por su propio
+   subdominio, así que la dirección se calcula a partir del nombre del
+   negocio (ver direccionDeLaCarta en nube.js). Aquí solo se guarda un
+   nombre para reconocerla de un vistazo. */
 $('#btnGuardarSitio').addEventListener('click',()=>{
-  const url=normalizarDireccion($('#sitioUrl').value);
-  $('#sitioUrl').value=url;
-  guardarSitio({nombre:$('#sitioNombre').value.trim(),url});
+  const a=leerAjustes();
+  guardarSitio({nombre:$('#sitioNombre').value.trim(),url:a.cliente?direccionDeLaCarta():''});
   pintarFichaSitio();
   avisar('Datos de la web guardados.','bien');
 });
 
 function pintarFichaSitio(){
+  const a=leerAjustes();
   const s=leerSitio();
+  const url=a.cliente?direccionDeLaCarta():'';
   $('#fichaSitioNombre').textContent=s.nombre||'Sin nombre';
   const enlace=$('#fichaSitioUrl');
-  if(s.url){
-    enlace.textContent=s.url;
-    enlace.href=s.url;
+  if(url){
+    enlace.textContent=url;
+    enlace.href=url;
     enlace.removeAttribute('aria-disabled');
   }else{
-    enlace.textContent='Sin averiguar todavía';
+    enlace.textContent='Falta el negocio en la conexión';
     enlace.removeAttribute('href');
     enlace.setAttribute('aria-disabled','true');
   }
 }
 
 function pintarFichaConexion(){
-  const a=leerAjustes();
-  $('#fichaRepo').textContent=a.owner&&a.repo?`${a.owner}/${a.repo}`:'Sin configurar';
+  $('#fichaNegocio').textContent=leerAjustes().cliente||'Sin configurar';
 }
 
 /* ---------- Información de la aplicación ---------- */
@@ -221,9 +229,7 @@ function refrescarPantallaAjustes(){
   pintarNombreEjemplo();
   sincronizarColorUI();
 
-  const s=leerSitio();
-  $('#sitioNombre').value=s.nombre||'';
-  $('#sitioUrl').value=s.url||'';
+  $('#sitioNombre').value=leerSitio().nombre||'';
   pintarFichaSitio();
   pintarFichaConexion();
 }
@@ -240,5 +246,5 @@ arrancarVersion().then(pintarInfoApp);
    primero que hay que hacer y no tiene sentido esconderlo. */
 {
   const a=leerAjustes();
-  if(!(a.owner&&a.repo&&a.token))abrirApartado($('#apConexion'),true);
+  if(!(a.cliente&&a.clave))abrirApartado($('#apConexion'),true);
 }

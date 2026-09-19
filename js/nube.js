@@ -21,17 +21,25 @@ const NUBE = {
      petición por la clave, así que no depende de ningún dominio. */
   portero: 'https://webcarta-publicar.webcartaonline.workers.dev',
 
-  /* De dónde se MIRAN las fotos que ya están publicadas, para las
-     vistas previas del editor. Tienen que ser direcciones públicas y
-     sin clave, porque una etiqueta <img> no sabe enviar claves.
+  /* Dónde vive la carta de cada negocio. El {negocio} se cambia por el
+     nombre que hay puesto en «Ajustes», porque cada uno entra por su
+     propio subdominio:
 
-     Mientras no haya dominio: las sirve el Worker de las cartas, de
-     la carpeta que va subida con la página.
-     El día del dominio: cambiar a 'https://fotos.webcartaonline.com'
-     y poner porCliente en true. Nada más. */
-  fotos: 'https://webcarta.webcartaonline.workers.dev',
-  fotosPorCliente: false
+       fusion-cafe.webcartaonline.com
+
+     De ahí se MIRAN las fotos ya publicadas y los archivos de la
+     plantilla. Son direcciones públicas y sin clave, porque una
+     etiqueta <img> no sabe enviar claves; y son exactamente las
+     mismas que ve el comensal, así que lo que enseñe el editor es lo
+     que hay. */
+  carta: 'https://{negocio}.webcartaonline.com'
 };
+
+/* La dirección de la carta de este negocio, ya con su nombre puesto. */
+function direccionDeLaCarta() {
+  const negocio = String(leerAjustes().cliente || '').trim();
+  return NUBE.carta.replace('{negocio}', negocio);
+}
 
 /* ---------- Errores con mensaje en claro ----------
    El portero contesta con un código y un motivo. Aquí se traducen a
@@ -164,10 +172,7 @@ async function borrarArchivo(ruta) {
 function urlPublica(rutaEnCarta) {
   const ruta = String(rutaEnCarta || '').trim();
   if (!ruta) return '';
-  const carpeta = NUBE.fotosPorCliente
-    ? `${String(leerAjustes().cliente || '').trim()}/`
-    : '';
-  return `${NUBE.fotos}/${carpeta}${ruta.replace(/^\/+/, '')}`;
+  return `${direccionDeLaCarta()}/${ruta.replace(/^\/+/, '')}`;
 }
 
 /* ---------- Archivos de la plantilla ----------
@@ -176,7 +181,7 @@ function urlPublica(rutaEnCarta) {
    cliente: son iguales para todos, así que se bajan sin clave del
    Worker de las cartas. */
 async function leerArchivoDePlantilla(nombre) {
-  const r = await fetch(`${NUBE.fotos}/${nombre}`, { cache: 'no-store' });
+  const r = await fetch(`${direccionDeLaCarta()}/${nombre}`, { cache: 'no-store' });
   if (!r.ok) throw new Error(`No se ha podido traer ${nombre} (${r.status}).`);
   return r.text();
 }

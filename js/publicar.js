@@ -42,15 +42,9 @@ async function traer(){
     cargarDatos(datos);
     avisar(mensajeDeBienvenida(licencia),'bien');
 
-    // Las estadísticas están aparcadas: el botón se queda escondido.
-    estado.estadisticas=null;
-    refrescarBotonEstadisticas();
-
     // Los archivos de la plantilla (los que hacen falta para la vista
     // previa) se ponen al día aparte. Si falla, la carta ya está
     // cargada: solo se queda sin vista previa, no se estropea nada.
-    // OJO: plantilla.js todavía habla con GitHub; se adapta en la
-    // siguiente tanda y hasta entonces este intento fallará sin ruido.
     try{ await sincronizarPlantilla(); }
     catch(e){ console.warn('Vista previa no disponible:',e.message); }
     if(typeof refrescarBotonVistaPrevia==='function')refrescarBotonVistaPrevia();
@@ -95,17 +89,11 @@ function cargarDatos(datos){
   return true;
 }
 
-function refrescarBotonEstadisticas(){
-  const hay=!!estado.estadisticas;
-  $('#btnEstadisticas').hidden=!hay;
-  if(!hay&&estado.vista==='estadisticas'){estado.vista='editor';pintarTodo();}
-}
-
 /* ---------- Fotos pendientes ----------
    El editor las prepara en base64 porque GitHub lo exigía. El servidor
-   nuevo quiere el archivo tal cual, que pesa un tercio menos, así que
-   aquí se deshace esa conversión. Cuando la ventana de la foto se
-   adapte (siguiente tanda), esta traducción sobrará. */
+   quiere el archivo tal cual, que pesa un tercio menos, así que aquí se
+   deshace esa conversión. El día que la ventana de la foto guarde ya el
+   archivo tal cual, esta traducción sobrará. */
 
 const TIPO_POR_EXTENSION={
   jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png',
@@ -170,9 +158,6 @@ async function publicar(){
 
     // 3.5) Los ajustes de la página sin publicar (colores, portada,
     //      logotipo, fuentes…) viajan en la misma tanda.
-    //      OJO: publicar-pagina.js todavía habla con GitHub; se adapta
-    //      en la siguiente tanda. Hasta entonces esto avisará de que no
-    //      se han podido publicar, y el borrador se queda guardado.
     const apariencia=await publicarAparienciaSiHay();
 
     if(typeof refrescarBotonVistaPrevia==='function')refrescarBotonVistaPrevia();
