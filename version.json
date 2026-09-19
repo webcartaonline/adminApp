@@ -1,12 +1,10 @@
 {
-  "version": "10.1.0-BETA",
+  "version": "10.2.0-BETA",
   "fecha": "2026-09-19",
-  "titulo": "La personalización de la página, de vuelta",
+  "titulo": "La vista previa, de vuelta",
   "cambios": [
-    "Los ajustes de la página vuelven a funcionar: logotipo, icono del navegador, colores, fondo de portada y pie.",
-    "Ahora cada apartado se muestra solo si el plan del negocio lo incluye.",
-    "Las fotos y las letras se suben al servidor propio de WebCartaOnline, más rápido que antes.",
-    "La carta en PDF se genera también desde el servidor nuevo.",
-    "Versión preliminar: la vista previa dentro del editor se reactiva en la próxima actualización."
+    "La vista previa vuelve a funcionar: ya se puede ver cómo queda la carta antes de publicarla.",
+    "El editor solo se descarga el diseño de la carta cuando de verdad ha cambiado, así que carga más rápido.",
+    "Si el diseño no se puede descargar, la vista previa sigue funcionando con la última copia guardada."
   ]
 }
