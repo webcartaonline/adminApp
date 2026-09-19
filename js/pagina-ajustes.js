@@ -67,7 +67,11 @@ function pintarEstadoConexion(){
   e.className=`apartado__estado ${completo?'apartado__estado--bien':'apartado__estado--falta'}`;
 }
 
-$('#btnGuardarCfg').addEventListener('click',()=>{
+/* Guarda lo que hay escrito en los dos campos. Lo usan el botón de
+   guardar y el de probar: probar sin guardar antes comprobaría los
+   datos viejos, que es justo lo que despista a quien acaba de
+   escribir los nuevos. */
+function guardarConexionDeLosCampos(){
   const a=leerAjustes();
   a.cliente=limpiarNegocio($('#cfgNegocio').value);
   a.clave=$('#cfgClave').value.trim();
@@ -76,6 +80,10 @@ $('#btnGuardarCfg').addEventListener('click',()=>{
      sola en cuanto se guarda. */
   guardarSitio({nombre:leerSitio().nombre||'',url:a.cliente?direccionDeLaCarta():''});
   refrescarPantallaAjustes();
+}
+
+$('#btnGuardarCfg').addEventListener('click',()=>{
+  guardarConexionDeLosCampos();
   avisar('Conexión guardada en este navegador.','bien');
 });
 
@@ -140,12 +148,13 @@ function pintarFichaLicencia(estadoLicencia){
 $('#btnProbarCfg').addEventListener('click',async()=>{
   const boton=$('#btnProbarCfg');
   const rotulo=boton.textContent;
+  guardarConexionDeLosCampos();   // se prueba lo que está escrito, no lo de antes
   boton.disabled=true;
   boton.textContent='Probando…';
   try{
     const estadoLicencia=await leerEstadoDeLicencia();
     pintarFichaLicencia(estadoLicencia);
-    avisar('Conexión correcta. Ya puedes volver al editor y traer la carta.','bien');
+    avisar('Conexión correcta y guardada. Ya puedes volver al editor y traer la carta.','bien');
   }catch(e){
     $('#fichaLicencia').hidden=true;
     avisar(`No se ha podido conectar: ${e.message}`,'error');
