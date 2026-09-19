@@ -123,7 +123,7 @@ function abrirModalImagen(tipo,id){
    dónde mirar: basta con intentar cargarla. */
 function buscarImagenGuardada(tipo,id,ficha){
   const a=leerAjustes();
-  if(!a.owner||!a.repo)return;
+  if(!nubeConfigurada())return;
   const rutaEnCarta=rutaImagenCarta(tipo,id);
   const url=urlImagenExistente(rutaEnCarta);
   if(!url)return;

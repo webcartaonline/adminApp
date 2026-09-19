@@ -75,20 +75,12 @@ async function traerColoresDeLaCarta(){
   if(coloresCarta.pedidos)return;
   coloresCarta.pedidos=true;
 
-  const a=leerAjustes();
-  if(!a.owner||!a.repo)return;
-
-  // apariencia.json vive en la misma carpeta que carta.json.
-  const partes=String(a.ruta||'carta.json').split('/');
-  partes[partes.length-1]='apariencia.json';
+  if(!nubeConfigurada())return;
 
   try{
-    const r=await fetch(
-      `https://api.github.com/repos/${a.owner}/${a.repo}/contents/${partes.join('/')}?ref=${a.rama||'main'}`,
-      { headers:{'Accept':'application/vnd.github+json',
-                 ...(a.token?{'Authorization':`Bearer ${a.token}`}:{})}, cache:'no-store' });
-    if(!r.ok)return;                       // 404 incluido: aún no lo han personalizado
-    const guardados=JSON.parse(deBase64((await r.json()).content))?.colores;
+    // Si el negocio aún no ha personalizado la página, no hay archivo
+    // y se devuelve null: se queda con los colores de fábrica.
+    const guardados=(await leerApariencia())?.colores;
     if(!guardados)return;
     asentarColoresDeLaCarta(guardados);
     if(estado.datos&&estado.vista==='editor')pintarZona();   // las previas ya pueden ser fieles

@@ -32,22 +32,16 @@ function nombreArchivoImagen(id){
   return `${limpio}.jpg`;
 }
 
-/* Carpeta donde vive carta.json dentro del repo ('' si está en la raíz). */
-function carpetaDeLaCarta(ruta){
-  const partes=String(ruta||'carta.json').split('/');
-  partes.pop();
-  return partes.length?partes.join('/')+'/':'';
-}
-
 /* Ruta que se guarda en carta.json (relativa al index.html de la carta). */
 function rutaImagenCarta(tipo,id){
   return `${IMG_TIPOS[tipo].carpeta}/${nombreArchivoImagen(id)}`;
 }
 
-/* Ruta dentro del repositorio (para subir por la API de GitHub). */
+/* Ruta con la que se sube al servidor. Es la MISMA que se guarda en la
+   carta: el servidor ya mete cada archivo en la carpeta de su negocio,
+   así que aquí no se pone ningún prefijo. */
 function rutaImagenRepo(tipo,id){
-  const a=leerAjustes();
-  return `${carpetaDeLaCarta(a.ruta)}${rutaImagenCarta(tipo,id)}`;
+  return rutaImagenCarta(tipo,id);
 }
 
 /* El campo "foco" dice qué casilla de la cuadrícula de tres por tres es
@@ -153,15 +147,15 @@ function contarImagenesDe(seccionOGrupo,esSeccion){
 function avisoFotos(n){
   if(!n)return '';
   return n===1
-    ? '\n\nSu foto se borrará del repositorio al publicar los cambios.'
-    : `\n\nSus ${n} fotos se borrarán del repositorio al publicar los cambios.`;
+    ? '\n\nSu foto se borrará al publicar los cambios.'
+    : `\n\nSus ${n} fotos se borrarán al publicar los cambios.`;
 }
 
-/* Dirección pública para ver una foto que ya está en el repo. */
+/* Dirección pública para ver una foto que ya está publicada. La calcula
+   nube.js, que es quien sabe dónde viven las fotos. */
 function urlImagenExistente(rutaEnCarta){
-  const a=leerAjustes();
-  if(!a.owner||!a.repo||!rutaEnCarta)return '';
-  return `https://raw.githubusercontent.com/${a.owner}/${a.repo}/${a.rama||'main'}/${carpetaDeLaCarta(a.ruta)}${sinVersion(rutaEnCarta)}`;
+  if(!rutaEnCarta)return '';
+  return urlPublica(sinVersion(rutaEnCarta));
 }
 
 /* Busca el objeto (sección, grupo o ítem) al que pertenece una imagen. */

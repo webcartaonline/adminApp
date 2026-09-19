@@ -1,14 +1,12 @@
 {
-  "version": "10.0.1-BETA",
+  "version": "10.1.0-BETA",
   "fecha": "2026-09-19",
-  "titulo": "Nuevo sistema de publicación (versión preliminar)",
+  "titulo": "La personalización de la página, de vuelta",
   "cambios": [
-    "El editor guarda ahora los cambios en el servidor propio de WebCartaOnline, más rápido y más seguro.",
-    "Al publicar ya no hay que esperar: los cambios aparecen en la carta al momento.",
-    "Los planes que no incluyen imágenes decorativas ya pueden cambiar su logotipo y el iconito de la pestaña.",
-    "Ya no se pide escribir un resumen de los cambios cada vez que se publica.",
-    "El servidor guarda una copia de seguridad de la carta cada vez que se publica.",
-    "Si la licencia está a punto de caducar, el editor avisa al cargar la carta.",
-    "Versión preliminar: la personalización de la página y la vista previa se reactivan en la próxima actualización."
+    "Los ajustes de la página vuelven a funcionar: logotipo, icono del navegador, colores, fondo de portada y pie.",
+    "Ahora cada apartado se muestra solo si el plan del negocio lo incluye.",
+    "Las fotos y las letras se suben al servidor propio de WebCartaOnline, más rápido que antes.",
+    "La carta en PDF se genera también desde el servidor nuevo.",
+    "Versión preliminar: la vista previa dentro del editor se reactiva en la próxima actualización."
   ]
 }
