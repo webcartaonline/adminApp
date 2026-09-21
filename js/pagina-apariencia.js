@@ -309,6 +309,7 @@ async function cargarPagina(){
     avisar('Antes de personalizar la página, completa la conexión en el primer apartado.','error');
     return;
   }
+  const a=leerAjustes();   // <-- arreglo: 'a' hacía falta más abajo (restaurarBorrador) y ya no se definía
   apar.cargando=true;
   pintarEstadoPagina('Cargando…');
   try{
