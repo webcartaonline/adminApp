@@ -9,28 +9,25 @@
 
 const estado = {
   datos:null,                // la carta entera, tal cual está en carta.json
-  sha:null,                  // "huella" del archivo en GitHub, para no pisar cambios ajenos
+  licencia:null,             // plan y permisos, tal y como los manda el servidor
+  vista:'editor',
   idiomas:['es'],
   imagenes:false,           // ¿esta carta lleva fotos? lo dice negocio.imagenes
-  estadisticas:null,
-  vista:'editor',            // 'editor' | 'estadisticas'
   seccionActiva:null, grupoActivo:null,
   sucio:false,               // ¿hay cambios sin publicar?
   aparienciaSucia:false,     // ¿hay cambios de «Ajustes de la página» sin publicar?
-  imagenesPendientes:{},     // ruta en el repo -> {base64, bytes, ancho, alto, previa}
-  imagenesPorBorrar:[],      // rutas en el repo que hay que borrar al publicar
-  imagenesHuerfanas:new Set(),// rutas que siguen en el repo pero la carta ya no usa
+  imagenesPendientes:{},     // ruta de la foto -> {base64, bytes, ancho, alto, previa}
+  imagenesPorBorrar:[],      // rutas de fotos que hay que borrar al publicar
+  imagenesHuerfanas:new Set(),// fotos que siguen en el servidor y la carta ya no usa
   expandidas:new Set(),      // ids de secciones abiertas en el árbol de la izquierda
   itemCopiado:null           // copia de un ítem, lista para pegar en otro grupo
 };
 
-/* El botón «Publicar cambios» se enciende SOLO si se cumplen tres cosas:
-   no estamos en la espera de después de publicar, la carta está cargada
-   (sin ella no hay nada que publicar y publicar daría error) y hay algo
-   pendiente, sea de la carta o de «Ajustes de la página». Un único sitio
-   decide esto para que los dos estados nunca se descuadren. */
+/* El botón «Publicar cambios» se enciende SOLO si se cumplen dos cosas:
+   que la carta esté cargada (sin ella no hay nada que publicar) y que
+   haya algo pendiente, sea de la carta o de «Ajustes de la página». Un
+   único sitio decide esto para que los dos estados nunca se descuadren. */
 function sincronizarBotonPublicar(){
-  if(enEspera())return;   // durante la espera manda espera.js: el botón queda bloqueado
   const hayCambios=estado.sucio||estado.aparienciaSucia;
   $('#btnPublicar').disabled=!(estado.datos&&hayCambios);
 }

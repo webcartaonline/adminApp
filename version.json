@@ -1,8 +1,12 @@
 {
-  "version": "9.1.1",
-  "fecha": "2026-09-12",
-  "titulo": "Mejora de rendiminento y estabilidad",
+  "version": "11.0.1-BETA",
+  "fecha": "2026-09-19",
+  "titulo": "Tus fotos, en tu carta",
   "cambios": [
-    "Se ha mejorado la estabilidad y el rendimiento"
+    "Las fotos que subes ya se ven en tu carta. Antes se guardaban bien, pero la carta seguía enseñando las de la plantilla.",
+    "La vista previa vuelve a enseñar las fotos que ya estaban publicadas.",
+    "La pantalla de «Ajustes» pide ahora solo dos datos, tu negocio y tu clave, y trae un botón para comprobar que la conexión funciona.",
+    "Se acabó la espera de dos minutos después de publicar: los cambios se ven al momento.",
+    "Quitado el apartado de estadísticas, que no estaba en uso."
   ]
 }

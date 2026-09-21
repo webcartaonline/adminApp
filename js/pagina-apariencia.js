@@ -3,15 +3,10 @@
    La personalización de la carta que ven los clientes del
    negocio: colores, título, eslogan, logotipo y fuentes.
 
-   Todo se guarda en un archivo propio del repositorio,
+   Todo se guarda en un archivo propio del negocio,
    apariencia.json, separado de carta.json a propósito: así
    publicar la apariencia y publicar la carta nunca se pisan
    entre sí aunque se haga desde pantallas distintas.
-
-   La espera de dos minutos tras publicar es LA MISMA que la
-   del editor (comparten la llave guardada en el navegador):
-   publiques donde publiques, los dos botones quedan
-   bloqueados hasta que el despliegue anterior termina.
 
    Va todo dentro de una función envolvente para no dejar
    nombres sueltos que choquen con el resto del programa.
@@ -252,12 +247,11 @@ function pintarPrevia(){
   caja.classList.toggle('previa-carta--con-fondo',!!origenFondo);
 }
 
-/* La dirección pública de un archivo del repositorio, para poder
-   enseñar en la previa un logo que ya estaba publicado. */
+/* La dirección pública de un archivo ya publicado, para poder enseñar
+   en la previa un logo que el negocio subió otro día. La calcula
+   nube.js, que es quien sabe dónde viven las fotos. */
 function rutaPublica(ruta){
-  const a=leerAjustes();
-  if(!a.owner||!a.repo||!ruta)return '';
-  return `https://raw.githubusercontent.com/${a.owner}/${a.repo}/${a.rama||'main'}/${ruta}`;
+  return ruta?urlPublica(ruta):'';
 }
 
 /* Una fuente recién elegida se enseña en la previa cargándola desde el
@@ -282,34 +276,35 @@ function quitarPreviaFuente(clave){
 
 /* =========================================================
    CARGA
-   Se trae apariencia.json del repositorio (si no existe aún,
-   se estrena uno) y carta.json solo para rellenar el título
-   y el eslogan con lo que la carta enseña hoy.
+   Se trae la apariencia publicada (si no existe aún, se
+   estrena una) y la carta solo para rellenar el título y el
+   eslogan con lo que enseña hoy. Las dos las pide nube.js.
    ========================================================= */
-function cabecerasGitHub(){
-  const a=leerAjustes();
-  return {'Accept':'application/vnd.github+json',...(a.token?{'Authorization':`Bearer ${a.token}`}:{})};
-}
-function rutaJunto(nombre){
-  // apariencia.json vive al lado de carta.json, sea cual sea la carpeta.
-  const partes=String(leerAjustes().ruta||'carta.json').split('/');
-  partes[partes.length-1]=nombre;
-  return partes.join('/');
-}
-async function traerDelRepo(ruta){
-  const a=leerAjustes();
-  const r=await fetch(`https://api.github.com/repos/${a.owner}/${a.repo}/contents/${ruta}?ref=${a.rama||'main'}`,
-    {headers:cabecerasGitHub(),cache:'no-store'});
-  if(r.status===404)return null;
-  if(r.status===401)throw new Error('El token no es válido o ha caducado.');
-  if(!r.ok)throw new Error(`GitHub respondió ${r.status}.`);
-  const cuerpo=await r.json();
-  return JSON.parse(deBase64(cuerpo.content));
+
+/* Esconde los apartados que el plan de este negocio no incluye. Un solo
+   sitio decide esto, y usa los MISMOS nombres de permiso que el
+   servidor, así que nunca se queda un botón suelto que el servidor
+   vaya a rechazar.
+
+     imagenMarca          -> el logotipo y el iconito del navegador
+     imagenesDecorativas  -> el fondo de la portada y las fuentes propias */
+const APARTADOS_POR_PERMISO={
+  imagenMarca:['#bloqueLogo','#bloqueFavicon'],
+  imagenesDecorativas:['#bloqueFondoPortada','#bloqueFuentes']
+};
+
+function aplicarPermisosDeLaPagina(permisos){
+  for(const [permiso,selectores] of Object.entries(APARTADOS_POR_PERMISO)){
+    const permitido=permisos[permiso]===true;
+    for(const selector of selectores){
+      const apartado=$(selector);
+      if(apartado)apartado.hidden=!permitido;
+    }
+  }
 }
 
 async function cargarPagina(){
-  const a=leerAjustes();
-  if(!a.owner||!a.repo){
+  if(!nubeConfigurada()){
     pintarEstadoPagina('Falta la conexión','falta');
     avisar('Antes de personalizar la página, completa la conexión en el primer apartado.','error');
     return;
@@ -317,9 +312,10 @@ async function cargarPagina(){
   apar.cargando=true;
   pintarEstadoPagina('Cargando…');
   try{
-    const [guardada,carta]=await Promise.all([
-      traerDelRepo(rutaJunto('apariencia.json')),
-      traerDelRepo(leerAjustes().ruta||'carta.json').catch(()=>null)
+    const [guardada,carta,licencia]=await Promise.all([
+      leerApariencia(),
+      leerCarta().catch(()=>null),
+      leerEstadoDeLicencia()
     ]);
 
     // Lo guardado se vuelca sobre uno de fábrica: si mañana hay campos
@@ -338,13 +334,10 @@ async function cargarPagina(){
       }
     };
 
-    /* El fondo de la portada es una «imagen decorativa»: solo lo enseñan
-       los planes que las incluyen. El plan lo dice la propia carta, en
-       negocio.licencia. Si la carta no se pudo traer o su licencia no es
-       válida, se deja escondido (más vale quedarse corto). */
-    const permiteDecorativas=permisosDePlan(planDeLicencia(carta?.negocio?.licencia)).imagenesDecorativas;
-    const secFondo=$('#bloqueFondoPortada');
-    if(secFondo)secFondo.hidden=!permiteDecorativas;
+    /* Qué puede tocar este negocio lo dice el SERVIDOR, no la carta: así
+       nadie se da permisos a sí mismo. Si la respuesta viniera vacía, no
+       se enseña nada de esto (más vale quedarse corto que de más). */
+    aplicarPermisosDeLaPagina(licencia?.permisos||{});
 
     /* Primera vez (sin título ni logo configurados): se rellena con lo
        que la carta enseña hoy. Así lo que ves en los campos es
@@ -909,7 +902,7 @@ function quitarFuente(clave){
    Esta ventana ya NO publica por su cuenta. Cada cambio se guarda en el
    cajón del navegador (guardarBorradorApariencia) y es el botón
    «Publicar cambios» del editor el que sube la apariencia junto con la
-   carta, de una sola vez. Ver js/publicar-pagina.js y js/github.js.
+   carta, de una sola vez. Ver js/publicar-pagina.js y js/publicar.js.
    ========================================================= */
 
 /* =========================================================

@@ -8,8 +8,10 @@ sincronizarBotonTema();
 arrancarAnchoPanel();
 aplicarNombreGuardado();
 
-// Si al cerrar quedaba cuenta atrás de publicación, se retoma.
-{const pendiente=leerEsperaGuardada();if(pendiente)empezarEspera(pendiente);}
+// La espera de dos minutos era cosa de GitHub, que tardaba en montar
+// la web. Con el servidor de ahora el cambio se ve al momento, así que
+// se quitó; si quedara guardada de una versión anterior, se borra.
+try{localStorage.removeItem(CLAVE_ESPERA);}catch{}
 
 // La copia de un ítem sobrevive a cerrar la aplicación.
 estado.itemCopiado=leerCopiaGuardada();

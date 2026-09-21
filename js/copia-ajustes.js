@@ -35,10 +35,9 @@ function reunirAjustes(conToken){
     exportado:new Date().toISOString(),
     creadoCon:notaVersion?.version||null,
     conexion:{
-      owner:a.owner||'', repo:a.repo||'',
-      rama:a.rama||'main', ruta:a.ruta||'carta.json',
-      /* El token solo va si se ha pedido a propósito. */
-      ...(conToken&&a.token?{token:a.token}:{})
+      negocio:a.cliente||'',
+      /* La clave solo va si se ha pedido a propósito. */
+      ...(conToken&&a.clave?{clave:a.clave}:{})
     },
     sitio:{ nombre:s.nombre||'', url:s.url||'' },
     personalizacion:{
@@ -55,12 +54,12 @@ function reunirAjustes(conToken){
 
 /* ---------- Exportar ---------- */
 
-/* El botón de incluir el token solo tiene sentido si hay token. */
+/* El botón de incluir la clave solo tiene sentido si hay clave. */
 function sincronizarChipToken(){
-  const hay=!!leerAjustes().token;
+  const hay=!!leerAjustes().clave;
   const chip=$('#btnIncluirToken');
   chip.disabled=!hay;
-  chip.title=hay?'':'No hay ningún token guardado en este navegador.';
+  chip.title=hay?'':'No hay ninguna clave guardada en este navegador.';
   if(!hay)chip.setAttribute('aria-pressed','false');
   pintarAvisoToken();
 }
@@ -79,7 +78,7 @@ $('#btnIncluirToken').addEventListener('click',()=>{
    descargas dentro de seis meses. */
 function nombreArchivoCopia(){
   const a=leerAjustes();
-  const base=String(a.nombre||a.repo||'carta').trim().toLowerCase().normalize('NFD')
+  const base=String(a.nombre||a.cliente||'carta').trim().toLowerCase().normalize('NFD')
     .replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-')
     .replace(/^-|-$/g,'').slice(0,32)||'carta';
   const hoy=new Date().toISOString().slice(0,10);
@@ -100,7 +99,7 @@ $('#btnExportar').addEventListener('click',()=>{
      de que se tire el enlace temporal. */
   setTimeout(()=>URL.revokeObjectURL(url),2000);
   avisar(tokenIncluido()
-    ? 'Archivo de ajustes descargado. Lleva el token dentro: guárdalo donde nadie más lo vea.'
+    ? 'Archivo de ajustes descargado. Lleva la clave dentro: guárdalo donde nadie más lo vea.'
     : 'Archivo de ajustes descargado.','bien');
 });
 
@@ -124,9 +123,8 @@ function resumirCopia(c){
     : 'Sin guardar';
 
   let html='';
-  html+=fila('Repositorio',cn.owner&&cn.repo?`${cn.owner}/${cn.repo}`:'Sin datos');
-  html+=fila('Archivo',`${cn.ruta||'carta.json'} · rama ${cn.rama||'main'}`);
-  html+=fila('Token',cn.token?'Incluido en el archivo':'No incluido');
+  html+=fila('Negocio',cn.negocio||cn.repo||'Sin datos');
+  html+=fila('Clave',(cn.clave||cn.token)?'Incluida en el archivo':'No incluida');
   html+=fila('Web',s.url||'Sin datos');
   html+=fila('Editor',p.nombre||'Sin nombre');
   html+=fila('Color',color);
@@ -175,16 +173,18 @@ function aplicarCopia(c){
   const cn=c.conexion||{}, s=c.sitio||{}, p=c.personalizacion||{};
 
   const a=leerAjustes();
-  if(typeof cn.owner==='string')a.owner=cn.owner.trim();
-  if(typeof cn.repo==='string') a.repo=cn.repo.trim();
-  if(typeof cn.rama==='string') a.rama=cn.rama.trim()||'main';
-  if(typeof cn.ruta==='string') a.ruta=cn.ruta.trim()||'carta.json';
-  if(typeof cn.token==='string'&&cn.token.trim())a.token=cn.token.trim();
+  /* Los nombres de antes (repo y token) se siguen entendiendo, para
+     que un archivo exportado en su día siga valiendo. */
+  const negocio=cn.negocio??cn.repo;
+  const clave=cn.clave??cn.token;
+  if(typeof negocio==='string')a.cliente=negocio.trim();
+  if(typeof clave==='string'&&clave.trim())a.clave=clave.trim();
   if(typeof p.nombre==='string')a.nombre=p.nombre.trim();
   guardarAjustes(a);
 
-  if(typeof s.url==='string'||typeof s.nombre==='string'){
-    guardarSitio({nombre:s.nombre||'',url:s.url||''});
+  /* La dirección ya no se importa: se calcula a partir del negocio. */
+  if(typeof s.nombre==='string'){
+    guardarSitio({nombre:s.nombre||'',url:leerAjustes().cliente?direccionDeLaCarta():''});
   }
 
   /* El tema, antes que el color: la barra se hunde más en oscuro,
@@ -211,11 +211,11 @@ $('#btnImportar').addEventListener('click',()=>{
   $('#importArchivo').value='';
   refrescarPantallaAjustes();
   sincronizarChipToken();
-  /* Se mira si hay token DESPUÉS de importar, no si venía en el
-     archivo: un archivo sin token no borra el que ya hubiera aquí. */
-  avisar(leerAjustes().token
+  /* Se mira si hay clave DESPUÉS de importar, no si venía en el
+     archivo: un archivo sin clave no borra la que ya hubiera aquí. */
+  avisar(leerAjustes().clave
     ? 'Ajustes importados. Ya puedes volver al editor y traer la carta.'
-    : 'Ajustes importados. Falta el token: escríbelo en «Conexión» para poder publicar.','bien');
+    : 'Ajustes importados. Falta la clave: escríbela en «Conexión» para poder publicar.','bien');
 });
 
 $('#btnImportarCancelar').addEventListener('click',()=>{

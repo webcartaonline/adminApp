@@ -10,10 +10,9 @@
        que eligió el negocio, igual que hace la carta real.
    ========================================================= */
 
-/* Dirección «en crudo» de un archivo publicado en el repositorio. */
-function pdfUrlPublicada(a, nombre) {
-  return `https://raw.githubusercontent.com/${a.owner}/${a.repo}/${a.rama || 'main'}/${carpetaDeLaCarta(a.ruta)}${nombre}`;
-}
+/* La dirección pública de una foto publicada la calcula nube.js, que es
+   quien sabe dónde viven las fotos. La carta y la apariencia, en cambio,
+   se piden al servidor con la clave del negocio (más abajo). */
 
 /* ---------- Cocina de colores ----------
    Copiada de la carta pública para que el papel salga con los
@@ -135,28 +134,19 @@ function pdfTiposDeImagen(carta) {
    un error con un mensaje claro si falta la conexión o el archivo. */
 async function pdfCartaPublicada() {
   const a = leerAjustes();
-  if (!a.owner || !a.repo || !a.ruta) {
-    throw new Error('Faltan datos de conexión. Entra en «Ajustes» y complétalos.');
+  if (!nubeConfigurada()) {
+    throw new Error('Faltan el negocio o la clave. Entra en «Ajustes» y complétalos.');
   }
 
-  let carta;
-  try {
-    const r = await fetch(pdfUrlPublicada(a, 'carta.json'), { cache: 'no-store' });
-    if (r.status === 404) throw new Error('Todavía no hay ninguna carta publicada.');
-    if (!r.ok) throw new Error('no se ha podido leer la carta (' + r.status + ').');
-    carta = await r.json();
-  } catch (e) {
-    if (e instanceof TypeError) throw new Error('Sin conexión: el PDF se genera desde la carta publicada y hace falta internet.');
-    throw e;
-  }
+  // Se pide la carta PUBLICADA, no la que se esté editando a medias.
+  const carta = await leerCarta();
+  if (!carta) throw new Error('Todavía no hay ninguna carta publicada.');
 
   // La apariencia puede no existir: es normal si el negocio no ha
   // personalizado nada. En ese caso valen los colores de siempre.
   let apariencia = null;
-  try {
-    const r = await fetch(pdfUrlPublicada(a, 'apariencia.json'), { cache: 'no-store' });
-    if (r.ok) apariencia = await r.json();
-  } catch { /* se queda sin apariencia propia */ }
+  try { apariencia = await leerApariencia(); }
+  catch { /* se queda sin apariencia propia */ }
 
   // Compatibilidad con cartas antiguas sin «secciones».
   if (!carta.secciones && carta.grupos) {
@@ -174,6 +164,6 @@ async function pdfCartaPublicada() {
     colores: vars,
     paleta,
     tipos: pdfTiposDeImagen(carta),
-    urlDe: (rutaRelativa) => pdfUrlPublicada(a, sinVersion(rutaRelativa))
+    urlDe: (rutaRelativa) => urlPublica(sinVersion(rutaRelativa))
   };
 }

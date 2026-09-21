@@ -12,7 +12,7 @@
        guardado en el navegador; si no lo hay, la última
        apariencia publicada.
      · Las fotos -> si están sin publicar, la copia local; si
-       ya están publicadas, se cargan desde GitHub.
+       ya están publicadas, se cargan de la carta de este negocio.
 
    La plantilla NO se modifica: los datos se le "sirven" desde
    el puente (vista-previa/puente.js). Ver plantilla.js para
@@ -37,28 +37,30 @@
      ?v=… para forzar recarga). Aquí decidimos qué dirección usar:
        1) ¿Está pendiente de subir en el editor de la carta? -> copia local.
        2) ¿Está pendiente de subir en los ajustes (portada/logo)? -> copia local.
-       3) Si no, la versión ya publicada en GitHub. */
+       3) Si no, la que ya está publicada, que la sirve la carta de este
+          negocio (ver urlPublica en nube.js). */
   async function resolverImagen(a, rutaEnCarta) {
     const original = String(rutaEnCarta || '');
     if (!original) return '';
     if (ES_ABSOLUTA.test(original)) return original;
 
-    // Ruta dentro del repositorio (con la carpeta de la carta por delante,
-    // si la hubiera, y sin el ?v=). Es la misma clave que usa el editor.
-    const rutaRepo = carpetaDeLaCarta(a.ruta) + sinVersion(original);
+    // Sin el ?v=: es la misma clave con la que el editor guarda y sube.
+    const ruta = sinVersion(original);
 
-    const pendCarta = estado.imagenesPendientes && estado.imagenesPendientes[rutaRepo];
+    const pendCarta = estado.imagenesPendientes && estado.imagenesPendientes[ruta];
     if (pendCarta) {
       return pendCarta.previa ||
              (pendCarta.base64 ? `data:image/jpeg;base64,${pendCarta.base64}` : '');
     }
 
     try {
-      const img = await Almacen.leer('imagenes', `${clienteActual(a)}::${rutaRepo}`);
+      const img = await Almacen.leer('imagenes', `${clienteActual(a)}::${ruta}`);
       if (img && img.base64) return `data:${img.tipo || 'image/jpeg'};base64,${img.base64}`;
     } catch { /* sin copia local de apariencia: se usa la publicada */ }
 
-    return `https://raw.githubusercontent.com/${a.owner}/${a.repo}/${a.rama || 'main'}/${rutaRepo}`;
+    // Con el ?v= puesto: así, si la foto se acaba de cambiar, el
+    // navegador no enseña la de antes.
+    return urlPublica(original);
   }
 
   /* Copia de la carta con TODAS las fotos ya resueltas a una dirección
@@ -93,10 +95,7 @@
 
     if (!apar) {
       try {
-        const r = await fetch(
-          `https://raw.githubusercontent.com/${a.owner}/${a.repo}/${a.rama || 'main'}/${carpetaDeLaCarta(a.ruta)}apariencia.json`,
-          { cache: 'no-store' });
-        if (r.ok) apar = await r.json();
+        apar = await leerApariencia();
       } catch { /* la página aún no tiene apariencia propia */ }
     }
     if (!apar) return null;
@@ -109,7 +108,7 @@
       }
     }
     // Las fuentes personalizadas se resuelven igual que las fotos: si están
-    // sin publicar, la copia local; si no, la publicada en GitHub. Así la
+    // sin publicar, la copia local; si no, la ya publicada. Así la
     // vista previa muestra también la tipografía elegida sin haberla subido.
     if (apar.fuentes) {
       for (const clave of ['titulo', 'texto']) {
@@ -260,7 +259,7 @@
                         : 'Esta página todavía no admite vista previa');
   }
 
-  /* Se comparte con el resto del programa (lo llama github.js al traer). */
+  /* Se comparte con el resto del programa (lo llama publicar.js al traer). */
   window.refrescarBotonVistaPrevia = refrescarBotonVistaPrevia;
 
   /* ---------- Arranque ---------- */
