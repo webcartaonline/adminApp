@@ -63,17 +63,24 @@
   gap: 10px; margin-bottom: 9px;
 }
 .pdf-campo > span { font-size: .82rem; color: var(--tinta-suave, #5B6478); }
+/* Aquí solo se ajusta el TAMAÑO. El aspecto (fondo opaco, borde, flecha)
+   viene del componente de css/formularios.css: si el desplegable se
+   repintara aquí con un fondo translúcido, la lista que abre el navegador
+   volvería a quedar ilegible en el tema oscuro. */
 .pdf-campo select,
 .pdf-campo input[type="number"] {
   flex: 1; max-width: 62%;
+  font-size: .84rem;
+}
+.pdf-campo input[type="number"] {
   padding: 7px 10px;
-  font-family: inherit; font-size: .84rem;
   color: var(--tinta, #1B2233);
   background: var(--velo, rgba(255,255,255,.55));
   border: 1px solid var(--linea-fuerte, rgba(23,29,45,.17));
   border-radius: var(--radio-s, 10px);
 }
-.pdf-campo select:focus,
+.pdf-campo select { padding: 7px 30px 7px 10px; border-radius: var(--radio-s, 10px);
+  background-position: calc(100% - 16px) calc(50% + 1px), calc(100% - 11px) calc(50% + 1px); }
 .pdf-campo input:focus { outline: 2px solid var(--acento-1, #7A5CFB); outline-offset: 1px; }
 
 .pdf-check {
@@ -97,9 +104,18 @@
 .pdf-margenes .pdf-campo input { max-width: 74px; }
 
 /* Zona de vista previa a la derecha */
-.pdf-vista { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+/* min-height:0 es imprescindible: sin él, una columna flexible se niega a
+   encogerse por debajo de su contenido, la hoja empuja hacia abajo y el
+   marco de la vista previa nunca llega a desplazarse. Era justo lo que
+   pasaba en el móvil. */
+.pdf-vista { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
 .pdf-lienzo {
   flex: 1; min-height: 0; overflow: auto;
+  /* En el móvil el dedo tiene que poder mover la hoja en los dos sentidos
+     sin arrastrar de paso la página de detrás. */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-x pan-y;
   padding: 20px;
   background:
     repeating-conic-gradient(rgba(23,29,45,.05) 0% 25%, transparent 0% 50%) 50% / 22px 22px,
@@ -120,7 +136,18 @@
 /* En móvil, panel arriba y vista debajo */
 @media (max-width: 780px) {
   .pdf-cuerpo { flex-direction: column; }
-  .pdf-panel { width: 100%; max-width: none; max-height: 46%; border-right: 0; border-bottom: 1px solid var(--linea, rgba(23,29,45,.10)); }
+  /* flex-shrink:0 para que el panel no se aplaste, y min-height:0 para que
+     sí pueda desplazarse por dentro cuando llega a su tope. */
+  .pdf-panel {
+    width: 100%; max-width: none;
+    flex: 0 0 auto; min-height: 0; max-height: 46%;
+    border-right: 0; border-bottom: 1px solid var(--linea, rgba(23,29,45,.10));
+  }
+  /* La vista se queda con el hueco que sobre, ni más ni menos. */
+  .pdf-vista { flex: 1 1 auto; min-height: 0; }
+  /* Menos aire alrededor de la hoja: en una pantalla estrecha, 20px por
+     lado se notan mucho y dejan menos sitio para ver la carta. */
+  .pdf-lienzo { padding: 12px; }
 }
 
 /* La hoja en la vista previa: centrada, con sombra. El encogido para

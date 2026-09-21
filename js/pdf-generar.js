@@ -56,11 +56,17 @@ async function pdfMostrarVistaPrevia(contenedor, paquete, opciones) {
   return { paginas: hojas.length, M };
 }
 
-/* Encoge la vista previa para que la hoja quepa a lo ancho. */
+/* Encoge la vista previa para que la hoja quepa a lo ancho.
+
+   El hueco de verdad es el ancho del marco MENOS su relleno, que cambia
+   según la pantalla (20px en el ordenador, 12px en el móvil). Antes se
+   descontaba siempre 24px y en el móvil la hoja se salía por los lados. */
 function pdfAjustarZoomPreview(contenedor, M) {
   const raiz = contenedor.querySelector('.pdf-raiz--preview');
   if (!raiz) return;
-  const disponible = contenedor.clientWidth - 24;   // un respiro a los lados
+  const est = getComputedStyle(contenedor);
+  const relleno = (parseFloat(est.paddingLeft) || 0) + (parseFloat(est.paddingRight) || 0);
+  const disponible = contenedor.clientWidth - relleno - 2;   // 2px de respiro
   const factor = Math.min(1, disponible / M.anchoPx);
   raiz.style.zoom = factor > 0 ? factor : 1;
 }

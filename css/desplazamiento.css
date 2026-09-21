@@ -1,0 +1,56 @@
+/* =========================================================
+   BARRAS DE DESPLAZAMIENTO
+   Un único diseño para TODAS las barras de la aplicación:
+   una pastilla fina, sin carril, del color del texto (negra
+   en el tema claro y blanca en el oscuro) y con aire a los
+   lados para que se vea despegada del borde.
+
+   Nació en el panel de secciones y aquí se convierte en
+   componente: se aplica a cualquier zona que se desplace, de
+   ahora y de las que vengan, sin tener que repetir el estilo.
+
+   Cómo se usa:
+     - Por defecto, ya está puesto en todo.
+     - .sin-desliz   -> esconde la barra (listas que se
+                        arrastran de lado, como la de botones).
+     - .desliz--ancha-> pastilla algo más gruesa, para zonas
+                        grandes como la vista previa del PDF.
+
+   Las medidas y los colores salen de las variables de
+   base.css: cambiarlas ahí cambia todas las barras a la vez.
+   ========================================================= */
+
+:root{
+  --desliz-ancho:10px;        /* grosor total de la barra */
+  --desliz-aire:3px;          /* hueco entre la pastilla y el borde */
+  --desliz-ancho-mas:14px;    /* variante gruesa */
+}
+
+/* ---------- La forma moderna (Firefox y navegadores nuevos) ----------
+   «thin» ya dibuja una barra fina; solo hay que decirle el color de
+   la pastilla y dejar el carril transparente. */
+html{scrollbar-width:thin;scrollbar-color:var(--desliz) transparent}
+*{scrollbar-width:thin;scrollbar-color:var(--desliz) transparent}
+
+/* ---------- La forma de siempre (Chrome, Edge, Safari) ---------- */
+::-webkit-scrollbar{width:var(--desliz-ancho);height:var(--desliz-ancho)}
+::-webkit-scrollbar-track{background:transparent}
+/* El truco del borde transparente con background-clip: el borde no se
+   pinta, así que la pastilla queda más fina y separada del borde. */
+::-webkit-scrollbar-thumb{background-color:var(--desliz);
+  border:var(--desliz-aire) solid transparent;background-clip:content-box;
+  border-radius:100px}
+::-webkit-scrollbar-thumb:hover{background-color:var(--desliz-fuerte)}
+/* El cuadradito donde se cruzan la barra vertical y la horizontal. */
+::-webkit-scrollbar-corner{background:transparent}
+
+/* ---------- Variante: sin barra ----------
+   Para las tiras que se arrastran de lado y no deben enseñarla. */
+.sin-desliz{scrollbar-width:none;-ms-overflow-style:none}
+.sin-desliz::-webkit-scrollbar{display:none}
+
+/* ---------- Variante: pastilla más gruesa ----------
+   En zonas grandes (la hoja del PDF) una barra fina se pierde. */
+.desliz--ancha{scrollbar-width:auto}
+.desliz--ancha::-webkit-scrollbar{width:var(--desliz-ancho-mas);height:var(--desliz-ancho-mas)}
+.desliz--ancha::-webkit-scrollbar-thumb{border-width:4px}

@@ -1,12 +1,10 @@
 {
-  "version": "11.0.1-BETA",
-  "fecha": "2026-09-19",
-  "titulo": "Tus fotos, en tu carta",
+  "version": "11.1.0-BETA",
+  "fecha": "2026-09-22",
+  "titulo": "Desplegables legibles, vista previa del PDF en móvil y barras de desplazamiento",
   "cambios": [
-    "Las fotos que subes ya se ven en tu carta. Antes se guardaban bien, pero la carta seguía enseñando las de la plantilla.",
-    "La vista previa vuelve a enseñar las fotos que ya estaban publicadas.",
-    "La pantalla de «Ajustes» pide ahora solo dos datos, tu negocio y tu clave, y trae un botón para comprobar que la conexión funciona.",
-    "Se acabó la espera de dos minutos después de publicar: los cambios se ven al momento.",
-    "Quitado el apartado de estadísticas, que no estaba en uso."
+    "Arreglados los desplegables en modo oscuro: la lista que se abría salía con el texto blanco sobre fondo blanco y no se leía.",
+    "En el móvil, la vista previa del PDF ya se puede deslizar para ver todas las páginas.",
+    "Las barras de desplazamiento de toda la aplicación comparten ahora el mismo diseño, fino y discreto."
   ]
 }
