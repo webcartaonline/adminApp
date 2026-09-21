@@ -58,9 +58,9 @@
   --linea:rgba(23,29,45,.10);
   --linea-fuerte:rgba(23,29,45,.17);
   --guia:rgba(23,29,45,.14);
-  /* Barra de desplazamiento del panel: negra en el tema claro, muy
-     transparente para que casi no se note, y algo más marcada al pasar
-     el ratón por encima. */
+  /* Color de TODAS las barras de desplazamiento (ver css/desplazamiento.css):
+     negro en el tema claro, muy transparente para que casi no se note, y
+     algo más marcado al pasar el ratón por encima. */
   --desliz:rgba(23,29,45,.20);
   --desliz-fuerte:rgba(23,29,45,.38);
   --pastilla:rgba(23,29,45,.06);
@@ -70,6 +70,11 @@
   --blur:16px;
   --radio:18px; --radio-m:12px; --radio-s:10px;
   --display:"Bricolage Grotesque",system-ui,sans-serif; --texto:"Hanken Grotesk",system-ui,sans-serif;
+  /* Le dice al navegador de qué color es la página. Con esto, lo que
+     pinta él por su cuenta (la lista que se abre en un desplegable, el
+     calendario de una fecha, el relleno al autocompletar) sale claro.
+     Es la pieza que faltaba para que los desplegables se leyeran. */
+  color-scheme:light;
 }
 [data-tema="oscuro"]{
   --marfil:#080B14;                       /* casi negro azulado */
@@ -111,6 +116,9 @@
   --pastilla:rgba(255,255,255,.06);
   --sombra:0 2px 10px rgba(0,0,0,.35),0 18px 42px rgba(0,0,0,.5);
   --sombra-alta:0 30px 80px rgba(0,0,0,.62);
+  /* En oscuro, las listas de los desplegables y demás piezas del
+     navegador se pintan oscuras, con su texto claro. */
+  color-scheme:dark;
 }
 
 *,*::before,*::after{box-sizing:border-box}

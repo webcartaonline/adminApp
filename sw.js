@@ -15,7 +15,7 @@
    automáticamente la ventana con lo que ha cambiado.
    ========================================================= */
 
-const VERSION = '11.0.2-BETA';
+const VERSION = '11.1.0-BETA';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
@@ -24,6 +24,7 @@ const CACHE   = `editor-carta-${VERSION}`;
 const ARCHIVOS = [
   './manifest.json',
   './css/base.css',
+  './css/desplazamiento.css',
   './css/botones.css',
   './css/formularios.css',
   './css/barra.css',

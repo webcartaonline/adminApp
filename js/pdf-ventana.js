@@ -54,7 +54,7 @@
         <div class="vp__cuerpo pdf-cuerpo">
           <aside class="pdf-panel" id="pdfPanel"></aside>
           <div class="pdf-vista">
-            <div class="pdf-lienzo" id="pdfLienzo">
+            <div class="pdf-lienzo desliz--ancha" id="pdfLienzo">
               <p class="pdf-vacio" id="pdfEstado">Preparando…</p>
             </div>
             <div class="pdf-acciones">
