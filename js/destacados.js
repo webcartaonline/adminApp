@@ -12,6 +12,10 @@
      los platos del grupo: «También en media ración». Va
      junto al título del grupo, así que solo se admite UNA:
      dos romperían esa línea.
+   - NOTA (de una sección): un recuadro con una barrita de
+     color entre la portada de la sección y el primer grupo:
+     «Tipos de pan», «Disponible en zona azul». Se pueden
+     poner varias y se colocan solas, una a cada lado.
 
    Las dos guardan lo mismo en carta.json:
      { "texto":{"es":"…","en":"…"}, "fondo":"…", "color":"…" }
@@ -30,12 +34,27 @@ function crearAlerta(){
 function crearEtiqueta(){
   return { texto:crearTexto(''), posicion:'arriba', fondo:'principal', color:'auto' };
 }
+function crearNotaDeSeccion(){
+  return { texto:crearTexto(''), fondo:'principal', color:'auto' };
+}
 
 /* Las etiquetas de un plato, siempre como lista aunque el plato
    todavía no tenga ninguna. */
 function etiquetasDe(item){
   if(!Array.isArray(item.etiquetas))item.etiquetas=[];
   return item.etiquetas;
+}
+
+/* Las notas de una sección, siempre como lista. Se admite que venga
+   escrita una sola y suelta (en el campo "nota"), que es la otra forma
+   que entiende la carta: aquí se convierte en lista de una. */
+function notasDeSeccion(seccion){
+  if(!Array.isArray(seccion.notas)){
+    const suelta=seccion.notas||seccion.nota;
+    seccion.notas=suelta?[suelta]:[];
+  }
+  delete seccion.nota;
+  return seccion.notas;
 }
 
 /* La alerta admite venir escrita como lista (cartas de antes de que
@@ -190,8 +209,50 @@ function bloquePrevia(d,forma){
     </div>`;
 }
 
+/* Lo que se enseña en la muestra. En las notas de sección el texto
+   puede tener varias líneas y la primera es el título, así que se coge
+   esa; en las alertas y las etiquetas, que son de una línea, es lo
+   mismo que el texto entero. */
 function textoDePrevia(d){
-  return valorTexto(d?.texto,estado.idiomas[0]).trim()||'Sin texto';
+  const escrito=valorTexto(d?.texto,estado.idiomas[0]);
+  return escrito.split('\n').map(l=>l.trim()).find(Boolean)||'Sin texto';
+}
+
+/* ---------- Las notas de la sección ----------
+   Un solo campo por nota y por idioma: la PRIMERA LÍNEA es el título y
+   lo que va debajo es el cuerpo. Se escribe el título, se pulsa intro y
+   se sigue escribiendo.
+
+   El lado de la barrita no se elige: la primera nota va a la izquierda,
+   la segunda a la derecha, y así. Lo decide la carta por el orden. */
+function bloqueNotasDeSeccion(seccion){
+  const lista=notasDeSeccion(seccion);
+
+  const fichas=lista.map((n,i)=>`
+    <div class="destacado" data-destacado="nota-seccion" data-indice="${i}">
+      <div class="destacado__cabecera">
+        <span class="campo__etiqueta">${i%2===0?'A la izquierda':'A la derecha'}</span>
+        <div class="destacado__botones">
+          <button class="mover" type="button" data-nota-subir ${i===0?'disabled':''}>▲</button>
+          <button class="mover" type="button" data-nota-bajar ${i===lista.length-1?'disabled':''}>▼</button>
+          <button class="btn btn--peligro btn--mini" type="button" data-nota-borrar>Eliminar</button>
+        </div>
+      </div>
+      <div class="par-idiomas">${camposTexto('nota-texto',n.texto,'Texto',true)}</div>
+      <p class="campo__pista">La primera línea es el título. Pulsa intro y sigue escribiendo para el resto.</p>
+      ${bloqueColores(n)}
+      ${bloquePrevia(n,'alerta')}
+    </div>`).join('');
+
+  return `
+    <div class="destacados">
+      <div class="destacados__cabecera">
+        <span class="campo__etiqueta">Notas de la sección</span>
+        <button class="btn btn--suave btn--mini" data-nota-anadir type="button">Añadir nota</button>
+      </div>
+      <p class="campo__pista">Recuadros que salen entre la portada de la sección y su primer grupo: «Tipos de pan», «Disponible en zona azul». Se colocan solos, uno a cada lado.</p>
+      ${fichas?`<div class="destacados__lista">${fichas}</div>`:''}
+    </div>`;
 }
 
 /* ---------- La alerta del grupo ---------- */
@@ -278,6 +339,13 @@ function destacadoDesde(elemento){
     return alerta?{caja,objeto:alerta}:null;
   }
 
+  if(caja.dataset.destacado==='nota-seccion'){
+    const s=seccionActual();
+    const lista=s?notasDeSeccion(s):null;
+    const i=Number(caja.dataset.indice);
+    return lista&&lista[i]?{caja,objeto:lista[i],lista,indice:i}:null;
+  }
+
   const ficha=caja.closest('.ficha-item');
   const g=grupoActual();
   if(!ficha||!g)return null;
@@ -333,6 +401,26 @@ document.addEventListener('click',(ev)=>{
     const g=grupoActual();if(!g)return;
     if(!confirm('¿Quitar la alerta de este grupo?'))return;
     delete g.alerta;delete g.alertas;
+    marcarSucio();pintarZona();return;
+  }
+
+  /* ---------- Notas de la sección ---------- */
+  if(t.closest('[data-nota-anadir]')){
+    const s=seccionActual();if(!s)return;
+    notasDeSeccion(s).push(crearNotaDeSeccion());
+    marcarSucio();pintarZona();return;
+  }
+  if(t.closest('[data-nota-subir]')||t.closest('[data-nota-bajar]')){
+    const d=destacadoDesde(t);if(!d||!d.lista)return;
+    const destino=t.closest('[data-nota-subir]')?d.indice-1:d.indice+1;
+    if(!d.lista[destino])return;
+    [d.lista[d.indice],d.lista[destino]]=[d.lista[destino],d.lista[d.indice]];
+    marcarSucio();pintarZona();return;
+  }
+  if(t.closest('[data-nota-borrar]')){
+    const d=destacadoDesde(t);if(!d||!d.lista)return;
+    if(!confirm('¿Quitar esta nota de la sección?'))return;
+    d.lista.splice(d.indice,1);
     marcarSucio();pintarZona();return;
   }
 
@@ -401,7 +489,7 @@ document.addEventListener('input',(ev)=>{
   }
 
   const ed=t.dataset.ed;
-  if(ed!=='alerta-texto'&&ed!=='etq-texto')return;
+  if(ed!=='alerta-texto'&&ed!=='etq-texto'&&ed!=='nota-texto')return;
   const d=destacadoDesde(t);if(!d)return;
   asignarTexto(d.objeto,'texto',t.dataset.lang,t.value);
   // La muestra se refresca sola, pero sin repintar: se está escribiendo.

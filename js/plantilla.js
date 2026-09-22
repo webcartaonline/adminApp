@@ -54,6 +54,19 @@ const PRESENTACION_DE_RESPALDO = {
    { cliente, plantillaId, nombre, version, archivos:{nombre:texto} } */
 let plantillaEnMemoria = null;
 
+/* El identificador de la plantilla que usa este negocio ("plantilla-1",
+   "plantilla-2"…), o cadena vacía si todavía no se ha traído ninguna. */
+function plantillaEnUso(){
+  return plantillaEnMemoria?.plantillaId || '';
+}
+
+/* ¿La plantilla de este negocio pinta las notas de la sección? Hoy solo
+   las pinta la Plantilla 2. El editor lo usa para no ofrecer un adorno
+   que luego no se vería. */
+function plantillaConNotasDeSeccion(){
+  return plantillaEnUso() === 'plantilla-2';
+}
+
 /* ¿Hay una plantilla lista para pintar la vista previa? */
 function hayPlantilla() {
   return !!(plantillaEnMemoria && plantillaEnMemoria.archivos &&

@@ -1,10 +1,11 @@
 {
-  "version": "11.3.0-BETA",
+  "version": "11.4.0-BETA",
   "fecha": "2026-09-22",
-  "titulo": "Las barras de desplazamiento, ahora sí",
+  "titulo": "Las notas de la sección",
   "cambios": [
-    "Arregladas las barras de desplazamiento: salían las grises de fábrica del navegador porque se estaban mezclando dos formas de maquetarlas que no se pueden mezclar.",
-    "La pastilla va teñida del violeta del acento, algo más gruesa, y se enciende al pasar el ratón y al arrastrarla.",
-    "Quitada la franja blanca del borde derecho de la ventana de «Ajustes de la página»."
+    "Nuevo: las notas de la sección. Son los recuadros con la barrita de color que salen entre la portada de una sección y su primer grupo, para avisos como «Tipos de pan» o «Disponible en zona azul».",
+    "Se escriben en un solo campo: la primera línea es el título y lo que pongas debajo, el texto.",
+    "Se colocan solas, una a cada lado, y llevan los mismos colores que las alertas y las etiquetas.",
+    "Solo aparecen si el diseño de tu carta las pinta; si ya tenías alguna guardada, la puedes editar igualmente."
   ]
 }
