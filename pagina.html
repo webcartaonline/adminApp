@@ -37,18 +37,26 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 
   <!-- Portada en miniatura: refleja al momento todo lo de esta ventana. -->
   <div class="previa-carta" id="previaCarta" aria-hidden="true">
-    <img class="previa-carta__fondo" id="previaFondo" alt="" hidden>
-    <div class="previa-carta__halo"></div>
-    <p class="previa-carta__lema" id="previaLema" hidden></p>
-    <div class="previa-carta__marca">
-      <img class="previa-carta__logo" id="previaLogo" alt="" hidden>
-      <h3 class="previa-carta__nombre" id="previaNombre">Nombre del negocio</h3>
+    <!-- Arriba, la PORTADA: la foto (o el color de fondo si no hay foto),
+         con el eslogan, el logotipo y el nombre encima. -->
+    <div class="previa-carta__portada">
+      <img class="previa-carta__fondo" id="previaFondo" alt="" hidden>
+      <div class="previa-carta__halo"></div>
+      <p class="previa-carta__lema" id="previaLema" hidden></p>
+      <div class="previa-carta__marca">
+        <img class="previa-carta__logo" id="previaLogo" alt="" hidden>
+        <h3 class="previa-carta__nombre" id="previaNombre">Nombre del negocio</h3>
+      </div>
     </div>
-    <div class="previa-carta__pie">
-      <span class="previa-carta__plato">Tosta de aguacate</span>
-      <span class="previa-carta__precio">7,90 €</span>
+    <!-- Abajo, el CONTENIDO: aquí no hay foto, así que se ve limpio el color
+         de fondo elegido, que es como se verá el resto de la carta. -->
+    <div class="previa-carta__contenido">
+      <div class="previa-carta__pie">
+        <span class="previa-carta__plato">Tosta de aguacate</span>
+        <span class="previa-carta__precio">7,90 €</span>
+      </div>
+      <p class="previa-carta__nota">Así se verán los platos, los precios y el texto de tu carta.</p>
     </div>
-    <p class="previa-carta__nota">Así se verán los platos, los precios y el texto de tu carta.</p>
   </div>
   <div class="ajustes__acciones">
     <button class="btn btn--suave btn--mini" id="btnAparRecargar" type="button">Descartar y volver a traer lo publicado</button>

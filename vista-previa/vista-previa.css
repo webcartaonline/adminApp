@@ -151,3 +151,15 @@ html.vp-abierta, html.vp-abierta body { overflow: hidden; }
   color: var(--tinta, #1B2233);
 }
 .vp--ajustes .vp__cerrar:hover { background: var(--pastilla, rgba(23, 29, 45, .06)); }
+
+/* El marco de dentro es un documento aparte y tiene su propia barra de
+   desplazamiento, pegada al borde derecho de la ventana. Como el carril
+   de esa barra es transparente (así las diseñamos en toda la app), por
+   ese hueco se ve lo que haya DETRÁS del marco... que era el blanco de
+   .vp__lienzo, y salía una franja blanca de arriba abajo.
+
+   La solución es que lo de detrás sea del mismo color que la página de
+   dentro: así el carril se funde con ella y solo se ve la pastilla.
+   (La Vista previa se queda en blanco a propósito: ahí lo que se carga
+   es la carta del cliente y el blanco es el papel de debajo.) */
+.vp--ajustes .vp__lienzo { background: var(--marfil, #EBEDF7); }
