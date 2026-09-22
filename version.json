@@ -1,10 +1,9 @@
 {
-  "version": "11.1.0-BETA",
+  "version": "11.2.0-BETA",
   "fecha": "2026-09-22",
-  "titulo": "Desplegables legibles, vista previa del PDF en móvil y barras de desplazamiento",
+  "titulo": "La miniatura enseña el color de fondo y se va la franja blanca",
   "cambios": [
-    "Arreglados los desplegables en modo oscuro: la lista que se abría salía con el texto blanco sobre fondo blanco y no se leía.",
-    "En el móvil, la vista previa del PDF ya se puede deslizar para ver todas las páginas.",
-    "Las barras de desplazamiento de toda la aplicación comparten ahora el mismo diseño, fino y discreto."
+    "La miniatura de «Ajustes de la página» se parte en dos: arriba la foto de portada y abajo el color de fondo elegido, que antes quedaba tapado.",
+    "Quitada la franja blanca que salía en el borde derecho de la ventana de ajustes, donde va la barra de desplazamiento."
   ]
 }

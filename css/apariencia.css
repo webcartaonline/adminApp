@@ -10,18 +10,41 @@
 /* ---------- Portada en miniatura ----------
    Sus colores llegan como variables --pc-* que pone el programa
    (pagina-apariencia.js) con la misma receta que usa la carta. */
+/* La miniatura tiene DOS mitades, como la carta de verdad:
+     - arriba la portada, con la foto;
+     - abajo el contenido, donde se ve limpio el color de fondo.
+   Así se aprecian de un vistazo los dos colores elegidos: el principal
+   en los títulos y los precios, y el de fondo en la mitad de abajo. */
 .previa-carta{
   position:relative; overflow:hidden;
   margin:14px 0 6px;
-  padding:30px 18px 34px;
   border:1px solid var(--linea-fuerte);
   border-radius:var(--radio-m);
   background:var(--pc-fondo,#12100E);
   color:var(--pc-texto,#F4EFE7);
   text-align:center;
 }
-/* La foto de portada va la primera de todas, debajo de todo lo
-   demás, y se recorta por donde haga falta igual que en la carta. */
+
+/* ---------- Mitad de arriba: la portada ---------- */
+.previa-carta__portada{
+  position:relative;
+  display:flex; flex-direction:column; justify-content:center;
+  min-height:152px;
+  padding:26px 18px 24px;
+}
+
+/* ---------- Mitad de abajo: el color de fondo ----------
+   Sin foto ni velos encima: es la muestra del color de fondo. */
+.previa-carta__contenido{
+  position:relative;
+  display:flex; flex-direction:column; justify-content:center;
+  min-height:92px;
+  padding:14px 18px 18px;
+  background:var(--pc-fondo,#12100E);
+}
+
+/* La foto de portada solo ocupa la mitad de arriba, y se recorta por
+   donde haga falta igual que en la carta. */
 .previa-carta__fondo{
   position:absolute; inset:0;
   width:100%; height:100%;
@@ -39,6 +62,13 @@
   background:
     radial-gradient(58% 46% at 50% 30%, var(--pc-halo,rgba(233,180,76,.16)), transparent 68%),
     linear-gradient(180deg, rgba(0,0,0,.50), rgba(0,0,0,.70));
+}
+/* Un degradado corto al pie de la foto: en vez de un corte seco, la
+   portada se funde con el color de fondo de la mitad de abajo. */
+.previa-carta--con-fondo .previa-carta__portada::after{
+  content:''; position:absolute; left:0; right:0; bottom:0; height:34%;
+  background:linear-gradient(180deg, transparent, var(--pc-fondo,#12100E));
+  pointer-events:none;
 }
 .previa-carta__lema{
   position:relative;
@@ -68,7 +98,7 @@
 }
 .previa-carta__pie{
   position:relative;
-  margin:22px auto 0; padding-top:12px;
+  margin:0 auto; padding-top:12px;
   max-width:340px;
   border-top:1px solid var(--pc-borde,#2C2620);
   display:flex; align-items:center; justify-content:space-between; gap:10px;
