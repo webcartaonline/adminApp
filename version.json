@@ -1,9 +1,10 @@
 {
-  "version": "11.2.0-BETA",
+  "version": "11.3.0-BETA",
   "fecha": "2026-09-22",
-  "titulo": "La miniatura enseña el color de fondo y se va la franja blanca",
+  "titulo": "Las barras de desplazamiento, ahora sí",
   "cambios": [
-    "La miniatura de «Ajustes de la página» se parte en dos: arriba la foto de portada y abajo el color de fondo elegido, que antes quedaba tapado.",
-    "Quitada la franja blanca que salía en el borde derecho de la ventana de ajustes, donde va la barra de desplazamiento."
+    "Arregladas las barras de desplazamiento: salían las grises de fábrica del navegador porque se estaban mezclando dos formas de maquetarlas que no se pueden mezclar.",
+    "La pastilla va teñida del violeta del acento, algo más gruesa, y se enciende al pasar el ratón y al arrastrarla.",
+    "Quitada la franja blanca del borde derecho de la ventana de «Ajustes de la página»."
   ]
 }

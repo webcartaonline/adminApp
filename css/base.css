@@ -58,11 +58,12 @@
   --linea:rgba(23,29,45,.10);
   --linea-fuerte:rgba(23,29,45,.17);
   --guia:rgba(23,29,45,.14);
-  /* Color de TODAS las barras de desplazamiento (ver css/desplazamiento.css):
-     negro en el tema claro, muy transparente para que casi no se note, y
-     algo más marcado al pasar el ratón por encima. */
-  --desliz:rgba(23,29,45,.20);
-  --desliz-fuerte:rgba(23,29,45,.38);
+  /* Color de TODAS las barras de desplazamiento (ver css/desplazamiento.css).
+     Van teñidas del violeta del acento, no de gris: así la barra se lee
+     como una pieza más del editor. En reposo, discreta; al pasar el ratón
+     por encima, casi a pleno color. */
+  --desliz:rgba(91,63,224,.38);
+  --desliz-fuerte:rgba(91,63,224,.72);
   --pastilla:rgba(23,29,45,.06);
   /* Elevación, curvatura y desenfoque */
   --sombra:0 2px 8px rgba(20,26,50,.06),0 14px 34px rgba(20,26,50,.10);
@@ -111,8 +112,10 @@
   --linea:rgba(255,255,255,.09);
   --linea-fuerte:rgba(255,255,255,.15);
   --guia:rgba(255,255,255,.12);
-  --desliz:rgba(255,255,255,.22);
-  --desliz-fuerte:rgba(255,255,255,.42);
+  /* En oscuro, el violeta claro del acento: se ve sobre el fondo casi
+     negro sin llegar a deslumbrar. */
+  --desliz:rgba(139,123,255,.48);
+  --desliz-fuerte:rgba(139,123,255,.85);
   --pastilla:rgba(255,255,255,.06);
   --sombra:0 2px 10px rgba(0,0,0,.35),0 18px 42px rgba(0,0,0,.5);
   --sombra-alta:0 30px 80px rgba(0,0,0,.62);
