@@ -1,11 +1,12 @@
 {
-  "version": "11.4.0-BETA",
-  "fecha": "2026-09-22",
-  "titulo": "Las notas de la sección",
+  "version": "11.5.0-BETA",
+  "fecha": "2026-09-23",
+  "titulo": "Las fotos que quitas, fuera de verdad",
   "cambios": [
-    "Nuevo: las notas de la sección. Son los recuadros con la barrita de color que salen entre la portada de una sección y su primer grupo, para avisos como «Tipos de pan» o «Disponible en zona azul».",
-    "Se escriben en un solo campo: la primera línea es el título y lo que pongas debajo, el texto.",
-    "Se colocan solas, una a cada lado, y llevan los mismos colores que las alertas y las etiquetas.",
-    "Solo aparecen si el diseño de tu carta las pinta; si ya tenías alguna guardada, la puedes editar igualmente."
+    "Al quitar una foto, ahora se borra también del servidor cuando publicas. Antes se quedaba allí guardada para siempre por si la querías de vuelta.",
+    "Para poder deshacer un despiste, el editor guarda una copia de la foto en tu propio navegador. Mientras no cierres el editor, el botón «Recuperar la que quité» la devuelve sin tener que buscarla otra vez.",
+    "Esa copia no sale de tu dispositivo y desaparece al cerrar: cuando has publicado y cerrado, se entiende que la carta ya está como querías.",
+    "Las fotos ahora las decide tu plan: si incluye fotos, los botones de foto salen siempre, sin tener que activarlas en la carta.",
+    "Si tu plan incluye idiomas extra, la primera vez que cargues la carta el editor te pregunta cuáles quieres."
   ]
 }
