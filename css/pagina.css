@@ -22,3 +22,19 @@ body[data-pagina="pagina"]{ background:var(--fondo, #0b1220); }
 }
 .apariencia__estado.apartado__estado--bien{ color:var(--verde, #2f9e6f); }
 .apariencia__estado.apartado__estado--falta{ color:var(--ambar-oscuro, #b6801f); }
+
+/* ---------- La barra de desplazamiento de ESTA página ----------
+   Esta página no se abre sola: va dentro de un marco (un iframe) en la
+   ventana de «Ajustes de la página». Y ahí el carril transparente que
+   usan todas las barras de la aplicación deja ver el blanco que hay
+   debajo del marco, así que salía una franja blanca de arriba abajo
+   pegada al borde derecho de la ventana.
+
+   Con el carril del color de la página, la franja desaparece y solo se
+   ve la pastilla. La pastilla y el grosor siguen saliendo del componente
+   de css/desplazamiento.css, que es lo que hace que se vea igual que en
+   el resto del editor.
+
+   Va sin «html» delante a propósito: Chrome ignora un carril escrito
+   como «html::-webkit-scrollbar-track» cuando ya hay una regla suelta. */
+::-webkit-scrollbar-track{ background:var(--marfil, #EBEDF7); }

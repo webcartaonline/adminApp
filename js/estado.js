@@ -12,13 +12,12 @@ const estado = {
   licencia:null,             // plan y permisos, tal y como los manda el servidor
   vista:'editor',
   idiomas:['es'],
-  imagenes:false,           // ¿esta carta lleva fotos? lo dice negocio.imagenes
+  imagenes:false,           // ¿su plan incluye fotos? lo dice la licencia (imagenes.js)
   seccionActiva:null, grupoActivo:null,
   sucio:false,               // ¿hay cambios sin publicar?
   aparienciaSucia:false,     // ¿hay cambios de «Ajustes de la página» sin publicar?
   imagenesPendientes:{},     // ruta de la foto -> {base64, bytes, ancho, alto, previa}
   imagenesPorBorrar:[],      // rutas de fotos que hay que borrar al publicar
-  imagenesHuerfanas:new Set(),// fotos que siguen en el servidor y la carta ya no usa
   expandidas:new Set(),      // ids de secciones abiertas en el árbol de la izquierda
   itemCopiado:null           // copia de un ítem, lista para pegar en otro grupo
 };

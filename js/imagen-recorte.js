@@ -11,7 +11,7 @@
    ========================================================= */
 
 const recorte = { mapa:null, zoom:1, tx:0, ty:0, tipo:'seccion', id:null,
-                  arrastrando:false, ultX:0, ultY:0, rescate:0 };
+                  arrastrando:false, ultX:0, ultY:0 };
 
 /* Alto del marco de vista previa, según la forma del tipo de imagen. */
 function previaAlto(){
@@ -108,50 +108,59 @@ function abrirModalImagen(tipo,id){
 
   pintarFoco();
   $('#btnQuitarImagen').hidden=!(obj.imagen||pendiente);
-  $('#btnRecuperarImagen').hidden=true;
-  $('#modalImagen').hidden=false;
 
-  // Si ahora mismo no tiene foto, miramos si quedó una guardada en el repo.
-  if(!obj.imagen&&!pendiente){
-    recorte.rescate=(recorte.rescate||0)+1;
-    buscarImagenGuardada(tipo,id,recorte.rescate);
-  }
-}
-
-/* Comprueba si sigue habiendo una foto de este plato/sección en el
-   repositorio. Como el nombre del archivo sale del id, siempre sabemos
-   dónde mirar: basta con intentar cargarla. */
-function buscarImagenGuardada(tipo,id,ficha){
-  const a=leerAjustes();
-  if(!nubeConfigurada())return;
-  const rutaEnCarta=rutaImagenCarta(tipo,id);
-  const url=urlImagenExistente(rutaEnCarta);
-  if(!url)return;
-  const prueba=new Image();
-  prueba.onload=()=>{
-    apuntarHuerfana(tipo,id);   // confirmado: el archivo está ahí
-    // Puede haber cambiado de ventana mientras se comprobaba.
-    if(ficha!==recorte.rescate||$('#modalImagen').hidden)return;
-    $('#btnRecuperarImagen').hidden=false;
+  /* Si ahora mismo no tiene foto, se mira si hay una copia de la que se
+     quitó. La copia está en este navegador y dura lo que dure el
+     editor abierto: no se le pregunta nada al servidor. */
+  const copia=(!obj.imagen&&!pendiente)?fotoQuitada(rutaImagenRepo(tipo,id)):null;
+  $('#btnRecuperarImagen').hidden=!copia;
+  if(copia){
     $('#modalImagenPista').textContent+=
-      ' Queda una foto guardada de la última vez: puedes recuperarla sin volver a subirla.';
-  };
-  prueba.onerror=()=>{};
-  prueba.src=`${url}?b=${Date.now().toString(36)}`;
+      ' Quitaste una foto antes: puedes recuperarla mientras no cierres el editor.';
+  }
+
+  $('#modalImagen').hidden=false;
 }
 
-/* Vuelve a apuntar a la foto que ya estaba en el repositorio. */
-function recuperarImagen(){
+/* Devuelve la foto quitada desde la copia de este navegador. Entra como
+   foto PREPARADA, igual que si se acabara de elegir: así da lo mismo
+   que el archivo del servidor ya se hubiera borrado al publicar. */
+async function recuperarImagen(){
   const obj=objetoDeImagen(recorte.tipo,recorte.id);
   if(!obj)return;
+
   const ruta=rutaImagenRepo(recorte.tipo,recorte.id);
-  rescatarDeLaPapelera(ruta);
-  estado.imagenesHuerfanas.delete(ruta);   // vuelve a estar en uso
-  obj.imagen=`${rutaImagenCarta(recorte.tipo,recorte.id)}?v=${Date.now().toString(36)}`;
-  marcarSucio();
-  cerrarModalImagen();
-  pintarZona();
-  avisar('Imagen recuperada. Publica los cambios para que vuelva a verse en la carta.','bien');
+  const copia=fotoQuitada(ruta);
+  if(!copia||!copia.base64){
+    $('#btnRecuperarImagen').hidden=true;
+    errorImagen('Ya no queda copia de esa foto: las copias se pierden al cerrar el editor. Vuelve a subirla.');
+    return;
+  }
+
+  try{
+    const blob=blobDesdeBase64(copia.base64,copia.tipo||'image/jpeg');
+    const mapa=await createImageBitmap(blob);
+    const anterior=estado.imagenesPendientes[ruta];
+    if(anterior?.previa)URL.revokeObjectURL(anterior.previa);
+    estado.imagenesPendientes[ruta]={
+      base64:copia.base64, bytes:blob.size,
+      ancho:mapa.width, alto:mapa.height,
+      previa:URL.createObjectURL(blob)
+    };
+    mapa.close?.();
+
+    if(copia.foco)obj.foco=copia.foco;
+    obj.imagen=`${rutaImagenCarta(recorte.tipo,recorte.id)}?v=${Date.now().toString(36)}`;
+    rescatarDeLaPapelera(ruta);     // ya no hay que borrarla del servidor
+    olvidarFotoQuitada(ruta);       // recuperada: la copia ya no hace falta
+
+    marcarSucio();
+    cerrarModalImagen();
+    pintarZona();
+    avisar('Foto recuperada. Se volverá a subir al publicar los cambios.','bien');
+  }catch(e){
+    errorImagen('No se ha podido recuperar la foto: '+e.message);
+  }
 }
 
 function cerrarModalImagen(){
@@ -233,9 +242,10 @@ async function guardarImagenRecortada(){
     const ruta=rutaImagenRepo(recorte.tipo,recorte.id);
     const anterior=estado.imagenesPendientes[ruta];
     if(anterior?.previa)URL.revokeObjectURL(anterior.previa);
-    // Esa ruta vuelve a estar ocupada: ni se borra ni está huérfana.
+    // Esa ruta vuelve a estar ocupada: ni se borra, ni hace falta la
+    // copia de la que hubiera antes.
     rescatarDeLaPapelera(ruta);
-    estado.imagenesHuerfanas.delete(ruta);
+    olvidarFotoQuitada(ruta);
     estado.imagenesPendientes[ruta]={
       base64, bytes:blob.size, ancho, alto, previa:URL.createObjectURL(blob)
     };
@@ -253,19 +263,55 @@ async function guardarImagenRecortada(){
   }
 }
 
-function quitarImagen(){
+/* La copia que se guarda en el navegador ANTES de quitar la foto: la
+   preparada si todavía no se había subido y, si no, la que está
+   publicada, que hay que traerse de la carta. Devuelve si se ha podido
+   guardar; nunca lanza, porque quitar la foto no debe depender de que
+   la copia salga bien. */
+async function guardarCopiaAntesDeQuitar(ruta,obj){
+  try{
+    const pendiente=estado.imagenesPendientes[ruta];
+    if(pendiente?.base64){
+      return guardarFotoQuitada(ruta,{base64:pendiente.base64,tipo:'image/jpeg',foco:obj.foco});
+    }
+    if(!obj.imagen)return false;
+
+    const respuesta=await fetch(urlImagenExistente(obj.imagen),{cache:'no-store'});
+    if(!respuesta.ok)return false;
+    const blob=await respuesta.blob();
+    return guardarFotoQuitada(ruta,{
+      base64:await blobABase64(blob), tipo:blob.type||'image/jpeg', foco:obj.foco
+    });
+  }catch{
+    return false;
+  }
+}
+
+async function quitarImagen(){
   const obj=objetoDeImagen(recorte.tipo,recorte.id);
   if(!obj)return;
   const que=IMG_TIPOS[recorte.tipo].demostrativo;
-  if(!confirm(`¿Quitar la imagen de ${que}? La carta dejará de mostrarla, pero el archivo se queda en el repositorio: podrás recuperarlo desde esta misma ventana con el botón «Recuperar la guardada», sin volver a subirlo.`))return;
+  if(!confirm(`¿Quitar la imagen de ${que}? Al publicar se borrará también del servidor. Mientras no cierres el editor podrás recuperarla desde esta misma ventana.`))return;
+
+  const boton=$('#btnQuitarImagen');
+  boton.disabled=true;
+  const ruta=rutaImagenRepo(recorte.tipo,recorte.id);
+  const hayCopia=await guardarCopiaAntesDeQuitar(ruta,obj);
+  boton.disabled=false;
+
   olvidarPendiente(recorte.tipo,recorte.id);
-  if(obj.imagen)apuntarHuerfana(recorte.tipo,recorte.id);   // el archivo se queda, y lo sabemos
+  if(obj.imagen)apuntarParaBorrar(ruta);   // al publicar, fuera del servidor
   delete obj.imagen;
   delete obj.foco;   // sin foto, la zona importante no significa nada
+
   marcarSucio();
   cerrarModalImagen();
   pintarZona();
-  avisar('Imagen quitada. Publica los cambios para que se note en la carta.','bien');
+
+  avisar(hayCopia
+    ? 'Imagen quitada. Al publicar se borrará del servidor; mientras no cierres el editor puedes recuperarla.'
+    : 'Imagen quitada. No he podido guardar una copia, así que si te has equivocado habrá que volver a subirla.',
+    hayCopia?'bien':'error');
 }
 
 /* ---------- Sucesos de la ventana ---------- */

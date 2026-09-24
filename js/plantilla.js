@@ -60,13 +60,14 @@ const PRESENTACION_DE_RESPALDO = {
        grupo es más baja: 5 a 1.
      · Plantilla 2: el grupo va ABIERTO, sin marco ni tarjeta: los
        platos y la alerta se leen directamente sobre el fondo de la
-       carta. La banda de la foto es 4 a 1.
+       carta. La banda de la foto es 4 a 1. Es además la única que
+       pinta las notas de la sección.
 
    Si mañana llega una Plantilla 3, se añade aquí con los mismos
    campos y el editor la entiende sin tocar nada más. */
 const PERFILES_DE_PLANTILLA = {
-  'plantilla-1': { id: 'plantilla-1', nombre: 'Plantilla 1', grupo: 'panel',   bandaGrupo: [5, 1] },
-  'plantilla-2': { id: 'plantilla-2', nombre: 'Plantilla 2', grupo: 'abierto', bandaGrupo: [4, 1] }
+  'plantilla-1': { id: 'plantilla-1', nombre: 'Plantilla 1', grupo: 'panel',   bandaGrupo: [5, 1], notasDeSeccion: false },
+  'plantilla-2': { id: 'plantilla-2', nombre: 'Plantilla 2', grupo: 'abierto', bandaGrupo: [4, 1], notasDeSeccion: true }
 };
 
 /* El perfil de la plantilla de este local. Si todavía no se sabe
@@ -100,6 +101,20 @@ function aplicarPerfilDePlantilla() {
 /* La copia de la plantilla que tenemos ahora mismo en memoria.
    { cliente, plantillaId, nombre, version, archivos:{nombre:texto} } */
 let plantillaEnMemoria = null;
+
+/* El identificador de la plantilla que usa este negocio ("plantilla-1",
+   "plantilla-2"…), o cadena vacía si todavía no se ha traído ninguna. */
+function plantillaEnUso(){
+  return plantillaEnMemoria?.plantillaId || '';
+}
+
+/* ¿La plantilla de este negocio pinta las notas de la sección? Lo dice
+   su perfil (hoy, solo la Plantilla 2). El editor lo usa para no ofrecer
+   un adorno que luego no se vería. Mientras no se sepa qué plantilla es,
+   no se ofrecen. */
+function plantillaConNotasDeSeccion(){
+  return !!plantillaEnUso() && perfilDePlantilla().notasDeSeccion === true;
+}
 
 /* ¿Hay una plantilla lista para pintar la vista previa? */
 function hayPlantilla() {

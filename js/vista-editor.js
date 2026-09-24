@@ -49,6 +49,20 @@ function bloqueImagen(tipo,obj,{vacio=''}={}){
     </div>`;
 }
 
+/* ¿Se enseñan las notas de esta sección? Hacen falta dos cosas: que el
+   plan incluya los destacados y que la plantilla de este negocio las
+   pinte. Si la sección ya tiene notas escritas se enseñan igualmente,
+   para que nadie se quede con algo guardado que no puede ni tocar ni
+   borrar. */
+function notasDeLaSeccionAlaVista(sec){
+  if(!puedeEtiquetas())return false;
+  if(typeof plantillaConNotasDeSeccion==='function'&&plantillaConNotasDeSeccion())return true;
+  // Aquí solo se mira, no se toca: una sección que no las enseña no debe
+  // acabar con un campo de notas vacío escrito dentro.
+  const escritas=Array.isArray(sec?.notas)?sec.notas.length:(sec?.notas||sec?.nota?1:0);
+  return escritas>0;
+}
+
 function pintarZona(){
   const zona=$('#zona');
   if(!estado.datos){zona.innerHTML='<p class="vacio">Presiona el botón de arriba "Cargar carta" para mostrar los datos actuales de la carta..</p>';return;}
@@ -85,6 +99,7 @@ function pintarZona(){
       </h2>
       <div class="par-idiomas">${camposTexto('sec-nombre',sec.nombre,'Nombre')}</div>
       ${imagenSeccion}
+      ${notasDeLaSeccionAlaVista(sec)?bloqueNotasDeSeccion(sec):''}
       <div class="acc">
         <button class="btn btn--peligro" data-borrar-seccion="1" type="button">Eliminar sección</button>
       </div>

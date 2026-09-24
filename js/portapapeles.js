@@ -83,7 +83,6 @@ async function pegarItem(){
     if(!foto)throw new Error('no se ha encontrado el archivo');
     const rutaDestino=rutaImagenRepo('item',nuevo.id);
     rescatarDeLaPapelera(rutaDestino);
-    estado.imagenesHuerfanas.delete(rutaDestino);
     estado.imagenesPendientes[rutaDestino]={
       base64:foto.base64, bytes:foto.bytes, ancho:foto.ancho, alto:foto.alto,
       previa:URL.createObjectURL(base64ABlob(foto.base64))

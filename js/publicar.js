@@ -41,6 +41,7 @@ async function traer(){
     }
     cargarDatos(datos);
     avisar(mensajeDeBienvenida(licencia),'bien');
+    preguntarIdiomasSiToca();
 
     // Los archivos de la plantilla (los que hacen falta para la vista
     // previa) se ponen al día aparte. Si falla, la carta ya está
@@ -73,7 +74,6 @@ function cargarDatos(datos){
   estado.sucio=false;
   liberarImagenesPendientes();
   estado.imagenesPorBorrar=[];
-  estado.imagenesHuerfanas=new Set();
   estado.expandidas=new Set();
   // Cartas antiguas sin secciones: se envuelven en una sección "General".
   if(!estado.datos.secciones&&estado.datos.grupos){
@@ -82,7 +82,7 @@ function cargarDatos(datos){
   }
   estado.datos.secciones=estado.datos.secciones||[];
   estado.idiomas=detectarIdiomas(estado.datos);
-  estado.imagenes=detectarImagenes(estado.datos);
+  anotarImagenesEnLaCarta();
   estado.seccionActiva=estado.datos.secciones[0]?.id??null;
   if(estado.seccionActiva)estado.expandidas.add(estado.seccionActiva);
   estado.grupoActivo=null;
@@ -151,7 +151,7 @@ async function publicar(){
     // 2) La carta. El servidor guarda una copia de seguridad con fecha
     //    antes de pisar la anterior, y rechaza el archivo si viniera
     //    roto, así que una carta estropeada nunca llega al público.
-    estado.datos.negocio=estado.datos.negocio||{};
+    anotarImagenesEnLaCarta();
     estado.datos.negocio.actualizado=new Date().toISOString();
     await guardarCarta(estado.datos);
     estado.sucio=false;

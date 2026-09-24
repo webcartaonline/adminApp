@@ -164,9 +164,24 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 
     <div class="modal__acc">
       <button class="btn btn--peligro" id="btnQuitarImagen" type="button" hidden>Quitar imagen</button>
-      <button class="btn btn--suave" id="btnRecuperarImagen" type="button" hidden>Recuperar la guardada</button>
+      <button class="btn btn--suave" id="btnRecuperarImagen" type="button" hidden>Recuperar la que quité</button>
       <button class="btn btn--suave" id="btnCerrarImagen" type="button">Cancelar</button>
       <button class="btn btn--principal" id="btnGuardarImagen" type="button" disabled>Guardar imagen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Elegir los idiomas extra =====
+     Sale al cargar la carta si el plan incluye idiomas extra que todavía
+     no se han elegido (ver idiomas.js). -->
+<div class="modal" id="modalIdiomas" hidden role="dialog" aria-modal="true" aria-labelledby="idiomasTitulo">
+  <div class="modal__caja">
+    <h2 class="modal__titulo" id="idiomasTitulo">Elige tus idiomas extra</h2>
+    <p class="modal__pista" id="idiomasPista"></p>
+    <div class="idiomas-extra" id="idiomasCampos"></div>
+    <div class="modal__acc">
+      <button class="btn btn--suave" id="btnIdiomasLuego" type="button">Ahora no</button>
+      <button class="btn btn--principal" id="btnIdiomasGuardar" type="button">Guardar idiomas</button>
     </div>
   </div>
 </div>
