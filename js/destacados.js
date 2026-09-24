@@ -230,25 +230,55 @@ function estiloDelFondoDePrevia(){
 
 function bloquePrevia(d,forma){
   const fondo=fondoDeDestacado(d), letra=letraDeDestacado(d,fondo);
-  const estilo=forma==='alerta'
-    ? `;border-color:${mezclaHex(fondo,letra,0.18)}`   // el filo tenue de la alerta, como en la carta
-    : '';
+  // La alerta y la nota llevan el filo tenue de la carta; la etiqueta, no.
+  const estilo=forma==='etiqueta'?'':`;border-color:${mezclaHex(fondo,letra,0.18)}`;
   return `
     <div class="previa-destacado previa-destacado--${perfilDePlantilla().grupo}"
          style="${estiloDelFondoDePrevia()}">
-      <span class="previa-destacado__pieza previa-destacado__pieza--${forma}"
-            data-des-previa
-            style="background:${fondo};color:${letra}${estilo}">${escapar(textoDePrevia(d))}</span>
+      <span class="${clasesDePieza(forma)}"
+            data-des-previa data-forma="${forma}"
+            style="background:${fondo};color:${letra}${estilo}">${contenidoDePrevia(d,forma)}</span>
     </div>`;
 }
 
-/* Lo que se enseña en la muestra. En las notas de sección el texto
-   puede tener varias líneas y la primera es el título, así que se coge
-   esa; en las alertas y las etiquetas, que son de una línea, es lo
-   mismo que el texto entero. */
-function textoDePrevia(d){
-  const escrito=valorTexto(d?.texto,estado.idiomas[0]);
-  return escrito.split('\n').map(l=>l.trim()).find(Boolean)||'Sin texto';
+/* ¿Respeta la plantilla de este local los saltos de línea de las notas
+   de sección? Plantilla 2: sí (primera línea título, el resto debajo).
+   Plantilla 1: no, la nota sale seguida en una sola línea. */
+function notaConSaltos(){
+  return perfilDePlantilla().notaConSaltos===true;
+}
+
+function clasesDePieza(forma){
+  const base=`previa-destacado__pieza previa-destacado__pieza--${forma}`;
+  if(forma!=='nota')return base;
+  return `${base} previa-destacado__pieza--nota-${notaConSaltos()?'lineas':'seguida'}`;
+}
+
+/* Las líneas escritas en el primer idioma, sin las vacías. */
+function lineasDePrevia(d){
+  return valorTexto(d?.texto,estado.idiomas[0]).split('\n').map(l=>l.trim()).filter(Boolean);
+}
+
+/* Lo que se enseña en la muestra (ya escapado, listo para pintar).
+     · Alertas y etiquetas son de una sola línea: el texto tal cual.
+     · Notas de sección, según la plantilla:
+         con saltos  -> la primera línea como título y el resto debajo,
+                        cada una en su renglón;
+         sin saltos  -> todo seguido en una línea, como lo pinta la
+                        carta: un salto de línea cuenta como un espacio. */
+function contenidoDePrevia(d,forma){
+  const lineas=lineasDePrevia(d);
+  if(!lineas.length)return 'Sin texto';
+  if(forma!=='nota')return escapar(lineas[0]);
+  if(!notaConSaltos())return escapar(lineas.join(' '));
+  const [titulo,...cuerpo]=lineas;
+  return `<b class="previa-nota__titulo">${escapar(titulo)}</b>`+
+    (cuerpo.length?`<span class="previa-nota__cuerpo">${cuerpo.map(escapar).join('<br>')}</span>`:'');
+}
+
+/* Repinta el texto de una muestra ya puesta, sin rehacer la tarjeta. */
+function refrescarTextoDePrevia(pieza,objeto){
+  pieza.innerHTML=contenidoDePrevia(objeto,pieza.dataset.forma);
 }
 
 /* ---------- Las notas de la sección ----------
@@ -272,9 +302,11 @@ function bloqueNotasDeSeccion(seccion){
         </div>
       </div>
       <div class="par-idiomas">${camposTexto('nota-texto',n.texto,'Texto',true)}</div>
-      <p class="campo__pista">La primera línea es el título. Pulsa intro y sigue escribiendo para el resto.</p>
+      <p class="campo__pista">${notaConSaltos()
+        ?'La primera línea es el título. Pulsa intro y sigue escribiendo para el resto.'
+        :'En el diseño de tu carta la nota se ve seguida, en una sola línea: los saltos de línea no se tienen en cuenta.'}</p>
       ${bloqueColores(n)}
-      ${bloquePrevia(n,'alerta')}
+      ${bloquePrevia(n,'nota')}
     </div>`).join('');
 
   return `
@@ -413,7 +445,7 @@ function refrescarDestacado(caja,objeto){
   pieza.style.background=fondo;
   pieza.style.color=letra;
   if(caja.dataset.destacado==='alerta')pieza.style.borderColor=mezclaHex(fondo,letra,0.18);
-  pieza.textContent=textoDePrevia(objeto);
+  refrescarTextoDePrevia(pieza,objeto);
 }
 
 /* =========================================================
@@ -528,7 +560,7 @@ document.addEventListener('input',(ev)=>{
   asignarTexto(d.objeto,'texto',t.dataset.lang,t.value);
   // La muestra se refresca sola, pero sin repintar: se está escribiendo.
   if(t.dataset.lang===estado.idiomas[0]){
-    d.caja.querySelector('[data-des-previa]').textContent=textoDePrevia(d.objeto);
+    refrescarTextoDePrevia(d.caja.querySelector('[data-des-previa]'),d.objeto);
   }
   marcarSucio();
 });

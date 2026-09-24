@@ -65,6 +65,18 @@
 .previa-destacado__pieza--alerta{display:inline-block;padding:4px 12px;border-radius:999px;
   border:1px solid transparent;font-size:.72rem;font-weight:500;line-height:1.45}
 
+/* La nota de la sección, según la plantilla:
+     --nota-seguida (Plantilla 1): una píldora de una sola línea, como la
+       alerta; los saltos de línea se ignoran.
+     --nota-lineas  (Plantilla 2): un recuadro con el título arriba y el
+       resto debajo, renglón a renglón. */
+.previa-destacado__pieza--nota{display:inline-block;border:1px solid transparent;
+  font-size:.72rem;font-weight:500;line-height:1.45}
+.previa-destacado__pieza--nota-seguida{padding:4px 12px;border-radius:999px}
+.previa-destacado__pieza--nota-lineas{padding:8px 14px;border-radius:12px;text-align:left}
+.previa-nota__titulo{display:block;font-weight:700}
+.previa-nota__cuerpo{display:block;margin-top:3px;opacity:.9}
+
 /* Móvil: los botones bajan a su propia línea para no aplastarse */
 @media(max-width:600px){
   .destacado__botones{margin-left:0;width:100%;justify-content:flex-end}

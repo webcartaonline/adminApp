@@ -55,21 +55,14 @@
   background:radial-gradient(58% 46% at 50% 30%, var(--pc-halo,rgba(233,180,76,.16)), transparent 68%);
   pointer-events:none;
 }
-/* Con foto detrás, el mismo halo hace de velo oscuro para que el
-   nombre y el eslogan se sigan leyendo. */
-.previa-carta--con-fondo .previa-carta__halo{
-  inset:0; height:100%;
-  background:
-    radial-gradient(58% 46% at 50% 30%, var(--pc-halo,rgba(233,180,76,.16)), transparent 68%),
-    linear-gradient(180deg, rgba(0,0,0,.50), rgba(0,0,0,.70));
-}
-/* Un degradado corto al pie de la foto: en vez de un corte seco, la
-   portada se funde con el color de fondo de la mitad de abajo. */
-.previa-carta--con-fondo .previa-carta__portada::after{
-  content:''; position:absolute; left:0; right:0; bottom:0; height:34%;
-  background:linear-gradient(180deg, transparent, var(--pc-fondo,#12100E));
-  pointer-events:none;
-}
+/* Con foto detrás, igual que en la carta: la foto solo se oscurece, de
+   forma pareja y SIN degradados, y el halo desaparece. La portada acaba
+   en seco donde empieza el resto de la carta, sin una franja que funda
+   una zona con la otra. Vale para todas las plantillas. */
+.previa-carta--con-fondo .previa-carta__fondo{ filter:brightness(.32); }
+.previa-carta--con-fondo .previa-carta__halo{ display:none; }
+.previa-carta--con-fondo .previa-carta__nombre{ color:#FFFFFF; text-shadow:0 2px 16px rgba(0,0,0,.55); }
+.previa-carta--con-fondo .previa-carta__lema{ text-shadow:0 1px 8px rgba(0,0,0,.6); }
 .previa-carta__lema{
   position:relative;
   margin:0 0 10px;

@@ -61,13 +61,15 @@ const PRESENTACION_DE_RESPALDO = {
      · Plantilla 2: el grupo va ABIERTO, sin marco ni tarjeta: los
        platos y la alerta se leen directamente sobre el fondo de la
        carta. La banda de la foto es 4 a 1. Es además la única que
-       pinta las notas de la sección.
+       pinta las notas de la sección con sus saltos de línea: la
+       primera línea es el título y el resto va debajo. En la
+       Plantilla 1 la nota sale seguida, en una sola línea.
 
    Si mañana llega una Plantilla 3, se añade aquí con los mismos
    campos y el editor la entiende sin tocar nada más. */
 const PERFILES_DE_PLANTILLA = {
-  'plantilla-1': { id: 'plantilla-1', nombre: 'Plantilla 1', grupo: 'panel',   bandaGrupo: [5, 1], notasDeSeccion: false },
-  'plantilla-2': { id: 'plantilla-2', nombre: 'Plantilla 2', grupo: 'abierto', bandaGrupo: [4, 1], notasDeSeccion: true }
+  'plantilla-1': { id: 'plantilla-1', nombre: 'Plantilla 1', grupo: 'panel',   bandaGrupo: [5, 1], notasDeSeccion: false, notaConSaltos: false },
+  'plantilla-2': { id: 'plantilla-2', nombre: 'Plantilla 2', grupo: 'abierto', bandaGrupo: [4, 1], notasDeSeccion: true,  notaConSaltos: true }
 };
 
 /* El perfil de la plantilla de este local. Si todavía no se sabe
