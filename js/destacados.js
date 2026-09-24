@@ -228,16 +228,49 @@ function estiloDelFondoDePrevia(){
   return `background:${coloresCarta.fondo}`;
 }
 
-function bloquePrevia(d,forma){
-  const fondo=fondoDeDestacado(d), letra=letraDeDestacado(d,fondo);
-  // La alerta y la nota llevan el filo tenue de la carta; la etiqueta, no.
-  const estilo=forma==='etiqueta'?'':`;border-color:${mezclaHex(fondo,letra,0.18)}`;
+/* ¿Esta muestra es una nota de sección pintada a renglones (Plantilla 2)?
+   Esa no es una píldora: es una barrita de color a un lado, el título
+   en ese mismo color y el resto del texto debajo. */
+function esNotaEnLineas(forma){
+  return forma==='nota'&&notaConSaltos();
+}
+
+/* Los colores de una muestra, como estilo en línea.
+     · Píldoras (etiqueta, alerta, nota seguida): fondo y letra, y la
+       alerta y la nota con su filo tenue.
+     · Nota en renglones: el color de «Fondo» pinta la barrita y el
+       título; el de «Letra», el resto del texto. En automático, la letra
+       es la normal de la carta, porque va directamente sobre su fondo. */
+/* La letra que se ve en la muestra. En la nota a renglones, en
+   automático, es la letra normal de la carta. */
+function letraVisible(d,forma){
+  if(!esNotaEnLineas(forma))return letraDeDestacado(d,fondoDeDestacado(d));
+  const elegida=String(d?.color??'auto').trim();
+  return esHexValido(elegida)?elegida:coloresCarta.texto;
+}
+
+function estiloDePieza(d,forma){
+  const fondo=fondoDeDestacado(d);
+  if(esNotaEnLineas(forma))return `--nota-acento:${fondo};color:${letraVisible(d,forma)}`;
+  const letra=letraDeDestacado(d,fondo);
+  const filo=forma==='etiqueta'?'':`;border-color:${mezclaHex(fondo,letra,0.18)}`;
+  return `background:${fondo};color:${letra}${filo}`;
+}
+
+/* lado: solo para las notas de sección, 'izquierda' o 'derecha' (dónde
+   va la barrita; la carta lo decide por el orden). */
+function bloquePrevia(d,forma,lado='izquierda'){
+  const fondoPrevia=forma==='nota'
+    ? `background:${coloresCarta.fondo}`   // las notas van sobre el fondo, fuera de los grupos
+    : estiloDelFondoDePrevia();
+  const clasePrevia=esNotaEnLineas(forma)
+    ? `previa-destacado--nota previa-destacado--nota-${lado}`
+    : `previa-destacado--${forma==='nota'?'abierto':perfilDePlantilla().grupo}`;
   return `
-    <div class="previa-destacado previa-destacado--${perfilDePlantilla().grupo}"
-         style="${estiloDelFondoDePrevia()}">
+    <div class="previa-destacado ${clasePrevia}" style="${fondoPrevia}">
       <span class="${clasesDePieza(forma)}"
             data-des-previa data-forma="${forma}"
-            style="background:${fondo};color:${letra}${estilo}">${contenidoDePrevia(d,forma)}</span>
+            style="${estiloDePieza(d,forma)}">${contenidoDePrevia(d,forma)}</span>
     </div>`;
 }
 
@@ -306,7 +339,7 @@ function bloqueNotasDeSeccion(seccion){
         ?'La primera línea es el título. Pulsa intro y sigue escribiendo para el resto.'
         :'En el diseño de tu carta la nota se ve seguida, en una sola línea: los saltos de línea no se tienen en cuenta.'}</p>
       ${bloqueColores(n)}
-      ${bloquePrevia(n,'nota')}
+      ${bloquePrevia(n,'nota',i%2===0?'izquierda':'derecha')}
     </div>`).join('');
 
   return `
@@ -426,7 +459,7 @@ function destacadoDesde(elemento){
    entero, para no perder el cursor mientras se escribe. */
 function refrescarDestacado(caja,objeto){
   const modoF=modoDelFondo(objeto), modoL=modoDeLaLetra(objeto);
-  const fondo=fondoDeDestacado(objeto), letra=letraDeDestacado(objeto,fondo);
+  const fondo=fondoDeDestacado(objeto);
 
   caja.querySelectorAll('[data-des-fondo]').forEach(b=>
     b.setAttribute('aria-pressed',String(b.dataset.desFondo===modoF)));
@@ -439,12 +472,10 @@ function refrescarDestacado(caja,objeto){
 
   const ruedaLetra=caja.querySelector('[data-des-letra-color]');
   ruedaLetra.hidden=modoL!=='manual';
-  ruedaLetra.value=letra;
+  ruedaLetra.value=letraVisible(objeto,caja.querySelector('[data-des-previa]')?.dataset.forma);
 
   const pieza=caja.querySelector('[data-des-previa]');
-  pieza.style.background=fondo;
-  pieza.style.color=letra;
-  if(caja.dataset.destacado==='alerta')pieza.style.borderColor=mezclaHex(fondo,letra,0.18);
+  pieza.setAttribute('style',estiloDePieza(objeto,pieza.dataset.forma));
   refrescarTextoDePrevia(pieza,objeto);
 }
 
@@ -537,9 +568,8 @@ document.addEventListener('click',(ev)=>{
   if(botonLetra){
     const d=destacadoDesde(botonLetra);if(!d)return;
     const modo=botonLetra.dataset.desLetra;
-    d.objeto.color=modo==='manual'
-      ? letraDeDestacado(d.objeto,fondoDeDestacado(d.objeto))
-      : 'auto';
+    const forma=d.caja.querySelector('[data-des-previa]')?.dataset.forma;
+    d.objeto.color=modo==='manual'?letraVisible(d.objeto,forma):'auto';
     refrescarDestacado(d.caja,d.objeto);marcarSucio();return;
   }
 });

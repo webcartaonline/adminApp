@@ -1,10 +1,10 @@
 {
-  "version": "11.7.0-BETA",
+  "version": "11.7.1-BETA",
   "fecha": "2026-09-24",
   "titulo": "Miniatura sin degradado y notas de sección según tu diseño",
   "cambios": [
     "La miniatura de «Ajustes de la página» ya no funde la portada con el resto de la carta: la foto solo se oscurece, igual que en tu carta.",
-    "La muestra de las notas de sección se ve como en tu diseño: en la Plantilla 2, con el título arriba y cada línea en su renglón; en la Plantilla 1, seguida en una sola línea.",
+    "La muestra de las notas de sección se ve como en tu diseño. En la Plantilla 2: una barrita de color a un lado, el título en ese color y el resto debajo en el color de la letra. En la Plantilla 1: seguida, en una sola línea.",
     "Las muestras de etiquetas, alertas y notas se ven sobre el mismo fondo que tendrán en tu carta, según su diseño.",
     "La vista previa indica con qué diseño se está pintando tu carta."
   ]

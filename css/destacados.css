@@ -68,14 +68,21 @@
 /* La nota de la sección, según la plantilla:
      --nota-seguida (Plantilla 1): una píldora de una sola línea, como la
        alerta; los saltos de línea se ignoran.
-     --nota-lineas  (Plantilla 2): un recuadro con el título arriba y el
-       resto debajo, renglón a renglón. */
-.previa-destacado__pieza--nota{display:inline-block;border:1px solid transparent;
-  font-size:.72rem;font-weight:500;line-height:1.45}
-.previa-destacado__pieza--nota-seguida{padding:4px 12px;border-radius:999px}
-.previa-destacado__pieza--nota-lineas{padding:8px 14px;border-radius:12px;text-align:left}
-.previa-nota__titulo{display:block;font-weight:700}
-.previa-nota__cuerpo{display:block;margin-top:3px;opacity:.9}
+     --nota-lineas  (Plantilla 2): sin recuadro. Una barrita del color de
+       «Fondo» a un lado, el título en ese mismo color y en negrita, y
+       debajo el resto del texto en el color de «Letra». La primera nota
+       lleva la barrita a la izquierda; la segunda, a la derecha. */
+.previa-destacado__pieza--nota{display:inline-block;font-size:.72rem;font-weight:500;line-height:1.45}
+.previa-destacado__pieza--nota-seguida{padding:4px 12px;border-radius:999px;border:1px solid transparent}
+
+.previa-destacado--nota{justify-content:flex-start;padding:12px 14px}
+.previa-destacado--nota-derecha{justify-content:flex-end}
+.previa-destacado__pieza--nota-lineas{display:block;padding:2px 0 2px 12px;
+  border-left:3px solid var(--nota-acento);text-align:left;font-size:.8rem;font-weight:400}
+.previa-destacado--nota-derecha .previa-destacado__pieza--nota-lineas{
+  padding:2px 12px 2px 0;border-left:none;border-right:3px solid var(--nota-acento);text-align:right}
+.previa-nota__titulo{display:block;font-weight:700;color:var(--nota-acento,inherit)}
+.previa-nota__cuerpo{display:block;margin-top:2px}
 
 /* Móvil: los botones bajan a su propia línea para no aplastarse */
 @media(max-width:600px){
