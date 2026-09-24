@@ -53,7 +53,7 @@ document.addEventListener('click',(ev)=>{
     if(!estado.datos){
       estado.datos={negocio:{},secciones:[]};
       estado.idiomas=detectarIdiomas(estado.datos);
-      estado.imagenes=detectarImagenes(estado.datos);
+      anotarImagenesEnLaCarta();
     }
     estado.datos.secciones=estado.datos.secciones??[];
     const s={id:nuevoId('s','seccion'),nombre:crearTexto('NUEVA SECCIÓN'),grupos:[]};

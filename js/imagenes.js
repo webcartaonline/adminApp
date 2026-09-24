@@ -5,19 +5,27 @@
    cuáles se pueden recuperar y cuáles hay que borrar.
    ========================================================= */
 
-/* ---------- ¿Esta carta tiene imágenes? ----------
-   Es un interruptor general que viene en la propia carta, en
-   negocio.imagenes, igual que los idiomas vienen en negocio.idiomas.
+/* ---------- ¿Esta carta puede llevar fotos? ----------
+   Lo decide la LICENCIA, no la carta: si el plan incluye algún tipo de
+   foto, el editor enseña los botones de foto. Cada botón sigue
+   preguntando además por su permiso concreto (licencia.js), así que
+   nadie ve un botón que su plan no incluya.
 
-   Apagado significa apagado del todo: ni la carta las enseña, ni el
-   editor ofrece un solo botón de foto. No se borra nada: las fotos
-   que hubiera siguen en su sitio y vuelven solas al encenderlo.
+   Antes lo decía el campo negocio.imagenes de la carta. Ese campo se
+   mantiene solo porque las plantillas lo leen para saber si pintar las
+   fotos (la carta pública no ve la licencia), pero ya no lo escribe
+   nadie a mano: el editor lo copia de la licencia al cargar y al
+   publicar (anotarImagenesEnLaCarta). */
+function imagenesSegunLicencia(){
+  return puedeImagenItem()||puedeImagenesDecorativas()||puedeImagenMarca();
+}
 
-   Si el campo no viene escrito, cuenta como apagado. Las fotos se
-   encienden queriendo, no por descuido. */
-function detectarImagenes(datos){
-  const v=datos?.negocio?.imagenes;
-  return v===true||v===1||/^(true|si|sí|1)$/i.test(String(v??''));
+/* Deja la carta en memoria diciendo lo mismo que la licencia, para que
+   al publicar la plantilla pinte (o no) las fotos según el plan. */
+function anotarImagenesEnLaCarta(){
+  estado.imagenes=imagenesSegunLicencia();
+  if(!estado.datos)return;
+  estado.datos.negocio={...(estado.datos.negocio||{}),imagenes:estado.imagenes};
 }
 
 /* Atajo para preguntarlo desde cualquier sitio. */
@@ -90,34 +98,93 @@ function olvidarPendiente(tipo,id){
 }
 
 /* ---------- Papelera de imágenes ----------
-   Quitar una imagen de un plato NO borra el archivo: se queda en el
-   repositorio y se puede recuperar. Pero si se borra el plato entero,
-   el archivo ya no lo va a reclamar nadie (los ids llevan un trozo
-   aleatorio, así que ningún plato nuevo reutilizará ese nombre), y por
-   eso se apunta aquí para borrarlo del repositorio al publicar. */
+   Quitar una foto la borra de la carta Y del servidor al publicar: en
+   la nube no se queda nada ocupando sitio «por si acaso». Lo que sí se
+   guarda es una copia en ESTE navegador (más abajo), para poder
+   deshacer el despiste mientras el editor siga abierto. */
+
+/* Apunta que este archivo hay que borrarlo del servidor al publicar. */
+function apuntarParaBorrar(ruta){
+  if(ruta&&!estado.imagenesPorBorrar.includes(ruta))estado.imagenesPorBorrar.push(ruta);
+}
+
+/* Se borra el plato (o el grupo, o la sección) entero: su foto ya no la
+   va a reclamar nadie, porque los ids llevan un trozo aleatorio y
+   ninguno nuevo va a reutilizar ese nombre. */
 function marcarImagenParaBorrar(tipo,id,obj){
   const ruta=rutaImagenRepo(tipo,id);
   olvidarPendiente(tipo,id);
-  // Solo tiene sentido pedir el borrado si sabemos que hay archivo: o la
-  // carta lo está usando, o lo quitamos antes y sigue guardado. Así no
-  // gastamos peticiones a GitHub preguntando por fotos que no existen.
-  const hayArchivo=!!obj?.imagen||estado.imagenesHuerfanas.has(ruta);
-  if(hayArchivo&&!estado.imagenesPorBorrar.includes(ruta))estado.imagenesPorBorrar.push(ruta);
-  estado.imagenesHuerfanas.delete(ruta);
-}
-
-/* Apunta que en el repositorio hay un archivo que la carta ya no usa
-   (porque se quitó la imagen, o porque lo hemos encontrado al abrir la
-   ventana de la foto). Sirve para saber que se puede recuperar, y para
-   borrarlo si luego se elimina el plato entero. */
-function apuntarHuerfana(tipo,id){
-  estado.imagenesHuerfanas.add(rutaImagenRepo(tipo,id));
+  // Solo tiene sentido pedir el borrado si hay algo publicado que borrar.
+  if(obj?.imagen)apuntarParaBorrar(ruta);
 }
 
 /* Saca una ruta de la papelera (al recuperar una imagen o al pegar un
    ítem que va a ocupar ese mismo nombre de archivo). */
 function rescatarDeLaPapelera(ruta){
   estado.imagenesPorBorrar=estado.imagenesPorBorrar.filter(x=>x!==ruta);
+}
+
+/* ---------- La copia de las fotos quitadas ----------
+   Vive en la memoria de esta pestaña (sessionStorage): no viaja a
+   ningún servidor y desaparece al cerrar el editor. Sirve para una sola
+   cosa, recuperar una foto quitada por error mientras se sigue
+   trabajando. Cada negocio tiene las suyas, y si el navegador no
+   dejara guardar nada, todo sigue funcionando: simplemente no habrá
+   copia que recuperar. */
+const claveDeFotoQuitada=(ruta)=>`${CLAVE_FOTOS_QUITADAS}::${clienteActual()}::${ruta}`;
+
+/* Las copias que hay ahora mismo, de la más vieja a la más nueva. */
+function fotosQuitadasGuardadas(){
+  const lista=[];
+  try{
+    for(let i=0;i<sessionStorage.length;i++){
+      const clave=sessionStorage.key(i);
+      if(!clave||!clave.startsWith(CLAVE_FOTOS_QUITADAS))continue;
+      let cuando=0;
+      try{cuando=JSON.parse(sessionStorage.getItem(clave))?.cuando||0;}catch{}
+      lista.push({clave,cuando});
+    }
+  }catch{}
+  return lista.sort((a,b)=>a.cuando-b.cuando);
+}
+
+function tirarLaMasVieja(){
+  const lista=fotosQuitadasGuardadas();
+  if(!lista.length)return false;
+  try{sessionStorage.removeItem(lista[0].clave);}catch{return false;}
+  return true;
+}
+
+function podarFotosQuitadas(){
+  const lista=fotosQuitadasGuardadas();
+  for(let i=0;i<lista.length-MAX_FOTOS_QUITADAS;i++){
+    try{sessionStorage.removeItem(lista[i].clave);}catch{}
+  }
+}
+
+/* Guarda la copia. Si el navegador dice que no cabe, se tira la más
+   vieja y se vuelve a intentar. Devuelve si se ha podido guardar, que
+   es lo que decide qué se le cuenta al cliente. */
+function guardarFotoQuitada(ruta,copia){
+  const dato=JSON.stringify({...copia,cuando:Date.now()});
+  for(let intento=0;intento<=MAX_FOTOS_QUITADAS;intento++){
+    try{
+      sessionStorage.setItem(claveDeFotoQuitada(ruta),dato);
+      podarFotosQuitadas();
+      return true;
+    }catch{
+      if(!tirarLaMasVieja())return false;
+    }
+  }
+  return false;
+}
+
+function fotoQuitada(ruta){
+  try{return JSON.parse(sessionStorage.getItem(claveDeFotoQuitada(ruta))||'null');}catch{return null;}
+}
+
+function olvidarFotoQuitada(ruta){
+  try{sessionStorage.removeItem(claveDeFotoQuitada(ruta));}catch{}
 }
 
 /* Al borrar una sección o un grupo, también sobran las fotos de sus platos. */

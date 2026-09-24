@@ -59,3 +59,6 @@ select option{background-color:var(--solido);color:var(--tinta)}
 /* Un campo por idioma, uno al lado del otro cuando cabe */
 .par-idiomas{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
   margin-bottom:10px}
+
+/* Los desplegables de la ventana «Elige tus idiomas extra». */
+.idiomas-extra{display:grid;gap:14px;margin:0 0 18px}

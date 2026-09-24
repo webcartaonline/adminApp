@@ -28,6 +28,16 @@ const CLAVE_COLOR          = 'editorCartaUniversal.color';
 const CLAVE_PANEL_ANCHO    = 'editorCartaUniversal.panelAncho';
 const CLAVE_SITIO          = 'editorCartaUniversal.sitio';
 
+/* ---------- Las fotos que se quitan ----------
+   Al quitar una foto, el editor guarda una copia por si fue un
+   despiste. Esa copia vive SOLO en la memoria de esta pestaña: no se
+   sube a ningún sitio y se pierde al cerrar el editor, que es justo lo
+   que se quiere. Cuando el dueño ha visto la vista previa, ha publicado
+   y ha cerrado, esa foto ya no le hace falta a nadie.
+   Se guardan las últimas; de las más viejas se va tirando. */
+const CLAVE_FOTOS_QUITADAS = 'editorCartaUniversal.fotoQuitada';
+const MAX_FOTOS_QUITADAS   = 8;
+
 /* ---------- Imágenes de la carta ----------
    Secciones, grupos y platos. Cada tipo tiene su propia forma y su
    propio tamaño. La proporción debe coincidir con la de estilos.css
