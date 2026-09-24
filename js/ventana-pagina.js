@@ -59,6 +59,8 @@
     document.documentElement.classList.remove('vp-abierta');
     // La apariencia pudo cambiar: que la vista previa se entere.
     if (typeof refrescarBotonVistaPrevia === 'function') refrescarBotonVistaPrevia();
+    // Y las muestras de etiquetas y alertas, que se pintan con sus colores.
+    if (typeof refrescarColoresDeLaCarta === 'function') refrescarColoresDeLaCarta();
   }
 
   document.addEventListener('keydown', (ev) => {

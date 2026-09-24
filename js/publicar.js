@@ -48,6 +48,9 @@ async function traer(){
     try{ await sincronizarPlantilla(); }
     catch(e){ console.warn('Vista previa no disponible:',e.message); }
     if(typeof refrescarBotonVistaPrevia==='function')refrescarBotonVistaPrevia();
+    // Los colores con los que se pintan las muestras de etiquetas y
+    // alertas, recién leídos para esta carta.
+    if(typeof refrescarColoresDeLaCarta==='function')refrescarColoresDeLaCarta();
   }catch(e){
     avisar(`No se ha podido traer la carta: ${e.message}`,'error');
   }

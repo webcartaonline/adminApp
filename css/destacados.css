@@ -46,10 +46,16 @@
 .rueda::-webkit-color-swatch{border:none;border-radius:6px}
 .rueda::-moz-color-swatch{border:none;border-radius:6px}
 
-/* La muestra: el mismo fondo oscuro de la carta, con la pieza encima,
-   para ver de verdad cómo va a quedar. Baja y discreta. */
+/* La muestra: lo mismo que tendrá detrás en la carta, con la pieza
+   encima, para ver de verdad cómo va a quedar. Baja y discreta.
+   Cambia según la plantilla del local (destacados.js pone el color):
+     --abierto (Plantilla 2): el fondo de la carta, sin más.
+     --panel   (Plantilla 1): un trocito del panel del grupo, con su
+                tono, su marco del color de la carta y sus esquinas
+                más redondas, como las tarjetas de esa plantilla. */
 .previa-destacado{padding:9px 10px;border-radius:var(--radio-s);
   border:1px solid var(--linea);display:flex;justify-content:center;overflow:hidden}
+.previa-destacado--panel{padding:10px 12px;border-radius:14px}
 .previa-destacado__pieza{max-width:100%;overflow-wrap:anywhere;text-align:center}
 
 /* Igual que en la carta: la etiqueta va en versalitas y a pelo; la
@@ -57,7 +63,7 @@
 .previa-destacado__pieza--etiqueta{display:inline-block;padding:3px 10px;border-radius:999px;
   font-size:.67rem;font-weight:600;line-height:1.55;letter-spacing:.09em;text-transform:uppercase}
 .previa-destacado__pieza--alerta{display:inline-block;padding:4px 12px;border-radius:999px;
-  font-size:.72rem;font-weight:500;line-height:1.45}
+  border:1px solid transparent;font-size:.72rem;font-weight:500;line-height:1.45}
 
 /* Móvil: los botones bajan a su propia línea para no aplastarse */
 @media(max-width:600px){

@@ -1,9 +1,11 @@
 {
-  "version": "11.2.0-BETA",
-  "fecha": "2026-09-22",
-  "titulo": "La miniatura enseña el color de fondo y se va la franja blanca",
+  "version": "11.3.0-BETA",
+  "fecha": "2026-09-24",
+  "titulo": "Las vistas previas se adaptan al diseño de tu carta",
   "cambios": [
-    "La miniatura de «Ajustes de la página» se parte en dos: arriba la foto de portada y abajo el color de fondo elegido, que antes quedaba tapado.",
-    "Quitada la franja blanca que salía en el borde derecho de la ventana de ajustes, donde va la barra de desplazamiento."
+    "Las muestras de etiquetas y alertas se ven sobre el mismo fondo que tendrán en tu carta, según su diseño (Plantilla 1 o Plantilla 2).",
+    "La miniatura de «Ajustes de la página» enseña los grupos como los pinta tu diseño: en tarjeta con marco o sueltos sobre el fondo.",
+    "El marco para encuadrar la foto de un grupo tiene la misma forma que en tu carta.",
+    "La vista previa indica con qué diseño se está pintando tu carta."
   ]
 }

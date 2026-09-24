@@ -196,6 +196,7 @@ function paletaDesde(colores){
   return {
     acento:principal, fondo, texto,
     textoSuave:mezclaDeHex(texto,fondo,.48),
+    superficie:mezclaDeHex(fondo,texto,.05),   // el tono de los paneles de la Plantilla 1
     borde:mezclaDeHex(fondo,texto,.14),
     halo:hexTransparente(principal,.16)
   };
@@ -215,7 +216,9 @@ function pintarPrevia(){
   caja.style.setProperty('--pc-texto',p.texto);
   caja.style.setProperty('--pc-texto-suave',p.textoSuave);
   caja.style.setProperty('--pc-borde',p.borde);
+  caja.style.setProperty('--pc-superficie',p.superficie);
   caja.style.setProperty('--pc-halo',p.halo);
+  pintarFormaDeLaPlantilla();
 
   const titulo=d.identidad.titulo.trim();
   const hayLogo=!!d.identidad.logo;
@@ -245,6 +248,23 @@ function pintarPrevia(){
     fondo.hidden=true; fondo.removeAttribute('src');
   }
   caja.classList.toggle('previa-carta--con-fondo',!!origenFondo);
+}
+
+/* La miniatura toma la forma de la plantilla de este local: los grupos
+   en panel con marco (Plantilla 1) o sueltos sobre el fondo
+   (Plantilla 2). La plantilla la dice la copia que guardó el editor al
+   cargar la carta (ver plantilla.js). */
+function pintarFormaDeLaPlantilla(){
+  if(typeof perfilDePlantilla!=='function')return;
+  const perfil=perfilDePlantilla();
+  const caja=$('#previaCarta');
+  caja.classList.toggle('previa-carta--panel',perfil.grupo==='panel');
+  caja.classList.toggle('previa-carta--abierto',perfil.grupo!=='panel');
+  const aviso=$('#previaPlantilla');
+  if(aviso){ aviso.textContent=`, con el diseño de tu carta (${perfil.nombre})`; aviso.hidden=false; }
+}
+if(typeof cargarPlantillaGuardada==='function'){
+  cargarPlantillaGuardada().finally(pintarFormaDeLaPlantilla);
 }
 
 /* La dirección pública de un archivo ya publicado, para poder enseñar
