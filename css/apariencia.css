@@ -105,6 +105,36 @@
   font-family:var(--pc-fuente-texto,system-ui,sans-serif);
   font-size:.72rem;
 }
+/* El grupo de muestra: su título en cursiva y del color principal,
+   con la línea fina detrás, como en la carta. */
+.previa-carta__grupo{ position:relative; box-sizing:border-box; width:100%; margin:0 auto; max-width:340px; }
+.previa-carta__grupo-cabecera{
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:8px;
+}
+.previa-carta__grupo-titulo{
+  font-family:var(--pc-fuente-titulo,Georgia,serif);
+  font-style:italic; font-weight:500; font-size:.86rem;
+  color:var(--pc-acento,#E9B44C);
+}
+.previa-carta__grupo-regla{ flex:1; height:1px; background:var(--pc-borde,#2C2620); }
+.previa-carta__grupo .previa-carta__pie{
+  max-width:none; padding:6px 0 8px;
+  border-top:none; border-bottom:1px solid var(--pc-borde,#2C2620);
+}
+
+/* Plantilla 1: el grupo es un PANEL, una tarjeta un punto más clara que
+   el fondo, con marco y esquinas redondeadas. Los platos van dentro. */
+.previa-carta--panel .previa-carta__grupo{
+  padding:10px 12px 12px;
+  border:1px solid var(--pc-borde,#2C2620);
+  border-radius:12px;
+  background:var(--pc-superficie,#1A1613);
+}
+.previa-carta--panel .previa-carta__grupo .previa-carta__pie{ border-bottom:none; padding-bottom:0; }
+/* Plantilla 2: el grupo va suelto sobre el fondo, sin tarjeta: no hace
+   falta nada más que lo de arriba. */
+
 .previa-carta__plato{ color:var(--pc-texto,#F4EFE7); }
 .previa-carta__precio{ color:var(--pc-acento,#E9B44C); font-weight:700; }
 .previa-carta__nota{

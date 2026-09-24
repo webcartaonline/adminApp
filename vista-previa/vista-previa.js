@@ -239,6 +239,10 @@
       const documento = await construirDocumento(a);
       const marco = crearCapa().querySelector('.vp__marco');
       marco.srcdoc = documento;
+      // Debajo del título, con qué plantilla se está pintando.
+      const perfil = perfilDePlantilla();
+      capa.querySelector('.vp__sub').textContent =
+        `Cambios sin publicar · ${plantillaEnMemoria.nombre || perfil.nombre}`;
       capa.hidden = false;
       document.documentElement.classList.add('vp-abierta');
       $('#mensaje').hidden = true;

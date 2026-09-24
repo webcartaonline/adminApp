@@ -1,12 +1,11 @@
 {
-  "version": "11.5.0-BETA",
-  "fecha": "2026-09-23",
-  "titulo": "Las fotos que quitas, fuera de verdad",
+  "version": "11.6.0-BETA",
+  "fecha": "2026-09-24",
+  "titulo": "Las vistas previas se adaptan al diseño de tu carta",
   "cambios": [
-    "Al quitar una foto, ahora se borra también del servidor cuando publicas. Antes se quedaba allí guardada para siempre por si la querías de vuelta.",
-    "Para poder deshacer un despiste, el editor guarda una copia de la foto en tu propio navegador. Mientras no cierres el editor, el botón «Recuperar la que quité» la devuelve sin tener que buscarla otra vez.",
-    "Esa copia no sale de tu dispositivo y desaparece al cerrar: cuando has publicado y cerrado, se entiende que la carta ya está como querías.",
-    "Las fotos ahora las decide tu plan: si incluye fotos, los botones de foto salen siempre, sin tener que activarlas en la carta.",
-    "Si tu plan incluye idiomas extra, la primera vez que cargues la carta el editor te pregunta cuáles quieres."
+    "Las muestras de etiquetas y alertas se ven sobre el mismo fondo que tendrán en tu carta, según su diseño (Plantilla 1 o Plantilla 2).",
+    "La miniatura de «Ajustes de la página» enseña los grupos como los pinta tu diseño: en tarjeta con marco o sueltos sobre el fondo.",
+    "El marco para encuadrar la foto de un grupo tiene la misma forma que en tu carta.",
+    "La vista previa indica con qué diseño se está pintando tu carta."
   ]
 }

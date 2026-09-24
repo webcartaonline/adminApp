@@ -46,6 +46,9 @@ const MAX_FOTOS_QUITADAS   = 8;
      grupo   -> .grupo__cabecera--imagen{aspect-ratio:4/1}
      item    -> .item__foto{aspect-ratio:1/1}
    Si allí cambian, cámbialas también aquí.
+   La banda del GRUPO no es igual en todas las plantillas (5 a 1 en la
+   Plantilla 1, 4 a 1 en la 2): la de aquí es la de partida, y
+   plantilla.js la cambia por la de la plantilla de cada local.
 
    Los anchos son los que de verdad se ven en la carta con margen de
    sobra para las pantallas más nítidas. Guardar más píxeles no se
@@ -64,7 +67,7 @@ const IMG_TIPOS = {
     etiqueta:'grupo', rotulo:'Grupo', demostrativo:'este grupo',
     titulo:'Imagen del grupo', carpeta:'img/grupos',
     conFoco:true,
-    relA:4, relB:1,                 // banda más baja que la de la sección
+    relA:4, relB:1,                 // banda más baja que la de la sección (la ajusta plantilla.js)
     anchoMax:1100, anchoMin:550,
     peso:150*1024
   },

@@ -33,7 +33,8 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 
 <main class="pagina-ventana">
   <p class="apartado__nota">Estos ajustes se publican todos a la vez con el botón «Publicar cambios»
-    del editor. La miniatura de abajo enseña una vista previa de cómo quedará la carta.</p>
+    del editor. La miniatura de abajo enseña una vista previa de cómo quedará la carta<span
+    id="previaPlantilla" hidden></span>.</p>
 
   <!-- Portada en miniatura: refleja al momento todo lo de esta ventana. -->
   <div class="previa-carta" id="previaCarta" aria-hidden="true">
@@ -49,11 +50,20 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
       </div>
     </div>
     <!-- Abajo, el CONTENIDO: aquí no hay foto, así que se ve limpio el color
-         de fondo elegido, que es como se verá el resto de la carta. -->
+         de fondo elegido, que es como se verá el resto de la carta.
+         El grupo se pinta como lo pinta la plantilla del local: en un
+         panel con marco (Plantilla 1) o suelto sobre el fondo
+         (Plantilla 2). Lo decide pagina-apariencia.js. -->
     <div class="previa-carta__contenido">
-      <div class="previa-carta__pie">
-        <span class="previa-carta__plato">Tosta de aguacate</span>
-        <span class="previa-carta__precio">7,90 €</span>
+      <div class="previa-carta__grupo">
+        <div class="previa-carta__grupo-cabecera">
+          <span class="previa-carta__grupo-titulo">Desayunos</span>
+          <span class="previa-carta__grupo-regla"></span>
+        </div>
+        <div class="previa-carta__pie">
+          <span class="previa-carta__plato">Tosta de aguacate</span>
+          <span class="previa-carta__precio">7,90 €</span>
+        </div>
       </div>
       <p class="previa-carta__nota">Así se verán los platos, los precios y el texto de tu carta.</p>
     </div>
@@ -290,6 +300,7 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 <script src="js/almacen.js"></script>
 <script src="js/ajustes.js"></script>
 <script src="js/nube.js"></script>
+<script src="js/plantilla.js"></script>
 <script src="js/imagen-comprimir.js"></script>
 <script src="js/pagina-apariencia.js"></script>
 </body>

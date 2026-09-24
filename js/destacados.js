@@ -88,25 +88,40 @@ function alertaDe(grupo){
 const CARTA_COLORES_FABRICA = { principal:'#E9B44C', fondo:'#12100E', texto:'auto' };
 
 const coloresCarta = { principal:'#E9B44C', fondo:'#12100E', texto:'#F4EFE7',
-                       superficie:'#1A1613', pedidos:false };
+                       superficie:'#1A1613', borde:'#2C2620', pedidos:false };
 
+/* Primero el borrador de «Ajustes de la página» (colores elegidos pero
+   aún sin publicar), que es también lo que enseña la vista previa
+   completa; si no lo hay, lo publicado. Así las muestras de aquí y la
+   vista previa nunca se contradicen. */
 async function traerColoresDeLaCarta(){
   if(coloresCarta.pedidos)return;
   coloresCarta.pedidos=true;
 
-  if(!nubeConfigurada())return;
-
+  let guardados=null;
   try{
+    const borrador=await Almacen.leer('apariencia',clienteActual());
+    guardados=borrador?.datos?.colores||null;
+  }catch{ /* sin cajón: se mira lo publicado */ }
+
+  if(!guardados&&nubeConfigurada()){
     // Si el negocio aún no ha personalizado la página, no hay archivo
     // y se devuelve null: se queda con los colores de fábrica.
-    const guardados=(await leerApariencia())?.colores;
-    if(!guardados)return;
-    asentarColoresDeLaCarta(guardados);
-    if(estado.datos&&estado.vista==='editor')pintarZona();   // las previas ya pueden ser fieles
-  }catch{ /* la vista previa se queda con los colores de fábrica */ }
+    try{ guardados=(await leerApariencia())?.colores||null; }
+    catch{ /* la vista previa se queda con los colores de fábrica */ }
+  }
+  asentarColoresDeLaCarta(guardados||{});
+  if(estado.datos&&estado.vista==='editor')pintarZona();   // las previas ya pueden ser fieles
 }
 
-/* Traduce los dos o tres colores que elige el negocio a los cuatro que
+/* Vuelve a mirar los colores: al cerrar «Ajustes de la página» o al
+   cargar la carta, que es cuando pueden haber cambiado. */
+function refrescarColoresDeLaCarta(){
+  coloresCarta.pedidos=false;
+  return traerColoresDeLaCarta();
+}
+
+/* Traduce los dos o tres colores que elige el negocio a los que
    necesita la vista previa. Es la misma cocina que hace carta.js: si
    allí cambia, aquí también. */
 function asentarColoresDeLaCarta(elegidos){
@@ -117,7 +132,8 @@ function asentarColoresDeLaCarta(elegidos){
   coloresCarta.principal=principal;
   coloresCarta.fondo=fondo;
   coloresCarta.texto=texto;
-  coloresCarta.superficie=mezclaHex(fondo,texto,0.05);
+  coloresCarta.superficie=mezclaHex(fondo,texto,0.05);   // --noche-alto de la carta
+  coloresCarta.borde=mezclaHex(fondo,texto,0.14);        // --borde de la carta
 }
 
 /* ---------- Cuentas de color ----------
@@ -198,14 +214,31 @@ function bloqueColores(d){
     </div>`;
 }
 
-/* La muestra: se ve tal cual saldrá en la carta, sobre el mismo fondo. */
+/* La muestra: se ve tal cual saldrá en la carta, sobre lo mismo que
+   tendrá detrás. Eso depende de la plantilla del local (ver
+   perfilDePlantilla en plantilla.js):
+     · Plantilla 1: los platos y la alerta van dentro del panel del
+       grupo, así que la muestra es un trocito de ese panel: su tono,
+       un punto más claro que el fondo, con su marco y sus esquinas.
+     · Plantilla 2: van sueltos sobre el fondo de la carta. */
+function estiloDelFondoDePrevia(){
+  if(perfilDePlantilla().grupo==='panel'){
+    return `background:${coloresCarta.superficie};border-color:${coloresCarta.borde}`;
+  }
+  return `background:${coloresCarta.fondo}`;
+}
+
 function bloquePrevia(d,forma){
   const fondo=fondoDeDestacado(d), letra=letraDeDestacado(d,fondo);
+  const estilo=forma==='alerta'
+    ? `;border-color:${mezclaHex(fondo,letra,0.18)}`   // el filo tenue de la alerta, como en la carta
+    : '';
   return `
-    <div class="previa-destacado" style="background:${coloresCarta.fondo}">
+    <div class="previa-destacado previa-destacado--${perfilDePlantilla().grupo}"
+         style="${estiloDelFondoDePrevia()}">
       <span class="previa-destacado__pieza previa-destacado__pieza--${forma}"
             data-des-previa
-            style="background:${fondo};color:${letra}">${escapar(textoDePrevia(d))}</span>
+            style="background:${fondo};color:${letra}${estilo}">${escapar(textoDePrevia(d))}</span>
     </div>`;
 }
 
@@ -379,6 +412,7 @@ function refrescarDestacado(caja,objeto){
   const pieza=caja.querySelector('[data-des-previa]');
   pieza.style.background=fondo;
   pieza.style.color=letra;
+  if(caja.dataset.destacado==='alerta')pieza.style.borderColor=mezclaHex(fondo,letra,0.18);
   pieza.textContent=textoDePrevia(objeto);
 }
 
@@ -502,3 +536,9 @@ document.addEventListener('input',(ev)=>{
 /* Los colores de la carta se piden en cuanto abre el editor, así la
    primera vista previa ya sale con los colores buenos. */
 traerColoresDeLaCarta();
+
+/* Cuando se sabe (o cambia) la plantilla del local, las muestras se
+   repintan con su forma. Lo avisa plantilla.js. */
+document.addEventListener('plantilla-lista',()=>{
+  if(estado.datos&&estado.vista==='editor')pintarZona();
+});

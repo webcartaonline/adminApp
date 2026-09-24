@@ -5,14 +5,15 @@
    Las proporciones deben coincidir con las de la carta
    (estilos.css del repositorio del cliente):
      sección -> 3/1 (franja ancha)
-     grupo   -> 4/1 (banda más baja)
+     grupo   -> 4/1 (banda más baja); 5/1 en la Plantilla 1. La pone
+                plantilla.js en la variable --banda-grupo.
      plato   -> 1/1 (cuadrado)
    ========================================================= */
 
 .miniatura{margin-top:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .miniatura__marco{width:180px;aspect-ratio:3/1;border-radius:var(--radio-s);overflow:hidden;
   border:1px solid var(--linea);background:var(--velo);flex-shrink:0}
-.miniatura--grupo .miniatura__marco{aspect-ratio:4/1}
+.miniatura--grupo .miniatura__marco{aspect-ratio:var(--banda-grupo,4/1)}
 .miniatura--item .miniatura__marco{width:76px;aspect-ratio:1/1}
 .miniatura__img{width:100%;height:100%;object-fit:cover;display:block}
 .miniatura__datos{font-size:.75rem;color:var(--tinta-suave);line-height:1.4}
