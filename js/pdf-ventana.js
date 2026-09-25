@@ -123,7 +123,9 @@
 
     panel.innerHTML = `
       <p class="pdf-aviso">
-        El PDF se genera a partir de la carta <b>publicada</b>
+        El PDF se genera a partir de la carta <b>publicada</b>, si tienes cambios sin publicar, estos no se reflejarán en el PDF.
+      </p>
+      <p class="pdf-aviso">
         Esta función se encuentra en una fase BETA, pueden haber errores.
       </p>
 
