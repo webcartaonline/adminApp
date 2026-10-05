@@ -65,11 +65,17 @@ const PRESENTACION_DE_RESPALDO = {
        primera línea es el título y el resto va debajo. En la
        Plantilla 1 la nota sale seguida, en una sola línea.
 
+   Además, barraMovible dice si la plantilla deja elegir dónde va la
+   barra de secciones (pagina.barra de apariencia.json): la 1 sí; la 2
+   no, porque allí la barra va siempre pegada a la cabecera. Cuando es
+   false, «Ajustes de la página» esconde ese ajuste sin borrar lo
+   guardado: si el local vuelve a la Plantilla 1, recupera el suyo.
+
    Si mañana llega una Plantilla 3, se añade aquí con los mismos
    campos y el editor la entiende sin tocar nada más. */
 const PERFILES_DE_PLANTILLA = {
-  'plantilla-1': { id: 'plantilla-1', nombre: 'Plantilla 1', grupo: 'panel',   bandaGrupo: [5, 1], notasDeSeccion: false, notaConSaltos: false },
-  'plantilla-2': { id: 'plantilla-2', nombre: 'Plantilla 2', grupo: 'abierto', bandaGrupo: [4, 1], notasDeSeccion: true,  notaConSaltos: true }
+  'plantilla-1': { id: 'plantilla-1', nombre: 'Plantilla 1', grupo: 'panel',   bandaGrupo: [5, 1], notasDeSeccion: false, notaConSaltos: false, barraMovible: true },
+  'plantilla-2': { id: 'plantilla-2', nombre: 'Plantilla 2', grupo: 'abierto', bandaGrupo: [4, 1], notasDeSeccion: true,  notaConSaltos: true,  barraMovible: false }
 };
 
 /* El perfil de la plantilla de este local. Si todavía no se sabe

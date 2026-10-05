@@ -47,8 +47,8 @@ function tipoPorExtension(ruta){
 function datosNormalizados(){
   const d=JSON.parse(JSON.stringify(apar.datos));
   d.identidad.titulo=String(d.identidad.titulo||'').trim();
-  d.identidad.eslogan.es=String(d.identidad.eslogan.es||'').trim();
-  d.identidad.eslogan.en=String(d.identidad.eslogan.en||'').trim();
+  const eslogan=d.identidad.eslogan;
+  Object.keys(eslogan).forEach(idioma=>{eslogan[idioma]=String(eslogan[idioma]||'').trim();});
   d.pie.bloques=(d.pie.bloques||[])
     .map(b=>({titulo:String(b.titulo||'').trim(),texto:String(b.texto||'').trim()}))
     .filter(b=>b.titulo||b.texto);
@@ -109,11 +109,12 @@ async function limpiarBorradorApariencia(){
   await limpiarArchivosDeCliente();
 }
 
-/* ---------- Cómo es un apariencia.json recién estrenado ---------- */
-function aparienciaDeFabrica(){
+/* ---------- Cómo es un apariencia.json recién estrenado ----------
+   El eslogan lleva un hueco por cada idioma de la carta. */
+function aparienciaDeFabrica(idiomas=['es']){
   return {
     colores:{ principal:'#E9B44C', fondo:'#12100E', texto:'auto' },
-    identidad:{ titulo:'', eslogan:{ es:'', en:'' }, logo:'', favicon:'',
+    identidad:{ titulo:'', eslogan:Object.fromEntries(idiomas.map(idioma=>[idioma,''])), logo:'', favicon:'',
                 fondo:{ imagen:'', foco:'centro' } },
     fuentes:{ titulo:null, texto:null },
     // Colocación de la barra de secciones y del filtro de alérgenos.
@@ -148,6 +149,7 @@ const FUENTE_TIPOS    = ['woff2','woff','ttf','otf'];
 const apar={
   cargada:false, cargando:false,
   datos:null,             // el apariencia.json que se está editando
+  idiomas:['es'],         // los idiomas de la carta: una casilla de eslogan por cada uno
   sucio:false,            // ¿hay cambios sin publicar?
   logoPendiente:null,     // {ruta, base64} esperando a subirse
   faviconPendiente:null,  // el icono de la pestaña, esperando a subirse
@@ -227,7 +229,7 @@ function pintarPrevia(){
   nombre.hidden=!nombre.textContent;
 
   const lema=$('#previaLema');
-  lema.textContent=d.identidad.eslogan.es.trim();
+  lema.textContent=String(d.identidad.eslogan[apar.idiomas[0]]||'').trim();
   lema.hidden=!lema.textContent;
 
   const img=$('#previaLogo');
@@ -263,8 +265,18 @@ function pintarFormaDeLaPlantilla(){
   const aviso=$('#previaPlantilla');
   if(aviso){ aviso.textContent=`, con el diseño de tu carta (${perfil.nombre})`; aviso.hidden=false; }
 }
+/* Los ajustes que solo tienen sentido en algunas plantillas. Hoy, la
+   barra de secciones: la Plantilla 2 no la deja mover. Solo se esconde
+   el control; lo guardado en apariencia.json no se toca. */
+function mostrarAjustesDeLaPlantilla(){
+  if(typeof perfilDePlantilla!=='function')return;
+  $('#bloqueBarra').hidden=perfilDePlantilla().barraMovible===false;
+}
 if(typeof cargarPlantillaGuardada==='function'){
-  cargarPlantillaGuardada().finally(pintarFormaDeLaPlantilla);
+  cargarPlantillaGuardada().finally(()=>{
+    pintarFormaDeLaPlantilla();
+    mostrarAjustesDeLaPlantilla();
+  });
 }
 
 /* La dirección pública de un archivo ya publicado, para poder enseñar
@@ -339,9 +351,14 @@ async function cargarPagina(){
       leerEstadoDeLicencia()
     ]);
 
+    // Los idiomas de la carta, contados como las plantillas. Si no se ha
+    // podido leer la carta, solo el español.
+    apar.idiomas=detectarIdiomas(carta);
+
     // Lo guardado se vuelca sobre uno de fábrica: si mañana hay campos
-    // nuevos, un archivo antiguo no deja huecos sin rellenar.
-    const base=aparienciaDeFabrica();
+    // nuevos, un archivo antiguo no deja huecos sin rellenar. Los
+    // eslóganes de idiomas que la carta ya no tiene se conservan.
+    const base=aparienciaDeFabrica(apar.idiomas);
     apar.datos={
       colores:{...base.colores,...(guardada?.colores||{})},
       identidad:{...base.identidad,...(guardada?.identidad||{}),
@@ -367,8 +384,9 @@ async function cargarPagina(){
     if(guardada===null&&carta?.negocio){
       apar.datos.identidad.titulo=carta.negocio.nombre||'';
       const lema=carta.negocio.lema;
-      if(typeof lema==='string')apar.datos.identidad.eslogan.es=lema;
-      else if(lema){apar.datos.identidad.eslogan.es=lema.es||'';apar.datos.identidad.eslogan.en=lema.en||'';}
+      apar.idiomas.forEach((idioma,i)=>{
+        apar.datos.identidad.eslogan[idioma]=typeof lema==='string'?(i?'':lema):(lema?.[idioma]||'');
+      });
     }
 
     // Se apunta qué archivos hay publicados ahora, para poder borrar
@@ -456,8 +474,7 @@ function volcarCampos(){
   $('#aparTextoRueda').hidden=!manual;
   if(manual)$('#aparColorTexto').value=d.colores.texto;
   $('#aparTitulo').value=d.identidad.titulo;
-  $('#aparEsloganEs').value=d.identidad.eslogan.es;
-  $('#aparEsloganEn').value=d.identidad.eslogan.en;
+  pintarCasillasEslogan();
   pintarFondoCampo();
   pintarLogoCampo();
   pintarFaviconCampo();
@@ -466,6 +483,17 @@ function volcarCampos(){
   pintarBloquesPie();
   pintarRedesPie();
   pintarColocacion();
+}
+
+/* Una casilla de eslogan por cada idioma de la carta: la del idioma
+   principal y las demás, opcionales. */
+function pintarCasillasEslogan(){
+  const eslogan=apar.datos.identidad.eslogan;
+  $('#aparEslogan').innerHTML=apar.idiomas.map((idioma,i)=>campoDeTexto({
+    etiqueta:`Eslogan (${nombreDeIdioma(idioma)}${i?', opcional':''})`,
+    valor:eslogan[idioma]||'',
+    atributos:`data-eslogan="${escapar(idioma)}" autocomplete="off"`
+  })).join('');
 }
 
 /* =========================================================
@@ -962,12 +990,14 @@ $('#btnAparColoresOriginales').addEventListener('click',()=>{
 });
 
 // Título y eslogan (la previa se refresca según se escribe)
-[['#aparTitulo','titulo'],['#aparEsloganEs','es'],['#aparEsloganEn','en']].forEach(([selector,campo])=>{
-  $(selector).addEventListener('input',()=>{
-    if(campo==='titulo')apar.datos.identidad.titulo=$(selector).value;
-    else apar.datos.identidad.eslogan[campo]=$(selector).value;
-    pintarPrevia();marcarSucio();
-  });
+$('#aparTitulo').addEventListener('input',()=>{
+  apar.datos.identidad.titulo=$('#aparTitulo').value;
+  pintarPrevia();marcarSucio();
+});
+$('#aparEslogan').addEventListener('input',(ev)=>{
+  const idioma=ev.target.dataset.eslogan; if(!idioma)return;
+  apar.datos.identidad.eslogan[idioma]=ev.target.value;
+  pintarPrevia();marcarSucio();
 });
 
 // Logotipo

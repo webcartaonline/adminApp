@@ -31,7 +31,8 @@ async function traer(){
       plan:licencia.plan,
       permisos:licencia.permisos||{},
       caduca:licencia.caduca,
-      diasRestantes:licencia.diasRestantes
+      diasRestantes:licencia.diasRestantes,
+      idiomasExtra:licencia.idiomasExtra   // cuántos además del principal (null en licencias antiguas)
     };
 
     const datos=await leerCarta();

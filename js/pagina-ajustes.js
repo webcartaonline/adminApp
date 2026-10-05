@@ -139,6 +139,10 @@ function pintarFichaLicencia(estadoLicencia){
     html+=filaFicha('Quedan',dias===1?'1 día':`${dias} días`);
   }
   html+=filaFicha('Incluye',incluye.length?incluye.join(' · '):'Nada todavía');
+  // Cuántos idiomas además del principal. Las licencias antiguas no lo dicen.
+  if(permisos.idiomaExtra===true&&Number.isInteger(estadoLicencia.idiomasExtra)){
+    html+=filaFicha('Idiomas extra',String(estadoLicencia.idiomasExtra));
+  }
 
   const ficha=$('#fichaLicencia');
   ficha.innerHTML=html;

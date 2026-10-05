@@ -6,15 +6,12 @@
 
 /* Genera un campo de texto por idioma. */
 function camposTexto(attr,valor,etiquetaBase,textarea=false){
-  return estado.idiomas.map(L=>{
-    const v=escapar(valorTexto(valor,L));
-    const etq=`${etiquetaBase}${etiquetaIdioma(L)}`;
-    return textarea
-      ? `<label class="campo"><span class="campo__etiqueta">${etq}</span>
-           <textarea data-ed="${attr}" data-lang="${L}" rows="2">${v}</textarea></label>`
-      : `<label class="campo"><span class="campo__etiqueta">${etq}</span>
-           <input type="text" data-ed="${attr}" data-lang="${L}" value="${v}"></label>`;
-  }).join('');
+  return estado.idiomas.map(L=>campoDeTexto({
+    etiqueta:`${etiquetaBase}${etiquetaIdioma(L)}`,
+    valor:valorTexto(valor,L),
+    atributos:`data-ed="${attr}" data-lang="${L}"`,
+    textarea
+  })).join('');
 }
 
 /* Miniatura de la foto guardada o preparada. Sirve igual para secciones,

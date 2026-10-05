@@ -44,62 +44,116 @@ const PDF_COL_MAX = 4;
 const PDF_ESCALA = 2;
 const PDF_LADO_MAX_PX = 2600;
 
-/* ---------- Textos fijos del PDF ----------
-   Los mismos que enseña la carta pública (carta.js), para que el
-   papel hable igual que la pantalla. */
-const PDF_UI = {
+/* ---------- Textos fijos del PDF, en cada idioma ----------
+   Los mismos que enseña la carta pública (textos.js de cada
+   plantilla), para que el papel hable igual que la pantalla:
+   el formato del precio, los dos textos fijos que salen en el
+   papel y los nombres oficiales de los 14 alérgenos. Si la carta
+   está en un idioma que no está aquí, se usa el español.
+   El nombre de cada idioma no va aquí: lo dice NOMBRE_IDIOMA
+   (config.js), la única lista de idiomas del editor. */
+const PDF_TEXTOS = {
   es: {
-    alergenosTitulo: 'Alérgenos',
-    contiene: 'Contiene',
-    sinAlergenos: 'Sin alérgenos declarados',
-    ivaNota: 'IVA incluido',
-    continua: '(continúa)'
+    precio: 'es-ES',
+    ui: { sinAlergenos: 'Sin alérgenos declarados', ivaNota: 'IVA incluido' },
+    alergenos: {
+      'gluten': 'Cereales con gluten', 'crustaceos': 'Crustáceos', 'huevos': 'Huevos',
+      'pescado': 'Pescado', 'cacahuetes': 'Cacahuetes', 'soja': 'Soja',
+      'lacteos': 'Lácteos', 'frutos-secos': 'Frutos de cáscara', 'apio': 'Apio',
+      'mostaza': 'Mostaza', 'sesamo': 'Sésamo', 'sulfitos': 'Sulfitos',
+      'altramuces': 'Altramuces', 'moluscos': 'Moluscos'
+    }
   },
   en: {
-    alergenosTitulo: 'Allergens',
-    contiene: 'Contains',
-    sinAlergenos: 'No declared allergens',
-    ivaNota: 'VAT included',
-    continua: '(continued)'
+    precio: 'en-IE',
+    ui: { sinAlergenos: 'No declared allergens', ivaNota: 'VAT included' },
+    alergenos: {
+      'gluten': 'Cereals with gluten', 'crustaceos': 'Crustaceans', 'huevos': 'Eggs',
+      'pescado': 'Fish', 'cacahuetes': 'Peanuts', 'soja': 'Soya',
+      'lacteos': 'Milk', 'frutos-secos': 'Tree nuts', 'apio': 'Celery',
+      'mostaza': 'Mustard', 'sesamo': 'Sesame', 'sulfitos': 'Sulphites',
+      'altramuces': 'Lupin', 'moluscos': 'Molluscs'
+    }
+  },
+  fr: {
+    precio: 'fr-FR',
+    ui: { sinAlergenos: 'Aucun allergène déclaré', ivaNota: 'TVA incluse' },
+    alergenos: {
+      'gluten': 'Céréales contenant du gluten', 'crustaceos': 'Crustacés', 'huevos': 'Œufs',
+      'pescado': 'Poissons', 'cacahuetes': 'Arachides', 'soja': 'Soja',
+      'lacteos': 'Lait', 'frutos-secos': 'Fruits à coque', 'apio': 'Céleri',
+      'mostaza': 'Moutarde', 'sesamo': 'Graines de sésame', 'sulfitos': 'Anhydride sulfureux et sulfites',
+      'altramuces': 'Lupin', 'moluscos': 'Mollusques'
+    }
+  },
+  de: {
+    precio: 'de-DE',
+    ui: { sinAlergenos: 'Keine Allergene angegeben', ivaNota: 'Inkl. MwSt.' },
+    alergenos: {
+      'gluten': 'Glutenhaltiges Getreide', 'crustaceos': 'Krebstiere', 'huevos': 'Eier',
+      'pescado': 'Fische', 'cacahuetes': 'Erdnüsse', 'soja': 'Sojabohnen',
+      'lacteos': 'Milch', 'frutos-secos': 'Schalenfrüchte', 'apio': 'Sellerie',
+      'mostaza': 'Senf', 'sesamo': 'Sesamsamen', 'sulfitos': 'Schwefeldioxid und Sulphite',
+      'altramuces': 'Lupinen', 'moluscos': 'Weichtiere'
+    }
+  },
+  it: {
+    precio: 'it-IT',
+    ui: { sinAlergenos: 'Nessun allergene dichiarato', ivaNota: 'IVA inclusa' },
+    alergenos: {
+      'gluten': 'Cereali contenenti glutine', 'crustaceos': 'Crostacei', 'huevos': 'Uova',
+      'pescado': 'Pesce', 'cacahuetes': 'Arachidi', 'soja': 'Soia',
+      'lacteos': 'Latte', 'frutos-secos': 'Frutta a guscio', 'apio': 'Sedano',
+      'mostaza': 'Senape', 'sesamo': 'Semi di sesamo', 'sulfitos': 'Anidride solforosa e solfiti',
+      'altramuces': 'Lupini', 'moluscos': 'Molluschi'
+    }
+  },
+  pt: {
+    precio: 'pt-PT',
+    ui: { sinAlergenos: 'Sem alergénios declarados', ivaNota: 'IVA incluído' },
+    alergenos: {
+      'gluten': 'Cereais que contêm glúten', 'crustaceos': 'Crustáceos', 'huevos': 'Ovos',
+      'pescado': 'Peixes', 'cacahuetes': 'Amendoins', 'soja': 'Soja',
+      'lacteos': 'Leite', 'frutos-secos': 'Frutos de casca rija', 'apio': 'Aipo',
+      'mostaza': 'Mostarda', 'sesamo': 'Sementes de sésamo', 'sulfitos': 'Dióxido de enxofre e sulfitos',
+      'altramuces': 'Tremoço', 'moluscos': 'Moluscos'
+    }
   }
 };
-
-/* Nombre en cristiano de cada idioma, para los rótulos de la ventana. */
-const PDF_NOMBRE_IDIOMA = { es: 'Español', en: 'English', fr: 'Français', de: 'Deutsch', it: 'Italiano', pt: 'Português' };
 
 /* ---------- Catálogo de alérgenos ----------
    Los 14 de declaración obligatoria, con el MISMO dibujo (icono)
    que usa la carta pública, para que las pastillas salgan idénticas
    en el papel. Copiado de la plantilla; si allí cambian los iconos,
-   cámbialos también aquí. */
+   cámbialos también aquí. Sus nombres están en PDF_TEXTOS. */
 const PDF_ALERGENOS = {
-  'gluten':       { es: 'Cereales con gluten', en: 'Cereals with gluten',
+  'gluten': {
     icono: '<path d="M12 21V6"/><path d="M12 12c-2.4 0-4-1.6-4-4 2.4 0 4 1.6 4 4Z"/><path d="M12 12c2.4 0 4-1.6 4-4-2.4 0-4 1.6-4 4Z"/><path d="M12 17c-2.4 0-4-1.6-4-4 2.4 0 4 1.6 4 4Z"/><path d="M12 17c2.4 0 4-1.6 4-4-2.4 0-4 1.6-4 4Z"/>' },
-  'crustaceos':   { es: 'Crustáceos', en: 'Crustaceans',
+  'crustaceos': {
     icono: '<path d="M17 6c-5 0-9 3.4-9 7.5 0 2.6 1.8 4.5 4.2 4.5 2 0 3.3-1.3 3.3-2.9 0-1.4-1-2.4-2.3-2.4"/><path d="M17 6c1.7 0 2.9.9 3.5 2.2"/><path d="M8 13.6 4.2 16M8.7 16.2 5.2 18.8"/>' },
-  'huevos':       { es: 'Huevos', en: 'Eggs',
+  'huevos': {
     icono: '<path d="M12 3.5c3.3 0 6 4.2 6 8.2 0 4-2.7 7.3-6 7.3s-6-3.3-6-7.3c0-4 2.7-8.2 6-8.2Z"/><circle cx="12" cy="12.4" r="2.6"/>' },
-  'pescado':      { es: 'Pescado', en: 'Fish',
+  'pescado': {
     icono: '<path d="M4.5 12c2.8-3.8 6-5.6 9.3-5.6 2.6 0 4.6 1 6.2 2.6-1 1.2-1 4.8 0 6-1.6 1.6-3.6 2.6-6.2 2.6-3.3 0-6.5-1.8-9.3-5.6Z"/><path d="M4.5 12 8 9.4M4.5 12 8 14.6"/><circle cx="16.8" cy="10.6" r=".9" fill="currentColor" stroke="none"/>' },
-  'cacahuetes':   { es: 'Cacahuetes', en: 'Peanuts',
+  'cacahuetes': {
     icono: '<path d="M12 4.4c2.3 0 4 1.7 4 3.8 0 1.5-.9 2.3-.9 3.8s.9 2.3.9 3.8c0 2.1-1.7 3.8-4 3.8s-4-1.7-4-3.8c0-1.5.9-2.3.9-3.8S8 9.7 8 8.2c0-2.1 1.7-3.8 4-3.8Z"/>' },
-  'soja':         { es: 'Soja', en: 'Soya',
+  'soja': {
     icono: '<path d="M6 17.5c-1.6-1.6-1.6-4.2 0-5.8l6-6c1.6-1.6 4.2-1.6 5.8 0 1.6 1.6 1.6 4.2 0 5.8l-6 6c-1.6 1.6-4.2 1.6-5.8 0Z"/><circle cx="9.4" cy="14.6" r="1.5"/><circle cx="14.6" cy="9.4" r="1.5"/>' },
-  'lacteos':      { es: 'Lácteos', en: 'Milk',
+  'lacteos': {
     icono: '<path d="M8 9.5h8V20H8z"/><path d="M8 9.5 9.9 4h4.2L16 9.5"/><path d="M8 13.4h8"/>' },
-  'frutos-secos': { es: 'Frutos de cáscara', en: 'Tree nuts',
+  'frutos-secos': {
     icono: '<path d="M12 3.8c3.5 0 6.5 3.6 6.5 8 0 4.6-3 8.4-6.5 8.4S5.5 16.4 5.5 11.8c0-4.4 3-8 6.5-8Z"/><path d="M12 20.2V6.6"/><path d="M12 12.6c1.5-1.6 3.1-2.5 4.7-2.7M12 12.6c-1.5-1.6-3.1-2.5-4.7-2.7"/>' },
-  'apio':         { es: 'Apio', en: 'Celery',
+  'apio': {
     icono: '<path d="M8.3 21c-.7-4.5-.6-9 .5-13.4M12 21c0-5 .1-10 .6-13.9M15.7 21c.7-4.5.6-9-.5-13.4"/>' },
-  'mostaza':      { es: 'Mostaza', en: 'Mustard',
+  'mostaza': {
     icono: '<path d="M9 21h6a1.5 1.5 0 0 0 1.5-1.5V11a4.5 4.5 0 0 0-3-4.2V4.5h-3v2.3A4.5 4.5 0 0 0 7.5 11v8.5A1.5 1.5 0 0 0 9 21Z"/><path d="M7.5 13.4h9"/>' },
-  'sesamo':       { es: 'Sésamo', en: 'Sesame',
+  'sesamo': {
     icono: '<ellipse cx="8.5" cy="9" rx="2" ry="3.1" transform="rotate(-25 8.5 9)"/><ellipse cx="15.6" cy="10.6" rx="2" ry="3.1" transform="rotate(22 15.6 10.6)"/><ellipse cx="11.6" cy="16.4" rx="2" ry="3.1" transform="rotate(-8 11.6 16.4)"/>' },
-  'sulfitos':     { es: 'Sulfitos', en: 'Sulphites',
+  'sulfitos': {
     icono: '<path d="M7.5 3.5h9l-.8 6a3.7 3.7 0 0 1-7.4 0Z"/><path d="M12 15.3V20"/><path d="M8.6 20h6.8"/>' },
-  'altramuces':   { es: 'Altramuces', en: 'Lupin',
+  'altramuces': {
     icono: '<circle cx="9" cy="8.8" r="3.2"/><circle cx="15.4" cy="11.6" r="3.2"/><circle cx="10.4" cy="16.2" r="3.2"/>' },
-  'moluscos':     { es: 'Moluscos', en: 'Molluscs',
+  'moluscos': {
     icono: '<path d="M12 20c-4.4 0-8-3.4-8-7.6C4 8 7.6 4 12 4s8 4 8 8.4c0 4.2-3.6 7.6-8 7.6Z"/><path d="M12 20V4M12 20 7.1 6.7M12 20l4.9-13.3"/>' }
 };
 
