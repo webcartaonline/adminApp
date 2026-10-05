@@ -18,8 +18,14 @@
      imagenesDecorativas -> fondo de portada, bandas y fuentes propias
      imagenMarca         -> el logotipo y el iconito de la pestaña
      imagenItem          -> la foto de cada plato
-     idiomaExtra         -> un idioma además del principal
+     idiomaExtra         -> idiomas además del principal (cuántos lo
+                            dice idiomasExtra de la licencia; el
+                            portero no deja publicar más)
      publicar            -> puede aplicar de verdad los cambios
+
+   Esconder no es proteger: el portero vuelve a mirar la carta al
+   publicar y la rechaza si lleva notas, alertas o etiquetas sin el
+   permiso, o más idiomas de los contratados.
    ========================================================= */
 
 /* ---------- Atajos para el editor ----------

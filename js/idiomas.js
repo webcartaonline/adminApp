@@ -57,18 +57,29 @@ function crearTexto(texto){
   return obj;
 }
 
+/* El nombre de un idioma en su propio idioma («Français»), sacado de
+   NOMBRE_IDIOMA (config.js). Si no se conoce, sus letras. */
+function nombreDeIdioma(codigo){
+  return NOMBRE_IDIOMA[codigo]||String(codigo).toUpperCase();
+}
+
 /* " (EN)" al lado de la etiqueta, solo si hay más de un idioma. */
 function etiquetaIdioma(lang){
   return estado.idiomas.length>1?` (${lang.toUpperCase()})`:'';
 }
 
 /* ---------- Idiomas extra por elegir ----------
-   Cuando se da de alta un negocio con idiomas extra, su carta nace
-   preparada con negocio.idiomasExtra: ["pendiente", …], un
-   "pendiente" por cada idioma contratado. Qué idiomas son lo decide
-   el propio cliente la primera vez que carga su carta: esta ventana
-   se lo pregunta. Al elegirlos pasan a negocio.idiomas (que es lo
-   que leen las plantillas) y los "pendiente" desaparecen.
+   Cuántos idiomas puede tener la carta además del principal lo dice la
+   LICENCIA (idiomasExtra), y el portero no deja publicar más. Si la
+   carta tiene menos de los contratados, esta ventana le pregunta al
+   cliente cuáles quiere. Al elegirlos pasan a negocio.idiomas (que es
+   lo que leen las plantillas).
+
+   Las licencias anteriores a ese número solo dicen sí o no. Para ellas
+   vale lo de siempre: la carta nace preparada con
+   negocio.idiomasExtra: ["pendiente", …], un "pendiente" por cada
+   idioma contratado, y se pregunta por esos. Al elegirlos, los
+   "pendiente" desaparecen.
 
    Si pulsa «Ahora no», la carta sigue en su idioma principal y se lo
    volvemos a preguntar la próxima vez que la cargue. Tampoco se
@@ -77,6 +88,8 @@ const IDIOMA_PENDIENTE='pendiente';
 
 function idiomasPorElegir(){
   if(!permisoActual('idiomaExtra'))return 0;
+  const contratados=estado.licencia?.idiomasExtra;
+  if(Number.isInteger(contratados))return Math.max(0,contratados-(estado.idiomas.length-1));
   const extra=estado.datos?.negocio?.idiomasExtra;
   return Array.isArray(extra)?extra.filter(x=>x===IDIOMA_PENDIENTE).length:0;
 }
@@ -89,7 +102,7 @@ function idiomasDisponibles(){
 
 function desplegableDeIdioma(numero,disponibles){
   const opciones=disponibles
-    .map(codigo=>`<option value="${codigo}">${escapar(NOMBRE_IDIOMA[codigo])}</option>`)
+    .map(codigo=>`<option value="${codigo}">${escapar(nombreDeIdioma(codigo))}</option>`)
     .join('');
   return `<label class="campo">
     <span class="campo__etiqueta">Idioma extra ${numero}</span>
@@ -98,12 +111,13 @@ function desplegableDeIdioma(numero,disponibles){
 }
 
 function preguntarIdiomasSiToca(){
-  const cuantos=idiomasPorElegir();
-  if(!cuantos||!$('#modalIdiomas'))return;
   const disponibles=idiomasDisponibles();
+  // Nunca más casillas que idiomas para elegir: no se podrían rellenar.
+  const cuantos=Math.min(idiomasPorElegir(),disponibles.length);
+  if(!cuantos||!$('#modalIdiomas'))return;
   $('#idiomasPista').textContent=cuantos===1
-    ? 'Tu plan incluye un idioma además del español. Elige cuál quieres que tenga tu carta.'
-    : `Tu plan incluye ${cuantos} idiomas además del español. Elige cuáles quieres que tenga tu carta.`;
+    ? 'Tu plan te deja añadir un idioma más a tu carta. Elige cuál quieres.'
+    : `Tu plan te deja añadir ${cuantos} idiomas más a tu carta. Elige cuáles quieres.`;
   $('#idiomasCampos').innerHTML=Array.from({length:cuantos},(_,i)=>desplegableDeIdioma(i+1,disponibles)).join('');
   $('#modalIdiomas').hidden=false;
 }

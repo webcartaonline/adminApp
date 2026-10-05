@@ -52,6 +52,19 @@ function avisar(txt,tipo='info'){
 /* Deja el texto seguro para meterlo dentro del HTML. */
 function escapar(t){return String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
+/* Un campo de texto con su rótulo, igual en todo el editor. Lo usan los
+   campos por idioma de secciones, grupos y platos (camposTexto) y las
+   casillas del eslogan de «Ajustes de la página». Los «atributos» van
+   tal cual dentro del <input> o del <textarea>: quien llama los escribe
+   ya seguros. */
+function campoDeTexto({etiqueta,valor='',atributos='',textarea=false}){
+  const v=escapar(valor);
+  const control=textarea
+    ? `<textarea ${atributos} rows="2">${v}</textarea>`
+    : `<input type="text" ${atributos} value="${v}">`;
+  return `<label class="campo"><span class="campo__etiqueta">${escapar(etiqueta)}</span>${control}</label>`;
+}
+
 /* Inventa un identificador único a partir de un nombre.
    El trozo aleatorio del final evita que dos platos distintos
    acaben compartiendo el nombre del archivo de su foto. */

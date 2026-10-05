@@ -11,7 +11,7 @@ function pdfContexto(paquete, opciones, fotos) {
   const idioma = opciones.idioma || paquete.idiomas[0] || 'es';
   return {
     paquete, opciones, fotos, idioma,
-    ui: PDF_UI[idioma] || PDF_UI.es
+    ui: pdfTextos(idioma).ui
   };
 }
 

@@ -12,14 +12,19 @@
    ========================================================= */
 
 /* ---------- Utilidades de texto ---------- */
+
+/* Lo que el papel dice por su cuenta en ese idioma (PDF_TEXTOS). Si el
+   idioma no está traducido, en español. */
+function pdfTextos(idioma) {
+  return PDF_TEXTOS[idioma] || PDF_TEXTOS.es;
+}
 function pdfTexto(campo, idioma) {
   if (campo == null) return '';
   if (typeof campo === 'string') return campo;
   return campo[idioma] || campo.es || campo.en || '';
 }
 function pdfEuros(precio, idioma) {
-  const loc = idioma === 'en' ? 'en-IE' : 'es-ES';
-  return new Intl.NumberFormat(loc, { style: 'currency', currency: 'EUR' }).format(Number(precio) || 0);
+  return new Intl.NumberFormat(pdfTextos(idioma).precio, { style: 'currency', currency: 'EUR' }).format(Number(precio) || 0);
 }
 function pdfNormalizar(nombre) {
   return String(nombre ?? '').trim().toLowerCase()
@@ -30,7 +35,7 @@ function pdfDatoAlergeno(nombre, idioma) {
   const ficha = PDF_ALERGENOS[clave];
   return {
     clave,
-    etiqueta: ficha ? (ficha[idioma] || ficha.es) : nombre,
+    etiqueta: ficha ? (pdfTextos(idioma).alergenos[clave] || PDF_TEXTOS.es.alergenos[clave]) : nombre,
     icono: ficha ? ficha.icono : PDF_ICONO_DESCONOCIDO
   };
 }

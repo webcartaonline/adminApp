@@ -1,8 +1,13 @@
 {
-  "version": "12.0.0-BETA",
-  "fecha": "2026-09-25",
-  "titulo": "Se ha mejorado la estabilidad del sistema",
+  "version": "12.1.1-BETA",
+  "fecha": "2026-10-05",
+  "titulo": "Tu carta, en todos sus idiomas",
   "cambios": [
-    "Las actualizaciones nos ayudan a mejorar tu experiencia"
+    "En «Ajustes de la página» hay una casilla de eslogan por cada idioma de tu carta.",
+    "Si tu carta usa la Plantilla 2, «Ajustes de la página» ya no enseña el ajuste de la barra de secciones, que ese diseño no usa. Lo que tenías elegido se guarda.",
+    "El PDF de la carta ya sale en francés, alemán, italiano y portugués, con el precio y los alérgenos de cada idioma.",
+    "Si tu plan incluye idiomas extra, el editor te pregunta cuáles quieres en cuanto haya alguno por elegir.",
+    "En «Ajustes», al probar la conexión verás cuántos idiomas extra incluye tu plan.",
+    "Si al publicar la carta lleva algo que tu plan no incluye, el aviso te explica qué es."
   ]
 }

@@ -1,8 +1,9 @@
 /* =========================================================
    CONFIGURACIÓN
    Listas fijas y números que no cambian mientras la
-   aplicación funciona. Si hay que tocar un límite o añadir
-   un idioma, se toca aquí y en ningún otro sitio.
+   aplicación funciona. Si hay que tocar un límite, se toca
+   aquí y en ningún otro sitio. Para añadir un idioma, ver
+   NOMBRE_IDIOMA más abajo.
    ========================================================= */
 
 /* Los 14 alérgenos de declaración obligatoria en la UE. */
@@ -16,6 +17,10 @@ const ETIQUETAS = {
   'altramuces':'Altramuces','moluscos':'Moluscos'
 };
 
+/* Los idiomas que el cliente puede elegir para su carta, con su nombre
+   en su propio idioma. Es la ÚNICA lista de idiomas del editor. Para
+   añadir uno: una línea aquí, su bloque en PDF_TEXTOS (pdf-config.js)
+   y su bloque en el textos.js de cada plantilla (ver SISTEMA.md). */
 const NOMBRE_IDIOMA = { es:'Español', en:'English', fr:'Français', de:'Deutsch', it:'Italiano', pt:'Português' };
 
 /* ---------- Lo que se guarda en este navegador ---------- */

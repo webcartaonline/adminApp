@@ -115,9 +115,8 @@
     const panel = capa.querySelector('#pdfPanel');
     const tam = Object.entries(PDF_TAMANOS)
       .map(([k, v]) => `<option value="${k}"${k === opciones.tamano ? ' selected' : ''}>${escapar(v.rotulo)}</option>`).join('');
-    const idiomasDisp = paquete.idiomas.filter(l => PDF_NOMBRE_IDIOMA[l] || l);
-    const idiomaSel = idiomasDisp
-      .map(l => `<option value="${l}"${l === opciones.idioma ? ' selected' : ''}>${escapar(PDF_NOMBRE_IDIOMA[l] || l.toUpperCase())}</option>`).join('');
+    const idiomaSel = paquete.idiomas
+      .map(l => `<option value="${l}"${l === opciones.idioma ? ' selected' : ''}>${escapar(nombreDeIdioma(l))}</option>`).join('');
     const tipos = paquete.tipos;
     const sinFotos = !tipos.seccion && !tipos.grupo && !tipos.item;
 
@@ -152,7 +151,7 @@
         </label>
       </div>
 
-      <div class="pdf-bloque"${idiomasDisp.length > 1 ? '' : ' hidden'}>
+      <div class="pdf-bloque"${paquete.idiomas.length > 1 ? '' : ' hidden'}>
         <h3 class="pdf-bloque__titulo">Idioma del PDF</h3>
         <label class="pdf-campo">
           <span>Idioma</span>
