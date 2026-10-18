@@ -1,13 +1,8 @@
 {
-  "version": "12.1.1-BETA",
-  "fecha": "2026-10-05",
-  "titulo": "Tu carta, en todos sus idiomas",
+  "version": "12.1.2-BETA",
+  "fecha": "2026-10-18",
+  "titulo": "Un diseño nuevo: la Plantilla 3",
   "cambios": [
-    "En «Ajustes de la página» hay una casilla de eslogan por cada idioma de tu carta.",
-    "Si tu carta usa la Plantilla 2, «Ajustes de la página» ya no enseña el ajuste de la barra de secciones, que ese diseño no usa. Lo que tenías elegido se guarda.",
-    "El PDF de la carta ya sale en francés, alemán, italiano y portugués, con el precio y los alérgenos de cada idioma.",
-    "Si tu plan incluye idiomas extra, el editor te pregunta cuáles quieres en cuanto haya alguno por elegir.",
-    "En «Ajustes», al probar la conexión verás cuántos idiomas extra incluye tu plan.",
-    "Si al publicar la carta lleva algo que tu plan no incluye, el aviso te explica qué es."
+    "El editor ya reconoce la Plantilla 3. Si tu carta la usa, la vista previa la enseña tal cual, con sus notas de sección y la foto de cada grupo bien encuadrada."
   ]
 }

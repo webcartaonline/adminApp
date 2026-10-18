@@ -2,7 +2,8 @@
    PLANTILLA
    La página que ve el cliente final (la carta) está hecha con
    una PLANTILLA: un diseño con sus propios archivos. Ahora
-   mismo hay dos, "Plantilla 1" y "Plantilla 2", y habrá más.
+   mismo hay tres, "Plantilla 1", "Plantilla 2" y "Plantilla 3",
+   y habrá más.
 
    La plantilla se presenta con un archivo diminuto,
    plantilla.json, que dice quién es y qué archivos necesita
@@ -51,8 +52,8 @@ const PRESENTACION_DE_RESPALDO = {
 };
 
 /* ---------- Perfil de cada plantilla ----------
-   En qué se diferencian las plantillas a la hora de pintar. Hoy las
-   dos comparten casi todo; lo que cambia es cómo se ve cada GRUPO:
+   En qué se diferencian las plantillas a la hora de pintar. Hoy
+   comparten casi todo; lo que cambia es cómo se ve cada GRUPO:
 
      · Plantilla 1: el grupo es un PANEL, una tarjeta con marco y
        esquinas redondeadas, un tono más clara que el fondo. Los platos
@@ -60,22 +61,26 @@ const PRESENTACION_DE_RESPALDO = {
        grupo es más baja: 5 a 1.
      · Plantilla 2: el grupo va ABIERTO, sin marco ni tarjeta: los
        platos y la alerta se leen directamente sobre el fondo de la
-       carta. La banda de la foto es 4 a 1. Es además la única que
-       pinta las notas de la sección con sus saltos de línea: la
+       carta. La banda de la foto es 4 a 1. Pinta además las notas
+       de la sección con sus saltos de línea: la
        primera línea es el título y el resto va debajo. En la
        Plantilla 1 la nota sale seguida, en una sola línea.
+     · Plantilla 3: como la 2, el grupo va ABIERTO con banda 4 a 1
+       y pinta las notas con sus saltos de línea. Los productos van
+       en vitrina (ver su CONTRATO-EDITOR.md).
 
    Además, barraMovible dice si la plantilla deja elegir dónde va la
-   barra de secciones (pagina.barra de apariencia.json): la 1 sí; la 2
-   no, porque allí la barra va siempre pegada a la cabecera. Cuando es
+   barra de secciones (pagina.barra de apariencia.json): la 1 sí; ni la 2
+   ni la 3, porque allí la barra va siempre pegada arriba. Cuando es
    false, «Ajustes de la página» esconde ese ajuste sin borrar lo
    guardado: si el local vuelve a la Plantilla 1, recupera el suyo.
 
-   Si mañana llega una Plantilla 3, se añade aquí con los mismos
+   Si mañana llega una Plantilla 4, se añade aquí con los mismos
    campos y el editor la entiende sin tocar nada más. */
 const PERFILES_DE_PLANTILLA = {
   'plantilla-1': { id: 'plantilla-1', nombre: 'Plantilla 1', grupo: 'panel',   bandaGrupo: [5, 1], notasDeSeccion: false, notaConSaltos: false, barraMovible: true },
-  'plantilla-2': { id: 'plantilla-2', nombre: 'Plantilla 2', grupo: 'abierto', bandaGrupo: [4, 1], notasDeSeccion: true,  notaConSaltos: true,  barraMovible: false }
+  'plantilla-2': { id: 'plantilla-2', nombre: 'Plantilla 2', grupo: 'abierto', bandaGrupo: [4, 1], notasDeSeccion: true,  notaConSaltos: true,  barraMovible: false },
+  'plantilla-3': { id: 'plantilla-3', nombre: 'Plantilla 3', grupo: 'abierto', bandaGrupo: [4, 1], notasDeSeccion: true,  notaConSaltos: true,  barraMovible: false }
 };
 
 /* El perfil de la plantilla de este local. Si todavía no se sabe
