@@ -1,8 +1,9 @@
 {
-  "version": "12.1.2-BETA",
+  "version": "12.2.0-BETA",
   "fecha": "2026-10-18",
-  "titulo": "Un diseño nuevo: la Plantilla 3",
+  "titulo": "Una sola vista previa, la de la página entera",
   "cambios": [
+    "Las muestras pequeñas de las etiquetas, las alertas, las notas y la portada se han quitado. Para ver cómo queda cualquier cambio, pulsa «Vista previa»: enseña tu carta entera, tal cual se verá, antes de publicar.",
     "El editor ya reconoce la Plantilla 3. Si tu carta la usa, la vista previa la enseña tal cual, con sus notas de sección y la foto de cada grupo bien encuadrada."
   ]
 }

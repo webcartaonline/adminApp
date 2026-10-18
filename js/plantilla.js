@@ -52,35 +52,29 @@ const PRESENTACION_DE_RESPALDO = {
 };
 
 /* ---------- Perfil de cada plantilla ----------
-   En qué se diferencian las plantillas a la hora de pintar. Hoy
-   comparten casi todo; lo que cambia es cómo se ve cada GRUPO:
+   Lo poco que el editor necesita saber de cada plantilla para no
+   ofrecer cosas que luego no se verían. Solo tres datos:
 
-     · Plantilla 1: el grupo es un PANEL, una tarjeta con marco y
-       esquinas redondeadas, un tono más clara que el fondo. Los platos
-       y la alerta se leen encima de ese tono. La banda con la foto del
-       grupo es más baja: 5 a 1.
-     · Plantilla 2: el grupo va ABIERTO, sin marco ni tarjeta: los
-       platos y la alerta se leen directamente sobre el fondo de la
-       carta. La banda de la foto es 4 a 1. Pinta además las notas
-       de la sección con sus saltos de línea: la
-       primera línea es el título y el resto va debajo. En la
-       Plantilla 1 la nota sale seguida, en una sola línea.
-     · Plantilla 3: como la 2, el grupo va ABIERTO con banda 4 a 1
-       y pinta las notas con sus saltos de línea. Los productos van
-       en vitrina (ver su CONTRATO-EDITOR.md).
+     · bandaGrupo: la forma de la foto del grupo (ancho a alto), para
+       que el marco donde se encuadra tenga la misma forma que en la
+       carta. Plantilla 1: 5 a 1. Plantillas 2 y 3: 4 a 1.
+     · notasDeSeccion: si la plantilla pinta las notas de la sección.
+       Si no, el editor no las ofrece. La 1 no; la 2 y la 3 sí.
+     · barraMovible: si la plantilla deja elegir dónde va la barra de
+       secciones (pagina.barra de apariencia.json). La 1 sí; ni la 2 ni
+       la 3, que la llevan siempre arriba. Cuando es false, «Ajustes de
+       la página» esconde ese ajuste sin borrar lo guardado.
 
-   Además, barraMovible dice si la plantilla deja elegir dónde va la
-   barra de secciones (pagina.barra de apariencia.json): la 1 sí; ni la 2
-   ni la 3, porque allí la barra va siempre pegada arriba. Cuando es
-   false, «Ajustes de la página» esconde ese ajuste sin borrar lo
-   guardado: si el local vuelve a la Plantilla 1, recupera el suyo.
+   Cómo se ve cada cosa en la carta NO se apunta aquí: se mira con la
+   «Vista previa», que pinta la página entera con la plantilla de
+   verdad. Así, al añadir una plantilla no hay muestras que retocar.
 
-   Si mañana llega una Plantilla 4, se añade aquí con los mismos
-   campos y el editor la entiende sin tocar nada más. */
+   Si mañana llega una Plantilla 4, se añade aquí una línea con los
+   mismos campos y el editor la entiende sin tocar nada más. */
 const PERFILES_DE_PLANTILLA = {
-  'plantilla-1': { id: 'plantilla-1', nombre: 'Plantilla 1', grupo: 'panel',   bandaGrupo: [5, 1], notasDeSeccion: false, notaConSaltos: false, barraMovible: true },
-  'plantilla-2': { id: 'plantilla-2', nombre: 'Plantilla 2', grupo: 'abierto', bandaGrupo: [4, 1], notasDeSeccion: true,  notaConSaltos: true,  barraMovible: false },
-  'plantilla-3': { id: 'plantilla-3', nombre: 'Plantilla 3', grupo: 'abierto', bandaGrupo: [4, 1], notasDeSeccion: true,  notaConSaltos: true,  barraMovible: false }
+  'plantilla-1': { id: 'plantilla-1', nombre: 'Plantilla 1', bandaGrupo: [5, 1], notasDeSeccion: false, barraMovible: true },
+  'plantilla-2': { id: 'plantilla-2', nombre: 'Plantilla 2', bandaGrupo: [4, 1], notasDeSeccion: true,  barraMovible: false },
+  'plantilla-3': { id: 'plantilla-3', nombre: 'Plantilla 3', bandaGrupo: [4, 1], notasDeSeccion: true,  barraMovible: false }
 };
 
 /* El perfil de la plantilla de este local. Si todavía no se sabe
@@ -97,8 +91,8 @@ function perfilDePlantilla() {
      · ajusta la forma de la banda de los grupos, para que el marco
        donde se encuadra la foto (y su miniatura en el editor) tenga la
        misma forma que en la carta;
-     · y avisa a quien esté escuchando (el editor repinta sus
-       miniaturas). */
+     · y avisa a quien esté escuchando (el editor se repinta para
+       ofrecer o no las notas de la sección). */
 function aplicarPerfilDePlantilla() {
   const perfil = perfilDePlantilla();
   document.documentElement.dataset.plantilla = perfil.id;
@@ -122,7 +116,7 @@ function plantillaEnUso(){
 }
 
 /* ¿La plantilla de este negocio pinta las notas de la sección? Lo dice
-   su perfil (hoy, solo la Plantilla 2). El editor lo usa para no ofrecer
+   su perfil (hoy, la 2 y la 3). El editor lo usa para no ofrecer
    un adorno que luego no se vería. Mientras no se sepa qué plantilla es,
    no se ofrecen. */
 function plantillaConNotasDeSeccion(){

@@ -1,6 +1,6 @@
 /* =========================================================
-   ETIQUETAS Y ALERTAS
-   Las dos formas que tiene el negocio de destacar algo en
+   ETIQUETAS, ALERTAS Y NOTAS
+   Las tres formas que tiene el negocio de destacar algo en
    la carta, y que se escriben aquí a mano:
 
    - ETIQUETA (de un plato): una palabra corta y en
@@ -17,7 +17,7 @@
      «Tipos de pan», «Disponible en zona azul». Se pueden
      poner varias y se colocan solas, una a cada lado.
 
-   Las dos guardan lo mismo en carta.json:
+   Las tres guardan lo mismo en carta.json:
      { "texto":{"es":"…","en":"…"}, "fondo":"…", "color":"…" }
    y la etiqueta añade "posicion": "arriba" o "abajo".
 
@@ -25,6 +25,9 @@
    "secundario" (el tono del fondo de la carta) o un color
    escrito a mano. La letra puede ir en "auto" y entonces se
    elige sola, clara u oscura, según lo que se lea mejor.
+
+   Cómo se ven en la carta depende de la plantilla del local:
+   se mira con la «Vista previa» del editor.
    ========================================================= */
 
 /* ---------- Cómo nace un destacado ---------- */
@@ -74,96 +77,29 @@ function alertaDe(grupo){
 }
 
 /* =========================================================
-   LOS COLORES DE LA CARTA
-   Para que la vista previa no mienta hace falta saber con
-   qué colores se pinta la carta de verdad. Los guarda
-   apariencia.json, al lado de carta.json.
-
-   Se piden una sola vez, al abrir el editor. Si no se
-   pueden traer (sin conexión, sin clave, archivo que aún no
-   existe), se usan los de fábrica: la vista previa se
-   parecerá un poco menos, pero nada deja de funcionar.
+   LOS COLORES DE UN DESTACADO
+   Aquí solo se elige el color. Cómo queda de verdad en la
+   carta se mira con la «Vista previa» del editor, que pinta
+   la página entera con la plantilla del local: así no hay que
+   mantener una muestra pequeña por cada plantilla.
    ========================================================= */
 
-const CARTA_COLORES_FABRICA = { principal:'#E9B44C', fondo:'#12100E', texto:'auto' };
+/* De dónde arranca la rueda al pasar a «A mi gusto», si todavía no
+   había ningún color escrito a mano: el principal de fábrica de la
+   carta y una letra oscura que se lee bien encima. */
+const COLOR_DE_PARTIDA = { fondo:'#E9B44C', letra:'#17140F' };
 
-const coloresCarta = { principal:'#E9B44C', fondo:'#12100E', texto:'#F4EFE7',
-                       superficie:'#1A1613', borde:'#2C2620', pedidos:false };
-
-/* Primero el borrador de «Ajustes de la página» (colores elegidos pero
-   aún sin publicar), que es también lo que enseña la vista previa
-   completa; si no lo hay, lo publicado. Así las muestras de aquí y la
-   vista previa nunca se contradicen. */
-async function traerColoresDeLaCarta(){
-  if(coloresCarta.pedidos)return;
-  coloresCarta.pedidos=true;
-
-  let guardados=null;
-  try{
-    const borrador=await Almacen.leer('apariencia',clienteActual());
-    guardados=borrador?.datos?.colores||null;
-  }catch{ /* sin cajón: se mira lo publicado */ }
-
-  if(!guardados&&nubeConfigurada()){
-    // Si el negocio aún no ha personalizado la página, no hay archivo
-    // y se devuelve null: se queda con los colores de fábrica.
-    try{ guardados=(await leerApariencia())?.colores||null; }
-    catch{ /* la vista previa se queda con los colores de fábrica */ }
-  }
-  asentarColoresDeLaCarta(guardados||{});
-  if(estado.datos&&estado.vista==='editor')pintarZona();   // las previas ya pueden ser fieles
-}
-
-/* Vuelve a mirar los colores: al cerrar «Ajustes de la página» o al
-   cargar la carta, que es cuando pueden haber cambiado. */
-function refrescarColoresDeLaCarta(){
-  coloresCarta.pedidos=false;
-  return traerColoresDeLaCarta();
-}
-
-/* Traduce los dos o tres colores que elige el negocio a los que
-   necesita la vista previa. Es la misma cocina que hace carta.js: si
-   allí cambia, aquí también. */
-function asentarColoresDeLaCarta(elegidos){
-  const c={...CARTA_COLORES_FABRICA,...elegidos};
-  const principal=esHexValido(c.principal)?c.principal:CARTA_COLORES_FABRICA.principal;
-  const fondo=esHexValido(c.fondo)?c.fondo:CARTA_COLORES_FABRICA.fondo;
-  const texto=esHexValido(c.texto)?c.texto:(hexEsClaroEnLaCarta(fondo)?'#1A1611':'#F4EFE7');
-  coloresCarta.principal=principal;
-  coloresCarta.fondo=fondo;
-  coloresCarta.texto=texto;
-  coloresCarta.superficie=mezclaHex(fondo,texto,0.05);   // --noche-alto de la carta
-  coloresCarta.borde=mezclaHex(fondo,texto,0.14);        // --borde de la carta
-}
-
-/* ---------- Cuentas de color ----------
-   Copian a propósito las de carta.js, incluida la de «¿es claro?»,
-   que allí usa una media sencilla y no la fórmula de accesibilidad.
-   Si las dos no coinciden, la vista previa enseñaría un color y la
-   carta pintaría otro. */
 function esHexValido(valor){
   return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(String(valor??'').trim());
 }
-function mezclaHex(a,b,cuanto){
-  return componentesAColor(mezclarColor(colorAComponentes(a),colorAComponentes(b),cuanto));
-}
-function hexEsClaroEnLaCarta(hex){
-  const [r,g,b]=colorAComponentes(hex);
-  return (0.2126*r+0.7152*g+0.0722*b)/255>0.55;
-}
 
-/* ---------- Los colores de UN destacado ---------- */
-function fondoDeDestacado(d){
-  const elegido=String(d?.fondo??'principal').trim();
-  if(elegido==='secundario')return coloresCarta.superficie;
-  if(esHexValido(elegido))return elegido;
-  return coloresCarta.principal;
+/* El color que enseña cada rueda: el elegido a mano o el de partida. */
+function colorDeLaRueda(valor,partida){
+  const elegido=String(valor??'').trim();
+  return esHexValido(elegido)?elegido:partida;
 }
-function letraDeDestacado(d,fondo){
-  const elegido=String(d?.color??'auto').trim();
-  if(esHexValido(elegido))return elegido;
-  return hexEsClaroEnLaCarta(fondo)?'#17140F':'#FFF8EC';
-}
+function ruedaDelFondo(d){ return colorDeLaRueda(d?.fondo,COLOR_DE_PARTIDA.fondo); }
+function ruedaDeLaLetra(d){ return colorDeLaRueda(d?.color,COLOR_DE_PARTIDA.letra); }
 
 /* Qué botón sale marcado: los dos colores fijos por su nombre y
    cualquier otra cosa cuenta como color escrito a mano. */
@@ -178,13 +114,13 @@ function modoDeLaLetra(d){
 /* =========================================================
    COMPONENTES
    Trozos de pantalla que se arman igual para la alerta del
-   grupo y para las etiquetas de los platos.
+   grupo, las notas de la sección y las etiquetas de los platos.
    ========================================================= */
 
 /* Los dos juegos de botones de color, con su rueda escondida hasta que
-   se elige «a mano», y la muestra de cómo quedará en la carta. */
+   se elige «a mano». */
 function bloqueColores(d){
-  const fondo=fondoDeDestacado(d), letra=letraDeDestacado(d,fondo);
+  const fondo=ruedaDelFondo(d), letra=ruedaDeLaLetra(d);
   const modoF=modoDelFondo(d), modoL=modoDeLaLetra(d);
   const marca=(activo,valor)=>`aria-pressed="${activo===valor}"`;
 
@@ -214,106 +150,6 @@ function bloqueColores(d){
     </div>`;
 }
 
-/* La muestra: se ve tal cual saldrá en la carta, sobre lo mismo que
-   tendrá detrás. Eso depende de la plantilla del local (ver
-   perfilDePlantilla en plantilla.js):
-     · Plantilla 1: los platos y la alerta van dentro del panel del
-       grupo, así que la muestra es un trocito de ese panel: su tono,
-       un punto más claro que el fondo, con su marco y sus esquinas.
-     · Plantilla 2: van sueltos sobre el fondo de la carta. */
-function estiloDelFondoDePrevia(){
-  if(perfilDePlantilla().grupo==='panel'){
-    return `background:${coloresCarta.superficie};border-color:${coloresCarta.borde}`;
-  }
-  return `background:${coloresCarta.fondo}`;
-}
-
-/* ¿Esta muestra es una nota de sección pintada a renglones (Plantilla 2)?
-   Esa no es una píldora: es una barrita de color a un lado, el título
-   en ese mismo color y el resto del texto debajo. */
-function esNotaEnLineas(forma){
-  return forma==='nota'&&notaConSaltos();
-}
-
-/* Los colores de una muestra, como estilo en línea.
-     · Píldoras (etiqueta, alerta, nota seguida): fondo y letra, y la
-       alerta y la nota con su filo tenue.
-     · Nota en renglones: el color de «Fondo» pinta la barrita y el
-       título; el de «Letra», el resto del texto. En automático, la letra
-       es la normal de la carta, porque va directamente sobre su fondo. */
-/* La letra que se ve en la muestra. En la nota a renglones, en
-   automático, es la letra normal de la carta. */
-function letraVisible(d,forma){
-  if(!esNotaEnLineas(forma))return letraDeDestacado(d,fondoDeDestacado(d));
-  const elegida=String(d?.color??'auto').trim();
-  return esHexValido(elegida)?elegida:coloresCarta.texto;
-}
-
-function estiloDePieza(d,forma){
-  const fondo=fondoDeDestacado(d);
-  if(esNotaEnLineas(forma))return `--nota-acento:${fondo};color:${letraVisible(d,forma)}`;
-  const letra=letraDeDestacado(d,fondo);
-  const filo=forma==='etiqueta'?'':`;border-color:${mezclaHex(fondo,letra,0.18)}`;
-  return `background:${fondo};color:${letra}${filo}`;
-}
-
-/* lado: solo para las notas de sección, 'izquierda' o 'derecha' (dónde
-   va la barrita; la carta lo decide por el orden). */
-function bloquePrevia(d,forma,lado='izquierda'){
-  const fondoPrevia=forma==='nota'
-    ? `background:${coloresCarta.fondo}`   // las notas van sobre el fondo, fuera de los grupos
-    : estiloDelFondoDePrevia();
-  const clasePrevia=esNotaEnLineas(forma)
-    ? `previa-destacado--nota previa-destacado--nota-${lado}`
-    : `previa-destacado--${forma==='nota'?'abierto':perfilDePlantilla().grupo}`;
-  return `
-    <div class="previa-destacado ${clasePrevia}" style="${fondoPrevia}">
-      <span class="${clasesDePieza(forma)}"
-            data-des-previa data-forma="${forma}"
-            style="${estiloDePieza(d,forma)}">${contenidoDePrevia(d,forma)}</span>
-    </div>`;
-}
-
-/* ¿Respeta la plantilla de este local los saltos de línea de las notas
-   de sección? Plantilla 2: sí (primera línea título, el resto debajo).
-   Plantilla 1: no, la nota sale seguida en una sola línea. */
-function notaConSaltos(){
-  return perfilDePlantilla().notaConSaltos===true;
-}
-
-function clasesDePieza(forma){
-  const base=`previa-destacado__pieza previa-destacado__pieza--${forma}`;
-  if(forma!=='nota')return base;
-  return `${base} previa-destacado__pieza--nota-${notaConSaltos()?'lineas':'seguida'}`;
-}
-
-/* Las líneas escritas en el primer idioma, sin las vacías. */
-function lineasDePrevia(d){
-  return valorTexto(d?.texto,estado.idiomas[0]).split('\n').map(l=>l.trim()).filter(Boolean);
-}
-
-/* Lo que se enseña en la muestra (ya escapado, listo para pintar).
-     · Alertas y etiquetas son de una sola línea: el texto tal cual.
-     · Notas de sección, según la plantilla:
-         con saltos  -> la primera línea como título y el resto debajo,
-                        cada una en su renglón;
-         sin saltos  -> todo seguido en una línea, como lo pinta la
-                        carta: un salto de línea cuenta como un espacio. */
-function contenidoDePrevia(d,forma){
-  const lineas=lineasDePrevia(d);
-  if(!lineas.length)return 'Sin texto';
-  if(forma!=='nota')return escapar(lineas[0]);
-  if(!notaConSaltos())return escapar(lineas.join(' '));
-  const [titulo,...cuerpo]=lineas;
-  return `<b class="previa-nota__titulo">${escapar(titulo)}</b>`+
-    (cuerpo.length?`<span class="previa-nota__cuerpo">${cuerpo.map(escapar).join('<br>')}</span>`:'');
-}
-
-/* Repinta el texto de una muestra ya puesta, sin rehacer la tarjeta. */
-function refrescarTextoDePrevia(pieza,objeto){
-  pieza.innerHTML=contenidoDePrevia(objeto,pieza.dataset.forma);
-}
-
 /* ---------- Las notas de la sección ----------
    Un solo campo por nota y por idioma: la PRIMERA LÍNEA es el título y
    lo que va debajo es el cuerpo. Se escribe el título, se pulsa intro y
@@ -335,11 +171,8 @@ function bloqueNotasDeSeccion(seccion){
         </div>
       </div>
       <div class="par-idiomas">${camposTexto('nota-texto',n.texto,'Texto',true)}</div>
-      <p class="campo__pista">${notaConSaltos()
-        ?'La primera línea es el título. Pulsa intro y sigue escribiendo para el resto.'
-        :'En el diseño de tu carta la nota se ve seguida, en una sola línea: los saltos de línea no se tienen en cuenta.'}</p>
+      <p class="campo__pista">La primera línea es el título. Pulsa intro y sigue escribiendo para el resto.</p>
       ${bloqueColores(n)}
-      ${bloquePrevia(n,'nota',i%2===0?'izquierda':'derecha')}
     </div>`).join('');
 
   return `
@@ -378,7 +211,6 @@ function bloqueAlerta(grupo){
         <div class="par-idiomas">${camposTexto('alerta-texto',alerta.texto,'Texto de la alerta')}</div>
         <p class="campo__pista">Cuanto más corta, mejor: comparte línea con el título del grupo.</p>
         ${bloqueColores(alerta)}
-        ${bloquePrevia(alerta,'alerta')}
       </div>
     </div>`;
 }
@@ -404,7 +236,6 @@ function bloqueEtiquetas(item){
       </div>
       <div class="par-idiomas">${camposTexto('etq-texto',e.texto,'Texto')}</div>
       ${bloqueColores(e)}
-      ${bloquePrevia(e,'etiqueta')}
     </div>`).join('');
 
   return `
@@ -454,12 +285,11 @@ function destacadoDesde(elemento){
   return lista[i]?{caja,objeto:lista[i],lista,indice:i}:null;
 }
 
-/* Repinta SOLO esta tarjeta: los botones marcados, la rueda escondida
-   o a la vista y la muestra. Se hace así, y no repintando el editor
-   entero, para no perder el cursor mientras se escribe. */
+/* Repinta SOLO esta tarjeta: los botones marcados y la rueda escondida
+   o a la vista. Se hace así, y no repintando el editor entero, para no
+   perder el cursor mientras se escribe. */
 function refrescarDestacado(caja,objeto){
   const modoF=modoDelFondo(objeto), modoL=modoDeLaLetra(objeto);
-  const fondo=fondoDeDestacado(objeto);
 
   caja.querySelectorAll('[data-des-fondo]').forEach(b=>
     b.setAttribute('aria-pressed',String(b.dataset.desFondo===modoF)));
@@ -468,15 +298,11 @@ function refrescarDestacado(caja,objeto){
 
   const ruedaFondo=caja.querySelector('[data-des-fondo-color]');
   ruedaFondo.hidden=modoF!=='manual';
-  ruedaFondo.value=fondo;
+  ruedaFondo.value=ruedaDelFondo(objeto);
 
   const ruedaLetra=caja.querySelector('[data-des-letra-color]');
   ruedaLetra.hidden=modoL!=='manual';
-  ruedaLetra.value=letraVisible(objeto,caja.querySelector('[data-des-previa]')?.dataset.forma);
-
-  const pieza=caja.querySelector('[data-des-previa]');
-  pieza.setAttribute('style',estiloDePieza(objeto,pieza.dataset.forma));
-  refrescarTextoDePrevia(pieza,objeto);
+  ruedaLetra.value=ruedaDeLaLetra(objeto);
 }
 
 /* =========================================================
@@ -553,14 +379,13 @@ document.addEventListener('click',(ev)=>{
     marcarSucio();pintarZona();return;
   }
 
-  /* ---------- Colores (vale para alerta y etiqueta) ---------- */
+  /* ---------- Colores (vale para alerta, nota y etiqueta) ---------- */
   const botonFondo=t.closest('[data-des-fondo]');
   if(botonFondo){
     const d=destacadoDesde(botonFondo);if(!d)return;
     const modo=botonFondo.dataset.desFondo;
-    // Al pasar a «a mi gusto» se arranca del color que ya se veía, para
-    // que la rueda no se abra en un color que no tiene nada que ver.
-    d.objeto.fondo=modo==='manual'?fondoDeDestacado(d.objeto):modo;
+    // Al pasar a «a mi gusto» la rueda arranca del color que ya enseñaba.
+    d.objeto.fondo=modo==='manual'?ruedaDelFondo(d.objeto):modo;
     refrescarDestacado(d.caja,d.objeto);marcarSucio();return;
   }
 
@@ -568,8 +393,7 @@ document.addEventListener('click',(ev)=>{
   if(botonLetra){
     const d=destacadoDesde(botonLetra);if(!d)return;
     const modo=botonLetra.dataset.desLetra;
-    const forma=d.caja.querySelector('[data-des-previa]')?.dataset.forma;
-    d.objeto.color=modo==='manual'?letraVisible(d.objeto,forma):'auto';
+    d.objeto.color=modo==='manual'?ruedaDeLaLetra(d.objeto):'auto';
     refrescarDestacado(d.caja,d.objeto);marcarSucio();return;
   }
 });
@@ -588,19 +412,12 @@ document.addEventListener('input',(ev)=>{
   if(ed!=='alerta-texto'&&ed!=='etq-texto'&&ed!=='nota-texto')return;
   const d=destacadoDesde(t);if(!d)return;
   asignarTexto(d.objeto,'texto',t.dataset.lang,t.value);
-  // La muestra se refresca sola, pero sin repintar: se está escribiendo.
-  if(t.dataset.lang===estado.idiomas[0]){
-    refrescarTextoDePrevia(d.caja.querySelector('[data-des-previa]'),d.objeto);
-  }
   marcarSucio();
 });
 
-/* Los colores de la carta se piden en cuanto abre el editor, así la
-   primera vista previa ya sale con los colores buenos. */
-traerColoresDeLaCarta();
-
-/* Cuando se sabe (o cambia) la plantilla del local, las muestras se
-   repintan con su forma. Lo avisa plantilla.js. */
+/* Cuando se sabe (o cambia) la plantilla del local, se repinta el
+   editor: según la plantilla se ofrecen o no las notas de la sección.
+   Lo avisa plantilla.js. */
 document.addEventListener('plantilla-lista',()=>{
   if(estado.datos&&estado.vista==='editor')pintarZona();
 });

@@ -157,14 +157,14 @@ const apar={
   fuentesPendientes:{},   // clave -> {ruta, base64}
   porBorrar:[],           // archivos del repositorio que ya sobran
   publicado:{ logo:'', favicon:'', fondo:'', fuentes:{ titulo:'', texto:'' } }, // lo que hay ahora en el repo
-  previas:{}              // URLs locales de vista previa, para liberarlas
+  previas:{}              // URLs locales de las miniaturas de los campos, para liberarlas
 };
 
 /* =========================================================
-   COCINA DE COLORES
-   La misma receta que usa la propia carta: de dos o tres
-   colores elegidos salen todos los demás. Si cambias algo
-   aquí, cámbialo también en carta.js de la página.
+   COLORES
+   Solo hace falta saber si un color escrito es válido. Cómo
+   se ve en la carta se comprueba con la «Vista previa» del
+   editor, que pinta la página entera.
    ========================================================= */
 function hexANumeros(hex){
   const limpio=String(hex??'').trim().replace('#','');
@@ -173,137 +173,23 @@ function hexANumeros(hex){
   const n=parseInt(largo,16);
   return {r:(n>>16)&255,g:(n>>8)&255,b:n&255};
 }
-function numerosAHex({r,g,b}){
-  const c=x=>Math.round(Math.min(255,Math.max(0,x))).toString(16).padStart(2,'0');
-  return `#${c(r)}${c(g)}${c(b)}`;
-}
-function mezclaDeHex(hexA,hexB,cuanto){
-  const a=hexANumeros(hexA),b=hexANumeros(hexB);
-  if(!a||!b)return hexA;
-  return numerosAHex({r:a.r+(b.r-a.r)*cuanto,g:a.g+(b.g-a.g)*cuanto,b:a.b+(b.b-a.b)*cuanto});
-}
-function hexTransparente(hex,alfa){
-  const c=hexANumeros(hex);
-  return c?`rgba(${c.r},${c.g},${c.b},${alfa})`:hex;
-}
-function hexEsClaro(hex){
-  const c=hexANumeros(hex);
-  return c?(0.2126*c.r+0.7152*c.g+0.0722*c.b)/255>0.55:false;
-}
-function paletaDesde(colores){
-  const principal=hexANumeros(colores.principal)?colores.principal:'#E9B44C';
-  const fondo=hexANumeros(colores.fondo)?colores.fondo:'#12100E';
-  const claro=hexEsClaro(fondo);
-  const texto=hexANumeros(colores.texto)?colores.texto:(claro?'#1A1611':'#F4EFE7');
-  return {
-    acento:principal, fondo, texto,
-    textoSuave:mezclaDeHex(texto,fondo,.48),
-    superficie:mezclaDeHex(fondo,texto,.05),   // el tono de los paneles de la Plantilla 1
-    borde:mezclaDeHex(fondo,texto,.14),
-    halo:hexTransparente(principal,.16)
-  };
-}
 
-/* =========================================================
-   VISTA PREVIA
-   Una portada en miniatura que refleja al momento colores,
-   título, eslogan, logotipo y fuentes.
-   ========================================================= */
-function pintarPrevia(){
-  const d=apar.datos; if(!d)return;
-  const caja=$('#previaCarta');
-  const p=paletaDesde(d.colores);
-  caja.style.setProperty('--pc-fondo',p.fondo);
-  caja.style.setProperty('--pc-acento',p.acento);
-  caja.style.setProperty('--pc-texto',p.texto);
-  caja.style.setProperty('--pc-texto-suave',p.textoSuave);
-  caja.style.setProperty('--pc-borde',p.borde);
-  caja.style.setProperty('--pc-superficie',p.superficie);
-  caja.style.setProperty('--pc-halo',p.halo);
-  pintarFormaDeLaPlantilla();
-
-  const titulo=d.identidad.titulo.trim();
-  const hayLogo=!!d.identidad.logo;
-  const nombre=$('#previaNombre');
-  nombre.textContent=titulo||(hayLogo?'':'Nombre del negocio');
-  nombre.hidden=!nombre.textContent;
-
-  const lema=$('#previaLema');
-  lema.textContent=String(d.identidad.eslogan[apar.idiomas[0]]||'').trim();
-  lema.hidden=!lema.textContent;
-
-  const img=$('#previaLogo');
-  const origen=apar.previas.logo||(hayLogo?rutaPublica(d.identidad.logo):'');
-  if(origen){ if(img.getAttribute('src')!==origen)img.src=origen; img.hidden=false; }
-  else{ img.hidden=true; img.removeAttribute('src'); }
-  caja.classList.toggle('previa-carta--solo-logo',hayLogo&&!titulo);
-
-  // La foto de fondo, con el mismo encuadre que tendrá en la carta,
-  // para que la miniatura no engañe.
-  const fondo=$('#previaFondo');
-  const origenFondo=urlDelFondo();
-  if(origenFondo){
-    if(fondo.getAttribute('src')!==origenFondo)fondo.src=origenFondo;
-    fondo.style.objectPosition=posicionDelFoco(d.identidad.fondo.foco);
-    fondo.hidden=false;
-  }else{
-    fondo.hidden=true; fondo.removeAttribute('src');
-  }
-  caja.classList.toggle('previa-carta--con-fondo',!!origenFondo);
-}
-
-/* La miniatura toma la forma de la plantilla de este local: los grupos
-   en panel con marco (Plantilla 1) o sueltos sobre el fondo
-   (Plantilla 2). La plantilla la dice la copia que guardó el editor al
-   cargar la carta (ver plantilla.js). */
-function pintarFormaDeLaPlantilla(){
-  if(typeof perfilDePlantilla!=='function')return;
-  const perfil=perfilDePlantilla();
-  const caja=$('#previaCarta');
-  caja.classList.toggle('previa-carta--panel',perfil.grupo==='panel');
-  caja.classList.toggle('previa-carta--abierto',perfil.grupo!=='panel');
-  const aviso=$('#previaPlantilla');
-  if(aviso){ aviso.textContent=`, con el diseño de tu carta (${perfil.nombre})`; aviso.hidden=false; }
-}
 /* Los ajustes que solo tienen sentido en algunas plantillas. Hoy, la
-   barra de secciones: la Plantilla 2 no la deja mover. Solo se esconde
-   el control; lo guardado en apariencia.json no se toca. */
+   barra de secciones: ni la Plantilla 2 ni la 3 la dejan mover. Solo se
+   esconde el control; lo guardado en apariencia.json no se toca. */
 function mostrarAjustesDeLaPlantilla(){
   if(typeof perfilDePlantilla!=='function')return;
   $('#bloqueBarra').hidden=perfilDePlantilla().barraMovible===false;
 }
 if(typeof cargarPlantillaGuardada==='function'){
-  cargarPlantillaGuardada().finally(()=>{
-    pintarFormaDeLaPlantilla();
-    mostrarAjustesDeLaPlantilla();
-  });
+  cargarPlantillaGuardada().finally(mostrarAjustesDeLaPlantilla);
 }
 
 /* La dirección pública de un archivo ya publicado, para poder enseñar
-   en la previa un logo que el negocio subió otro día. La calcula
+   en su campo un logo que el negocio subió otro día. La calcula
    nube.js, que es quien sabe dónde viven las fotos. */
 function rutaPublica(ruta){
   return ruta?urlPublica(ruta):'';
-}
-
-/* Una fuente recién elegida se enseña en la previa cargándola desde el
-   propio archivo local, sin esperar a publicarla. */
-async function previsualizarFuente(clave,archivo){
-  try{
-    const url=URL.createObjectURL(archivo);
-    if(apar.previas[`fuente-${clave}`])URL.revokeObjectURL(apar.previas[`fuente-${clave}`]);
-    apar.previas[`fuente-${clave}`]=url;
-    const familia=clave==='titulo'?'PreviaFuenteTitulo':'PreviaFuenteTexto';
-    const fuente=new FontFace(familia,`url("${url}")`);
-    await fuente.load();
-    document.fonts.add(fuente);
-    $('#previaCarta').style.setProperty(
-      clave==='titulo'?'--pc-fuente-titulo':'--pc-fuente-texto',
-      `"${familia}", ${clave==='titulo'?'Georgia, serif':'system-ui, sans-serif'}`);
-  }catch{avisar('Ese archivo de fuente no se ha podido leer. ¿Seguro que es una fuente válida?','error');}
-}
-function quitarPreviaFuente(clave){
-  $('#previaCarta').style.removeProperty(clave==='titulo'?'--pc-fuente-titulo':'--pc-fuente-texto');
 }
 
 /* =========================================================
@@ -408,7 +294,6 @@ async function cargarPagina(){
     apar.forzarPublicado=false;
 
     volcarCampos();
-    pintarPrevia();
     pintarEstadoPagina(apar.sucio?'Cambios sin publicar':'Al día', apar.sucio?'falta':'bien');
     avisarAlPadre(apar.sucio);   // que el editor sepa si hay cambios que publicar
   }catch(e){
@@ -717,7 +602,7 @@ async function guardarLogoPreparado(preparado){
   apar.logoPendiente={ruta,base64:await blobABase64(preparado.blob)};
   guardarArchivoBorrador(ruta,apar.logoPendiente.base64);
   apar.datos.identidad.logo=`${ruta}?v=${marcaDeTiempo()}`;
-  pintarLogoCampo(); pintarPrevia(); marcarSucio();
+  pintarLogoCampo(); marcarSucio();
 }
 
 function quitarLogo(){
@@ -726,7 +611,7 @@ function quitarLogo(){
   apar.logoPendiente=null;
   if(apar.previas.logo){URL.revokeObjectURL(apar.previas.logo);delete apar.previas.logo;}
   apar.datos.identidad.logo='';
-  pintarLogoCampo(); pintarPrevia(); marcarSucio();
+  pintarLogoCampo(); marcarSucio();
 }
 
 /* =========================================================
@@ -899,7 +784,7 @@ async function guardarFondoPreparado(preparado){
   apar.fondoPendiente={ruta,base64:await blobABase64(preparado.blob)};
   guardarArchivoBorrador(ruta,apar.fondoPendiente.base64);
   apar.datos.identidad.fondo.imagen=`${ruta}?v=${marcaDeTiempo()}`;
-  pintarFondoCampo(); pintarPrevia(); marcarSucio();
+  pintarFondoCampo(); marcarSucio();
 }
 
 function quitarFondo(){
@@ -908,7 +793,7 @@ function quitarFondo(){
   apar.fondoPendiente=null;
   if(apar.previas.fondo){URL.revokeObjectURL(apar.previas.fondo);delete apar.previas.fondo;}
   apar.datos.identidad.fondo={imagen:'',foco:FOCO_DEFECTO};
-  pintarFondoCampo(); pintarPrevia(); marcarSucio();
+  pintarFondoCampo(); marcarSucio();
 }
 
 /* Si en el repositorio hay un archivo publicado y va a dejar de
@@ -933,7 +818,6 @@ async function elegirFuente(clave,archivo){
   guardarArchivoBorrador(ruta,apar.fuentesPendientes[clave].base64);
   apar.datos.fuentes[clave]={archivo:`${ruta}?v=${marcaDeTiempo()}`,nombre:archivo.name};
   pintarFuenteCampo(clave);
-  previsualizarFuente(clave,archivo);
   marcarSucio();
 }
 function quitarFuente(clave){
@@ -942,7 +826,6 @@ function quitarFuente(clave){
   delete apar.fuentesPendientes[clave];
   apar.datos.fuentes[clave]=null;
   pintarFuenteCampo(clave);
-  quitarPreviaFuente(clave);
   marcarSucio();
 }
 
@@ -967,37 +850,37 @@ $('#btnAparRecargar').addEventListener('click',async()=>{
 });
 
 // Colores
-$('#aparColorPrincipal').addEventListener('input',()=>{apar.datos.colores.principal=$('#aparColorPrincipal').value;pintarPrevia();marcarSucio();});
-$('#aparColorFondo').addEventListener('input',()=>{apar.datos.colores.fondo=$('#aparColorFondo').value;pintarPrevia();marcarSucio();});
-$('#aparColorTexto').addEventListener('input',()=>{apar.datos.colores.texto=$('#aparColorTexto').value;pintarPrevia();marcarSucio();});
+$('#aparColorPrincipal').addEventListener('input',()=>{apar.datos.colores.principal=$('#aparColorPrincipal').value;marcarSucio();});
+$('#aparColorFondo').addEventListener('input',()=>{apar.datos.colores.fondo=$('#aparColorFondo').value;marcarSucio();});
+$('#aparColorTexto').addEventListener('input',()=>{apar.datos.colores.texto=$('#aparColorTexto').value;marcarSucio();});
 $('#aparTextoAuto').addEventListener('click',()=>{
   apar.datos.colores.texto='auto';
   $('#aparTextoAuto').setAttribute('aria-pressed','true');
   $('#aparTextoManual').setAttribute('aria-pressed','false');
   $('#aparTextoRueda').hidden=true;
-  pintarPrevia();marcarSucio();
+  marcarSucio();
 });
 $('#aparTextoManual').addEventListener('click',()=>{
   apar.datos.colores.texto=$('#aparColorTexto').value;
   $('#aparTextoAuto').setAttribute('aria-pressed','false');
   $('#aparTextoManual').setAttribute('aria-pressed','true');
   $('#aparTextoRueda').hidden=false;
-  pintarPrevia();marcarSucio();
+  marcarSucio();
 });
 $('#btnAparColoresOriginales').addEventListener('click',()=>{
   apar.datos.colores=aparienciaDeFabrica().colores;
-  volcarCampos();pintarPrevia();marcarSucio();
+  volcarCampos();marcarSucio();
 });
 
-// Título y eslogan (la previa se refresca según se escribe)
+// Título y eslogan
 $('#aparTitulo').addEventListener('input',()=>{
   apar.datos.identidad.titulo=$('#aparTitulo').value;
-  pintarPrevia();marcarSucio();
+  marcarSucio();
 });
 $('#aparEslogan').addEventListener('input',(ev)=>{
   const idioma=ev.target.dataset.eslogan; if(!idioma)return;
   apar.datos.identidad.eslogan[idioma]=ev.target.value;
-  pintarPrevia();marcarSucio();
+  marcarSucio();
 });
 
 // Logotipo
@@ -1016,7 +899,7 @@ $('#aparFondoRejilla').addEventListener('click',(ev)=>{
   const casilla=ev.target.closest('[data-foco]');
   if(!casilla||!apar.datos)return;
   apar.datos.identidad.fondo.foco=casilla.dataset.foco;
-  pintarFondoCampo(); pintarPrevia(); marcarSucio();
+  pintarFondoCampo(); marcarSucio();
 });
 
 // Fuentes
