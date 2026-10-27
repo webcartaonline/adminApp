@@ -1,0 +1,39 @@
+/* =========================================================
+   VENTANA EMERGENTE (el anuncio) · el formulario
+   La caja que flota es la de vista-previa.css (vp--ajustes),
+   y los bloques, campos y botones son los del editor
+   (editor.css, formularios.css, botones.css). Aquí solo va lo
+   propio de esta ventana.
+   ========================================================= */
+
+/* Aquí no hay un marco con su propia página, como en «Ajustes de la
+   página»: el formulario se desplaza dentro de la propia ventana. */
+.vp__lienzo--formulario{overflow-y:auto;overscroll-behavior:contain}
+
+.anuncio-editor{max-width:760px;margin:0 auto;
+  padding:22px clamp(14px,4vw,28px) calc(48px + env(safe-area-inset-bottom,0px))}
+
+.anuncio-editor__intro{margin:0 0 18px;font-size:.82rem;line-height:1.55;color:var(--tinta-suave)}
+
+.anuncio-editor .chips{margin-top:0}
+.anuncio-editor .bloque > .campo__pista{margin:10px 0 0}
+
+/* Cada texto con su pista debajo, y aire entre uno y otro. */
+.anuncio-editor__campo + .anuncio-editor__campo{margin-top:18px}
+.anuncio-editor__campo .par-idiomas{margin-bottom:6px}
+.anuncio-editor__campo .campo__pista{margin:0}
+.anuncio-editor .anuncio-editor__nota{margin-top:18px;padding-top:12px;border-top:1px solid var(--linea)}
+
+/* Qué verá el comensal, en una pastilla al lado del título. */
+.anuncio-editor__estado{margin-left:auto;padding:4px 11px;border-radius:100px;
+  font-family:var(--texto);font-size:.7rem;font-weight:700;letter-spacing:.02em;
+  text-transform:none;background:var(--pastilla);color:var(--tinta-suave)}
+.anuncio-editor__estado--encendida{background:var(--verde-tenue);color:var(--verde-texto)}
+.anuncio-editor__estado--vacia{background:var(--naranja-tenue,rgba(242,140,40,.16));color:var(--naranja-hondo)}
+
+.anuncio-editor__acciones{margin-top:4px}
+
+/* En el móvil, la pastilla baja debajo del título. */
+@media(max-width:600px){
+  .anuncio-editor__estado{margin-left:0}
+}

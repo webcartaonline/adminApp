@@ -49,6 +49,7 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <link rel="stylesheet" href="css/imagenes.css">
 <link rel="stylesheet" href="css/version.css">
 <link rel="stylesheet" href="vista-previa/vista-previa.css">
+<link rel="stylesheet" href="css/ventana-anuncio.css">
 <link rel="stylesheet" href="css/pdf.css">
 </head>
 <body>
@@ -68,6 +69,8 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
     <button class="btn btn--claro" id="btnCargar" type="button">Cargar carta</button>
     <button class="btn btn--claro" id="btnAjustesPagina" type="button"
             title="Colores, portada, fuentes, pie y redes de la carta">Ajustes de la carta</button>
+    <button class="btn btn--claro" id="btnAnuncio" type="button"
+            title="La ventanita que sale al abrir la carta, para destacar algo">Ventana emergente</button>
     <button class="btn btn--claro" id="btnVistaPrevia" type="button" disabled
             title="Trae la carta primero">Vista previa</button>
     <button class="btn btn--principal" id="btnPublicar" type="button" disabled>Publicar cambios</button>
@@ -225,7 +228,9 @@ if(a>0)document.documentElement.style.setProperty("--panel-usuario",a+"px");}cat
 <script src="js/version.js"></script>
 <script src="js/app.js"></script>
 <script src="vista-previa/vista-previa.js"></script>
+<script src="js/ventana-flotante.js"></script>
 <script src="js/ventana-pagina.js"></script>
+<script src="js/ventana-anuncio.js"></script>
 
 <!-- Librerias de terceros (jsPDF, html2canvas). Licencias en THIRD-PARTY-LICENSES.txt -->
 

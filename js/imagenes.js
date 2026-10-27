@@ -225,8 +225,10 @@ function urlImagenExistente(rutaEnCarta){
   return urlPublica(sinVersion(rutaEnCarta));
 }
 
-/* Busca el objeto (sección, grupo o ítem) al que pertenece una imagen. */
+/* Busca el objeto (sección, grupo, ítem o anuncio) al que pertenece una
+   imagen. El anuncio es uno solo por carta: no hace falta su id. */
 function objetoDeImagen(tipo,id){
+  if(tipo==='anuncio')return estado.datos?.anuncio??null;
   const secciones=estado.datos?.secciones??[];
   if(tipo==='seccion')return secciones.find(s=>s.id===id);
   if(tipo==='grupo'){

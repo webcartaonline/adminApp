@@ -1,9 +1,9 @@
 /* =========================================================
    VENTANA DE «AJUSTES DE LA PÁGINA»
    Abre los ajustes de la página (colores, portada, fuentes,
-   pie, redes…) en una ventana a pantalla completa, igual que
-   la vista previa. Dentro va un marco aislado que carga
-   pagina.html, para que sus estilos no toquen el editor.
+   pie, redes…) en una ventana flotante (ventana-flotante.js).
+   Dentro va un marco aislado que carga pagina.html, para que
+   sus estilos no toquen el editor.
 
    La ventana se carga UNA sola vez y se queda: abrir y cerrar
    no la recarga, así lo que estás editando no se pierde. Y
@@ -11,68 +11,30 @@
    vista previa y el botón «Publicar cambios» lo ven igual.
    ========================================================= */
 (function () {
-  let capa = null;
+  let ventana = null;
   let cargada = false;   // ¿ya se pidió pagina.html y se puso en el marco?
 
-  function crearCapa() {
-    if (capa) return capa;
-    capa = document.createElement('div');
-    /* «vp--ajustes» la distingue de la Vista previa: esta no ocupa toda la
-       pantalla, sino que flota como una ventana sobre un fondo atenuado. */
-    capa.className = 'vp vp--ajustes';
-    capa.hidden = true;
-    /* Todo va dentro de «vp__ventana»: es la caja que flota, con sus esquinas
-       redondeadas y su sombra, separada de los bordes de la pantalla. */
-    capa.innerHTML = `
-      <div class="vp__ventana">
-        <div class="vp__barra">
-          <div class="vp__marca">
-            <span class="vp__punto" aria-hidden="true"></span>
-            <div class="vp__rotulos">
-              <span class="vp__titulo">Ajustes de la página</span>
-              <span class="vp__sub">Se publican con «Publicar cambios»</span>
-            </div>
-          </div>
-          <button class="vp__cerrar" type="button" aria-label="Cerrar los ajustes de la página">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
-            <span>Cerrar</span>
-          </button>
-        </div>
-        <div class="vp__lienzo">
-          <iframe class="vp__marco" title="Ajustes de la página"
-                  referrerpolicy="no-referrer"></iframe>
-        </div>
-      </div>`;
-    document.body.appendChild(capa);
-    capa.querySelector('.vp__cerrar').addEventListener('click', cerrar);
-    /* Al pulsar fuera de la caja (en el fondo atenuado de alrededor) se cierra,
-       como en cualquier ventana. Solo cuenta el clic en el propio fondo, no el
-       que cae dentro de la ventana. */
-    capa.addEventListener('click', (ev) => { if (ev.target === capa) cerrar(); });
-    return capa;
+  function crearVentana() {
+    if (ventana) return ventana;
+    ventana = crearVentanaFlotante({
+      titulo: 'Ajustes de la página',
+      subtitulo: 'Se publican con «Publicar cambios»',
+      rotuloCerrar: 'Cerrar los ajustes de la página',
+      // La apariencia pudo cambiar: que la vista previa se entere.
+      alCerrar: () => { if (typeof refrescarBotonVistaPrevia === 'function') refrescarBotonVistaPrevia(); }
+    });
+    ventana.lienzo.innerHTML =
+      '<iframe class="vp__marco" title="Ajustes de la página" referrerpolicy="no-referrer"></iframe>';
+    return ventana;
   }
-
-  function cerrar() {
-    if (!capa || capa.hidden) return;
-    capa.hidden = true;                 // se oculta, NO se recarga
-    document.documentElement.classList.remove('vp-abierta');
-    // La apariencia pudo cambiar: que la vista previa se entere.
-    if (typeof refrescarBotonVistaPrevia === 'function') refrescarBotonVistaPrevia();
-  }
-
-  document.addEventListener('keydown', (ev) => {
-    if (ev.key === 'Escape' && capa && !capa.hidden) cerrar();
-  });
 
   async function abrir() {
-    const c = crearCapa();
-    const marco = c.querySelector('.vp__marco');
+    const v = crearVentana();
     if (!cargada) {
       avisar('Abriendo los ajustes de la página…');
       try {
         const r = await fetch('pagina.html', { cache: 'no-store' });
-        marco.srcdoc = await r.text();  // se carga una vez y se queda
+        v.lienzo.querySelector('.vp__marco').srcdoc = await r.text();  // se carga una vez y se queda
         cargada = true;
         $('#mensaje').hidden = true;
       } catch (e) {
@@ -80,8 +42,7 @@
         return;
       }
     }
-    c.hidden = false;
-    document.documentElement.classList.add('vp-abierta');
+    v.abrir();
   }
 
   /* ---------- Arranque ---------- */

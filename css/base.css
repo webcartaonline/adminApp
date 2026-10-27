@@ -156,8 +156,11 @@ body{margin:0;background:var(--fondo) fixed;background-color:var(--marfil);
    para que se lea bien. El relleno de abajo respeta la franja de los móviles
    con barra o botón de inicio en pantalla, para que el texto no quede tapado.
    Se estiliza por su id para no afectar al aviso de error del recuadro de
-   imágenes, que comparte la clase .mensaje pero vive dentro de una ventana. */
-#mensaje{position:fixed;left:0;right:0;bottom:0;z-index:21;margin:0;
+   imágenes, que comparte la clase .mensaje pero vive dentro de una ventana.
+   Va por encima de las ventanas flotantes (z-index 200: así se lee lo que
+   pasa al preparar la foto del anuncio) y por debajo de los cuadros de
+   diálogo (.modal, 210), para no tapar sus botones. */
+#mensaje{position:fixed;left:0;right:0;bottom:0;z-index:205;margin:0;
   padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
   box-shadow:0 -10px 26px rgba(20,26,50,.20)}
 

@@ -64,14 +64,16 @@
   }
 
   /* Copia de la carta con TODAS las fotos ya resueltas a una dirección
-     que se pueda mostrar. Se trabaja sobre una copia para no tocar lo
-     que el cliente está editando. */
+     que se pueda mostrar (también la de la ventana emergente, «anuncio»).
+     Se trabaja sobre una copia para no tocar lo que el cliente está
+     editando. */
   async function resolverDatos(a, datosVivos) {
     const d = JSON.parse(JSON.stringify(datosVivos || {}));
     if (d.negocio) {
       if (d.negocio.portada) d.negocio.portada = await resolverImagen(a, d.negocio.portada);
       if (d.negocio.logo)    d.negocio.logo    = await resolverImagen(a, d.negocio.logo);
     }
+    if (d.anuncio && d.anuncio.imagen) d.anuncio.imagen = await resolverImagen(a, d.anuncio.imagen);
     for (const s of (d.secciones || [])) {
       if (s.imagen) s.imagen = await resolverImagen(a, s.imagen);
       for (const g of (s.grupos || [])) {
@@ -263,8 +265,10 @@
                         : 'Esta página todavía no admite vista previa');
   }
 
-  /* Se comparte con el resto del programa (lo llama publicar.js al traer). */
+  /* Se comparte con el resto del programa: lo primero lo llama publicar.js
+     al traer; lo segundo, el «Ver cómo queda» de la ventana emergente. */
   window.refrescarBotonVistaPrevia = refrescarBotonVistaPrevia;
+  window.abrirVistaPrevia = abrirVistaPrevia;
 
   /* ---------- Arranque ---------- */
   const boton = $('#btnVistaPrevia');

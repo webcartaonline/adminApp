@@ -15,7 +15,7 @@
    automáticamente la ventana con lo que ha cambiado.
    ========================================================= */
 
-const VERSION = '12.2.0-BETA';
+const VERSION = '12.3.0-BETA';
 const CACHE   = `editor-carta-${VERSION}`;
 
 /* Todo lo que hace falta para que la aplicación funcione sin internet.
@@ -38,6 +38,7 @@ const ARCHIVOS = [
   './css/apariencia.css',
   './css/pagina.css',
   './css/pdf.css',
+  './css/ventana-anuncio.css',
   './js/config.js',
   './js/licencia.js',
   './js/utiles.js',
@@ -59,7 +60,9 @@ const ARCHIVOS = [
   './js/publicar.js',
   './js/plantilla.js',
   './js/publicar-pagina.js',
+  './js/ventana-flotante.js',
   './js/ventana-pagina.js',
+  './js/ventana-anuncio.js',
   './vendor/jspdf.umd.min.js',
   './vendor/html2canvas.min.js',
   './js/pdf-config.js',

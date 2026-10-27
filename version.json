@@ -1,9 +1,10 @@
 {
-  "version": "12.2.0-BETA",
-  "fecha": "2026-10-18",
-  "titulo": "Una sola vista previa, la de la página entera",
+  "version": "12.3.0-BETA",
+  "fecha": "2026-10-27",
+  "titulo": "Nueva: la ventana emergente de tu carta",
   "cambios": [
-    "Las muestras pequeñas de las etiquetas, las alertas, las notas y la portada se han quitado. Para ver cómo queda cualquier cambio, pulsa «Vista previa»: enseña tu carta entera, tal cual se verá, antes de publicar.",
-    "El editor ya reconoce la Plantilla 3. Si tu carta la usa, la vista previa la enseña tal cual, con sus notas de sección y la foto de cada grupo bien encuadrada."
+    "Nuevo botón «Ventana emergente». Es una ventanita que sale encima de tu carta al abrirla, para destacar algo: un plato nuevo, una oferta, un evento… Desde ahí la enciendes o la apagas y escribes sus textos en cada idioma de tu carta.",
+    "Si tu plan incluye imágenes decorativas, también puedes ponerle una foto, que se encuadra igual que las de la carta.",
+    "Sus colores y su letra son los de tu carta: si los cambias en «Ajustes de la carta», la ventana cambia con ellos. Pulsa «Ver cómo queda» para verla antes de publicar."
   ]
 }

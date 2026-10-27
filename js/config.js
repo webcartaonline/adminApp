@@ -44,13 +44,17 @@ const CLAVE_FOTOS_QUITADAS = 'editorCartaUniversal.fotoQuitada';
 const MAX_FOTOS_QUITADAS   = 8;
 
 /* ---------- Imágenes de la carta ----------
-   Secciones, grupos y platos. Cada tipo tiene su propia forma y su
-   propio tamaño. La proporción debe coincidir con la de estilos.css
-   de la carta:
+   Secciones, grupos, platos y la ventana emergente (el anuncio). Cada
+   tipo tiene su propia forma y su propio tamaño. La proporción debe
+   coincidir con la de estilos.css de la carta:
      seccion -> .panel__cabecera--imagen{aspect-ratio:3/1}
      grupo   -> .grupo__cabecera--imagen{aspect-ratio:4/1}
      item    -> .item__foto{aspect-ratio:1/1}
+     anuncio -> .anuncio__foto{aspect-ratio:16/11} (anuncio.css, igual
+                en todas las plantillas)
    Si allí cambian, cámbialas también aquí.
+   «previaMax» es el ancho máximo del marco de encuadre en la ventana
+   de la foto: un cuadrado o una foto alta a 700 px serían enormes.
    La banda del GRUPO no es igual en todas las plantillas (5 a 1 en la
    Plantilla 1, 4 a 1 en la 2): la de aquí es la de partida, y
    plantilla.js la cambia por la de la plantilla de cada local.
@@ -82,7 +86,17 @@ const IMG_TIPOS = {
     conFoco:false,                  // cuadrado exacto: se ve entera, no hay nada que elegir
     relA:1, relB:1,                 // cuadrado exacto
     anchoMax:450, anchoMin:240,     // se ve a ~104 px: 450 sobra hasta en pantallas muy nítidas
-    peso:70*1024
+    peso:70*1024,
+    previaMax:'320px'
+  },
+  anuncio:{
+    etiqueta:'ventana emergente', rotulo:'Ventana emergente', demostrativo:'la ventana emergente',
+    titulo:'Foto de la ventana emergente', carpeta:'img/anuncio',
+    conFoco:false,                  // la carta la enseña siempre con esta forma: no se recorta más
+    relA:16, relB:11,               // la de .anuncio__foto en anuncio.css
+    anchoMax:920, anchoMin:460,     // la ventana mide como mucho 460 px de ancho
+    peso:150*1024,
+    previaMax:'440px'
   }
 };
 

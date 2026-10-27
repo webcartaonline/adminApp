@@ -66,6 +66,13 @@ function refrescarFondoFoco(){
   }catch{ /* si el navegador se queja, la cuadrícula se queda sin fondo y ya */ }
 }
 
+/* Tras cambiar una foto se repinta todo lo que la enseña: la columna del
+   editor y, si está abierta, la ventana emergente (ventana-anuncio.js). */
+function repintarTrasFoto(){
+  pintarZona();
+  if(typeof pintarVentanaAnuncio==='function')pintarVentanaAnuncio();
+}
+
 function errorImagen(txt){
   const p=$('#imgError');
   if(!txt){p.hidden=true;p.textContent='';return;}
@@ -84,11 +91,11 @@ function abrirModalImagen(tipo,id){
   recorte.tipo=tipo; recorte.id=id;
 
   // El lienzo adopta la forma del tipo: franjas para secciones y grupos,
-  // cuadrado para platos.
+  // cuadrado para platos, apaisada para la ventana emergente.
   const lienzo=$('#imgLienzo');
   lienzo.width=PREVIA_ANCHO; lienzo.height=previaAlto();
   lienzo.style.aspectRatio=`${conf.relA}/${conf.relB}`;
-  lienzo.style.maxWidth=tipo==='item'?'320px':'';   // un cuadrado a 700px sería enorme
+  lienzo.style.maxWidth=conf.previaMax||'';
 
   $('#imgArchivo').value='';
   $('#imgZoom').value=1;
@@ -97,14 +104,16 @@ function abrirModalImagen(tipo,id){
   errorImagen('');
 
   const pendiente=estado.imagenesPendientes[rutaImagenRepo(tipo,id)];
-  const nombre=valorTexto(obj.nombre,estado.idiomas[0])||'(sin nombre)';
+  // El anuncio no tiene nombre: se le conoce por su mensaje principal.
+  const nombre=valorTexto(obj.nombre??obj.mensaje,estado.idiomas[0]);
+  const quien=nombre?`${conf.rotulo} "${nombre}"`:conf.rotulo;
   $('#modalImagenTitulo').textContent=conf.titulo;
   $('#modalImagenPista').textContent=
     pendiente
-      ? `${conf.rotulo} "${nombre}". Hay una imagen preparada sin publicar; si eliges otra foto, la sustituirá.`
+      ? `${quien}. Hay una imagen preparada sin publicar; si eliges otra foto, la sustituirá.`
       : obj.imagen
-        ? `${conf.rotulo} "${nombre}". Ya tiene imagen publicada; si eliges otra foto, la sustituirá.`
-        : `${conf.rotulo} "${nombre}". Se guardará como ${rutaImagenCarta(tipo,id)}.`;
+        ? `${quien}. Ya tiene imagen publicada; si eliges otra foto, la sustituirá.`
+        : `${quien}. Se guardará como ${rutaImagenCarta(tipo,id)}.`;
 
   pintarFoco();
   $('#btnQuitarImagen').hidden=!(obj.imagen||pendiente);
@@ -156,7 +165,7 @@ async function recuperarImagen(){
 
     marcarSucio();
     cerrarModalImagen();
-    pintarZona();
+    repintarTrasFoto();
     avisar('Foto recuperada. Se volverá a subir al publicar los cambios.','bien');
   }catch(e){
     errorImagen('No se ha podido recuperar la foto: '+e.message);
@@ -253,7 +262,7 @@ async function guardarImagenRecortada(){
     obj.imagen=`${rutaImagenCarta(recorte.tipo,recorte.id)}?v=${Date.now().toString(36)}`;
     marcarSucio();
     cerrarModalImagen();
-    pintarZona();
+    repintarTrasFoto();
     avisar(`Imagen preparada (${Math.round(blob.size/1024)} KB). Se subirá al publicar los cambios.`,'bien');
   }catch(e){
     errorImagen(e.message);
@@ -306,7 +315,7 @@ async function quitarImagen(){
 
   marcarSucio();
   cerrarModalImagen();
-  pintarZona();
+  repintarTrasFoto();
 
   avisar(hayCopia
     ? 'Imagen quitada. Al publicar se borrará del servidor; mientras no cierres el editor puedes recuperarla.'
