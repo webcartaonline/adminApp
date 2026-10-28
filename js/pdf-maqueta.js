@@ -230,8 +230,8 @@ function pdfUnidadItem(ctx, item, seccionId) {
 
 /* ---------- Pie ----------
    Los mensajes del negocio (horarios, avisos…) y la nota de IVA con
-   la fecha, como en la carta real. Las redes sociales no se pintan:
-   en papel un icono para tocar no sirve de nada. */
+   la fecha, como en la carta real. Las redes sociales y las apps de
+   pedidos no se pintan: en papel un enlace para tocar no sirve de nada. */
 function pdfUnidadPie(ctx) {
   const pie = ctx.paquete.apariencia?.pie;
   const el = pdfCrear('footer', 'pdf-pie');

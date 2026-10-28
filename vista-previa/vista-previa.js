@@ -109,6 +109,10 @@
         apar.identidad.fondo.imagen = await resolverImagen(a, apar.identidad.fondo.imagen);
       }
     }
+    // Los logotipos de las apps de pedidos del pie, igual que el del local.
+    for (const app of Object.values(apar.pie?.reparto || {})) {
+      if (app && app.logo) app.logo = await resolverImagen(a, app.logo);
+    }
     // Las fuentes personalizadas se resuelven igual que las fotos: si están
     // sin publicar, la copia local; si no, la ya publicada. Así la
     // vista previa muestra también la tipografía elegida sin haberla subido.

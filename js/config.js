@@ -130,6 +130,11 @@ const FAVICON_PESO_INTACTO = 100*1024;     // hasta aquí, se sube sin tocar
 const FAVICON_PESO_MAX     = 5*1024*1024;  // más que esto no se acepta
 const FAVICON_CALIDAD      = 0.92;         // solo se usa si hay que reducirlo
 
+/* El logotipo de cada app de pedidos (pie de la carta). Allí sale a unos
+   40 px de alto: con 256 px de lado sobra incluso en pantallas muy finas. */
+const LOGO_APP_LADO_MAX     = 256;          // px del lado mayor
+const LOGO_APP_PESO_INTACTO = 100*1024;     // hasta aquí, se sube sin tocar
+
 /* ---------- Zona importante de la foto ----------
    Las franjas de sección y grupo ocupan todo el ancho de la pantalla,
    así que según la pantalla quedan más bajas o más estrechas de lo que

@@ -134,27 +134,84 @@
 .pie-bloque textarea{ resize:vertical; min-height:64px; }
 .pie-bloques__vacio{ margin:4px 0 0; font-size:.79rem; color:var(--tinta-suave); }
 
-/* ---------- Redes sociales ----------
-   Una fila por red: el icono en su pastilla y el campo del enlace. */
-.redes{
+/* ---------- Redes sociales del pie ----------
+   Una fila por red: el icono en su pastilla y el campo del enlace
+   (pagina-enlaces.js). */
+.enlaces{
   display:grid; gap:10px 14px;
   grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
 }
-.redes__fila{
+.enlaces__fila{
   display:flex; align-items:center; gap:12px;
   padding:10px 12px;
   border:1px solid var(--linea); border-radius:var(--radio-m);
   background:var(--velo);
 }
-.redes__icono{
+.enlaces__icono{
   flex:none; width:38px; height:38px;
   display:grid; place-items:center;
   border-radius:12px;
   background:var(--pastilla); color:var(--acento-texto,currentColor);
 }
-.redes__icono svg{ width:20px; height:20px; }
-.redes__datos{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:4px; }
-.redes__datos input{ width:100%; }
+.enlaces__icono svg{ width:20px; height:20px; }
+.enlaces__datos{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:4px; }
+.enlaces__datos input{ width:100%; }
+
+/* ---------- Pedidos por app (pagina-reparto.js) ----------
+   El aviso de los logotipos con su «Saber más», y una tarjeta por app:
+   su logotipo (si lo hay), el texto (solo sin logotipo) y el enlace. */
+.reparto-aviso{
+  display:flex; align-items:flex-start; gap:8px 12px; flex-wrap:wrap;
+  margin:0 0 12px; padding:10px 12px;
+  border-radius:var(--radio-m); background:var(--pastilla);
+  font-size:.79rem; line-height:1.5; color:var(--tinta-suave);
+}
+.reparto-aviso__texto{ flex:1 1 240px; margin:0; }
+.reparto-aviso__mas{
+  flex:none; padding:3px 10px;
+  border:1px solid var(--linea-fuerte); border-radius:100px;
+  background:transparent; color:var(--tinta-suave);
+  font:inherit; font-size:.72rem; font-weight:700; cursor:pointer;
+}
+.reparto-aviso__mas:hover{ color:var(--tinta); }
+.reparto-legal{
+  margin:0 0 14px; padding:12px 14px;
+  border:1px solid var(--linea); border-radius:var(--radio-m);
+  font-size:.79rem; line-height:1.55; color:var(--tinta-suave);
+}
+.reparto-legal h4{ margin:14px 0 4px; font-size:.78rem; color:var(--tinta); }
+.reparto-legal h4:first-child{ margin-top:0; }
+.reparto-legal p{ margin:0; }
+.reparto-legal ul{ margin:0; padding-left:18px; }
+.reparto-legal li+li{ margin-top:4px; }
+.reparto-legal .reparto-legal__nota{ margin-top:12px; font-style:italic; }
+#repartoSinLogos{ margin:0 0 12px; }
+
+.reparto-lista{
+  display:grid; gap:10px 14px;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+}
+.reparto-fila{
+  display:flex; flex-direction:column; gap:10px;
+  padding:12px;
+  border:1px solid var(--linea); border-radius:var(--radio-m);
+  background:var(--velo);
+}
+.reparto-fila__nombre{
+  font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--tinta);
+}
+.reparto-fila__logo{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+/* El hueco del logotipo: cuadrado, y el logotipo entero dentro, como en
+   la carta (si es alargado se encoge, sin deformarse). */
+.reparto-fila__marco{
+  flex:none; width:48px; height:48px;
+  display:flex; align-items:center; justify-content:center; overflow:hidden;
+  border-radius:12px; background:var(--pastilla);
+  font-size:.6rem; line-height:1.15; text-align:center; color:var(--tinta-suave);
+}
+.reparto-fila__marco img{ display:block; width:100%; height:100%; object-fit:contain; }
+.reparto-fila input[type="text"]{ width:100%; }
 
 /* ---------- Publicar ---------- */
 .apariencia__publicar{

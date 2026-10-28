@@ -42,8 +42,9 @@ function tipoPorExtension(ruta){
 
 /* Deja los datos listos para guardarse/publicarse, sin tocar lo que el
    cliente está escribiendo: recorta espacios, tira los mensajes de pie
-   vacíos y ordena los enlaces de redes. (Antes esto se hacía al publicar;
-   ahora se publica desde el editor, así que se hace aquí, sobre una copia.) */
+   vacíos y ordena los enlaces de las redes y de las apps de pedidos.
+   (Antes esto se hacía al publicar; ahora se publica desde el editor,
+   así que se hace aquí, sobre una copia.) */
 function datosNormalizados(){
   const d=JSON.parse(JSON.stringify(apar.datos));
   d.identidad.titulo=String(d.identidad.titulo||'').trim();
@@ -52,9 +53,10 @@ function datosNormalizados(){
   d.pie.bloques=(d.pie.bloques||[])
     .map(b=>({titulo:String(b.titulo||'').trim(),texto:String(b.texto||'').trim()}))
     .filter(b=>b.titulo||b.texto);
-  for(const clave of Object.keys(d.pie.redes||{})){
-    d.pie.redes[clave]=normalizarEnlace(d.pie.redes[clave]);
+  for(const red of Object.keys(d.pie.redes)){
+    d.pie.redes[red]=EnlacesDelPie.normalizar(d.pie.redes[red]);
   }
+  d.pie.reparto=RepartoDelPie.normalizado(d.pie.reparto);
   return d;
 }
 
@@ -119,26 +121,18 @@ function aparienciaDeFabrica(idiomas=['es']){
     fuentes:{ titulo:null, texto:null },
     // Colocación de la barra de secciones y del filtro de alérgenos.
     pagina:{ barra:'inferior', alergenos:'abajo' },
-    pie:{ bloques:[], redes:{ tiktok:'', instagram:'', x:'', youtube:'', facebook:'', snapchat:'' } }
+    pie:completarEnlacesPie({ bloques:[] })
   };
 }
 
-/* Las seis redes que puede elegir el negocio, en el orden en que se
-   pintan. Los iconos son los mismos que dibuja la carta. */
-const REDES_PIE = [
-  { clave:'tiktok',    nombre:'TikTok',
-    icono:'<path d="M15 4.2c.4 2.3 2 3.9 4.2 4.1"/><path d="M15 4.2v9.3a4.1 4.1 0 1 1-3.4-4.04"/>' },
-  { clave:'instagram', nombre:'Instagram',
-    icono:'<rect x="4" y="4" width="16" height="16" rx="4.6"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.7" cy="7.3" r=".9" fill="currentColor" stroke="none"/>' },
-  { clave:'x',         nombre:'X',
-    icono:'<path d="M5.3 4.5h3.5l9.9 15h-3.5Z"/><path d="M10.6 13.4 5 19.5"/><path d="M18.7 4.5 13.3 10.4"/>' },
-  { clave:'youtube',   nombre:'YouTube',
-    icono:'<rect x="3.5" y="6" width="17" height="12" rx="3.6"/><path d="M10.4 9.5v5l4.4-2.5Z"/>' },
-  { clave:'facebook',  nombre:'Facebook',
-    icono:'<path d="M15.6 4.5h-1.9a3.5 3.5 0 0 0-3.5 3.5V20"/><path d="M8 11.6h6.6"/>' },
-  { clave:'snapchat',  nombre:'Snapchat',
-    icono:'<path d="M12 4c2.5 0 4.3 1.9 4.3 4.5v1.6c0 .3.2.5.5.5l1.7.4c-.6 1.3-1.6 2.2-2.9 2.7.9 1.2 2.2 1.9 3.9 2.1-1 1.2-2.4 1.9-4 1.9-.5.8-1.9 1.4-3.5 1.4s-3-.6-3.5-1.4c-1.6 0-3-.7-4-1.9 1.7-.2 3-.9 3.9-2.1-1.3-.5-2.3-1.4-2.9-2.7l1.7-.4c.3 0 .5-.2.5-.5V8.5C7.7 5.9 9.5 4 12 4Z"/>' }
-];
+/* Pone en blanco lo que falte de las redes (pagina-enlaces.js) y de las
+   apps de pedidos (pagina-reparto.js). Así un apariencia.json (o un
+   borrador del navegador) de antes de que existieran no deja huecos. */
+function completarEnlacesPie(pie){
+  pie.redes=EnlacesDelPie.completar(pie.redes);
+  pie.reparto=RepartoDelPie.completar(pie.reparto);
+  return pie;
+}
 
 /* Los límites del logotipo y de la portada están en config.js:
    LOGO_LADO_MAX, LOGO_PESO_INTACTO, FONDO_LADO_MAX… */
@@ -156,7 +150,8 @@ const apar={
   fondoPendiente:null,    // la foto de la portada, esperando a subirse
   fuentesPendientes:{},   // clave -> {ruta, base64}
   porBorrar:[],           // archivos del repositorio que ya sobran
-  publicado:{ logo:'', favicon:'', fondo:'', fuentes:{ titulo:'', texto:'' } }, // lo que hay ahora en el repo
+  publicado:{ logo:'', favicon:'', fondo:'', fuentes:{ titulo:'', texto:'' }, reparto:{} }, // lo que hay ahora en el repo
+  permisos:{},            // lo que deja hacer el plan, según el portero
   previas:{}              // URLs locales de las miniaturas de los campos, para liberarlas
 };
 
@@ -252,16 +247,18 @@ async function cargarPagina(){
         fondo:{...base.identidad.fondo,...(guardada?.identidad?.fondo||{})}},
       fuentes:{...base.fuentes,...(guardada?.fuentes||{})},
       pagina:normalizarPagina(guardada?.pagina),
-      pie:{
+      pie:completarEnlacesPie({
         bloques:Array.isArray(guardada?.pie?.bloques)?guardada.pie.bloques:[],
-        redes:{...base.pie.redes,...(guardada?.pie?.redes||{})}
-      }
+        redes:guardada?.pie?.redes,
+        reparto:guardada?.pie?.reparto
+      })
     };
 
     /* Qué puede tocar este negocio lo dice el SERVIDOR, no la carta: así
        nadie se da permisos a sí mismo. Si la respuesta viniera vacía, no
        se enseña nada de esto (más vale quedarse corto que de más). */
-    aplicarPermisosDeLaPagina(licencia?.permisos||{});
+    apar.permisos=licencia?.permisos||{};
+    aplicarPermisosDeLaPagina(apar.permisos);
 
     /* Primera vez (sin título ni logo configurados): se rellena con lo
        que la carta enseña hoy. Así lo que ves en los campos es
@@ -282,6 +279,8 @@ async function cargarPagina(){
     apar.publicado.fondo=sinVersion(apar.datos.identidad.fondo.imagen);
     apar.publicado.fuentes.titulo=sinVersion(apar.datos.fuentes.titulo?.archivo);
     apar.publicado.fuentes.texto=sinVersion(apar.datos.fuentes.texto?.archivo);
+    apar.publicado.reparto=Object.fromEntries(Object.entries(apar.datos.pie.reparto)
+      .map(([clave,app])=>[clave,sinVersion(app.logo)]));
 
     apar.cargada=true; apar.sucio=false;
     apar.logoPendiente=null; apar.faviconPendiente=null; apar.fondoPendiente=null;
@@ -313,6 +312,7 @@ async function restaurarBorrador(a){
   try{ b=await Almacen.leer('apariencia',clienteActual(a)); }catch{}
   if(!b||!b.datos) return;
   apar.datos=b.datos;
+  completarEnlacesPie(apar.datos.pie);   // un borrador de antes de las apps de pedidos no las trae
   apar.porBorrar=Array.isArray(b.porBorrar)?b.porBorrar.slice():[];
   apar.sucio=true;
   await restaurarImagenPendiente(a,'logo');
@@ -320,6 +320,7 @@ async function restaurarBorrador(a){
   await restaurarImagenPendiente(a,'fondo');
   await restaurarFuentePendiente(a,'titulo');
   await restaurarFuentePendiente(a,'texto');
+  await restaurarLogosDeApps(a);
 }
 async function restaurarImagenPendiente(a,cual){
   const ruta=cual==='logo'    ? sinVersion(apar.datos.identidad.logo)
@@ -345,6 +346,17 @@ async function restaurarFuentePendiente(a,clave){
   apar.fuentesPendientes[clave]={ruta,base64:arch.base64};
 }
 
+/* Las miniaturas de los logotipos de las apps que aún no se han subido. */
+async function restaurarLogosDeApps(a){
+  for(const [clave,app] of Object.entries(apar.datos.pie.reparto)){
+    const ruta=sinVersion(app.logo);
+    if(!ruta) continue;
+    let img=null;
+    try{ img=await Almacen.leer('imagenes',`${clienteActual(a)}::${ruta}`); }catch{}
+    if(img&&img.base64) apar.previas[`reparto-${clave}`]=`data:${img.tipo||'image/png'};base64,${img.base64}`;
+  }
+}
+
 function sinVersion(ruta){return String(ruta||'').split('?')[0];}
 function marcaDeTiempo(){return Date.now().toString(36);}
 
@@ -366,7 +378,7 @@ function volcarCampos(){
   pintarFuenteCampo('titulo');
   pintarFuenteCampo('texto');
   pintarBloquesPie();
-  pintarRedesPie();
+  pintarEnlacesPie();
   pintarColocacion();
 }
 
@@ -475,38 +487,86 @@ $('#btnAparPieAnadir').addEventListener('click',()=>{
 });
 
 /* =========================================================
-   PIE DE PÁGINA: REDES SOCIALES
-   Las seis redes, cada una con su icono y su campo de
-   enlace. Con enlace, sale en la carta; en blanco, no.
-   ========================================================= */
-function pintarRedesPie(){
-  const redes=apar.datos.pie.redes;
-  $('#aparPieRedes').innerHTML=REDES_PIE.map((r)=>`
-    <label class="redes__fila">
-      <span class="redes__icono" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-             stroke-linecap="round" stroke-linejoin="round">${r.icono}</svg>
-      </span>
-      <span class="redes__datos">
-        <span class="campo__etiqueta">${r.nombre}</span>
-        <input type="text" inputmode="url" autocomplete="off" spellcheck="false"
-               data-red="${r.clave}" value="${escapar(redes[r.clave]||'')}"
-               placeholder="https://…">
-      </span>
-    </label>`).join('');
-}
-$('#aparPieRedes').addEventListener('input',(ev)=>{
-  const red=ev.target.dataset.red;
-  if(!red)return;
-  apar.datos.pie.redes[red]=ev.target.value;
-  marcarSucio();
-});
+   PIE DE PÁGINA: REDES SOCIALES Y PEDIDOS POR APP
+   Cada lista en su bloque: las redes las pinta pagina-enlaces.js
+   y las apps de pedidos, pagina-reparto.js. Con enlace, salen en
+   la carta; en blanco, no.
 
-/* Un enlace escrito sin el «https://» delante se arregla solo. */
-function normalizarEnlace(url){
-  const t=String(url||'').trim();
-  if(!t)return '';
-  return /^https?:\/\//i.test(t)?t:`https://${t}`;
+   El logotipo de cada app lo sube el propio local (ver «Saber
+   más» en pagina.html). Va a img/reparto/<app>.<extensión>, que
+   el portero guarda con el permiso «imagenesDecorativas»: sin
+   él no se ofrece subirlo y en la carta sale el texto.
+   ========================================================= */
+const puedeSubirLogosDeApps=()=>apar.permisos.imagenesDecorativas===true;
+
+function pintarEnlacesPie(){
+  EnlacesDelPie.pintar($('#aparPieRedes'),apar.datos.pie.redes);
+  RepartoDelPie.pintar($('#aparPieReparto'),apar.datos.pie.reparto,{
+    imagenDe:(clave)=>apar.previas[`reparto-${clave}`]||rutaPublica(apar.datos.pie.reparto[clave].logo),
+    puedeSubir:puedeSubirLogosDeApps()
+  });
+  $('#repartoSinLogos').hidden=puedeSubirLogosDeApps();
+}
+EnlacesDelPie.escuchar($('#aparPieRedes'),()=>apar.datos.pie.redes,marcarSucio);
+RepartoDelPie.escuchar($('#aparPieReparto'),{
+  leerValores:()=>apar.datos.pie.reparto,
+  alCambiar:marcarSucio,
+  alElegirLogo:elegirLogoDeApp,
+  alQuitarLogo:quitarLogoDeApp
+});
+RepartoDelPie.prepararSaberMas($('#btnRepartoSaberMas'),$('#repartoSaberMas'));
+
+/* El logotipo de una app se sube tal cual (como el del local), solo
+   encogido si es enorme: en la carta sale a unos 40 px de alto. */
+const POLITICA_LOGO_APP = {
+  ladoMax:LOGO_APP_LADO_MAX,
+  pesoIntacto:LOGO_APP_PESO_INTACTO,
+  calidad:LOGO_CALIDAD,
+  conservarTransparencia:true
+};
+
+async function elegirLogoDeApp(clave,archivo){
+  const nombre=RepartoDelPie.nombreDe(clave);
+  if(!RepartoDelPie.TIPOS_DE_LOGO.includes(archivo.type)){
+    avisar('Ese archivo no es un logotipo que se pueda usar. Valen PNG, JPG, WebP o SVG.','error');return;
+  }
+  if(archivo.size>LOGO_PESO_MAX){
+    avisar('Ese archivo pesa demasiado. Prueba con una imagen de menos de 10 MB.','error');return;
+  }
+  try{
+    const preparado=archivo.type==='image/svg+xml'
+      ? {blob:archivo,extension:'svg',tocada:false,ancho:0,alto:0}
+      : await prepararImagenIntacta(archivo,POLITICA_LOGO_APP);
+    const app=apar.datos.pie.reparto[clave];
+    const ruta=`img/reparto/${clave}.${preparado.extension}`;
+    const anterior=sinVersion(app.logo);
+    if(anterior&&anterior!==ruta)borrarArchivoBorrador(anterior);   // otro sin subir que ya no vale
+
+    apuntarSiSobra(apar.publicado.reparto[clave],ruta);
+    guardarArchivoBorrador(ruta,await blobABase64(preparado.blob));
+    soltarPreviaDeApp(clave);
+    apar.previas[`reparto-${clave}`]=URL.createObjectURL(preparado.blob);
+    app.logo=`${ruta}?v=${marcaDeTiempo()}`;
+    pintarEnlacesPie(); marcarSucio();
+    avisar(`Logotipo de ${nombre} listo. ${resumenDeImagen(preparado)}`,'bien');
+  }catch{
+    avisar('No se ha podido leer esa imagen. Prueba con un PNG, JPG, WebP o SVG.','error');
+  }
+}
+
+function quitarLogoDeApp(clave){
+  const app=apar.datos.pie.reparto[clave];
+  borrarArchivoBorrador(sinVersion(app.logo));
+  apuntarSiSobra(apar.publicado.reparto[clave],'');
+  soltarPreviaDeApp(clave);
+  app.logo='';
+  pintarEnlacesPie(); marcarSucio();
+}
+
+function soltarPreviaDeApp(clave){
+  const previa=apar.previas[`reparto-${clave}`];
+  if(previa?.startsWith('blob:'))URL.revokeObjectURL(previa);
+  delete apar.previas[`reparto-${clave}`];
 }
 
 function pintarLogoCampo(){
@@ -799,6 +859,9 @@ function quitarFondo(){
 /* Si en el repositorio hay un archivo publicado y va a dejar de
    usarse (o va a llamarse distinto), se apunta para borrarlo. */
 function apuntarSiSobra(publicada,nueva){
+  // Lo que se vuelve a usar ya no sobra: si se quitó un archivo y luego
+  // se pone otro con el mismo nombre, no se puede borrar tras subirlo.
+  if(nueva)apar.porBorrar=apar.porBorrar.filter((ruta)=>ruta!==nueva);
   if(publicada&&publicada!==nueva&&!apar.porBorrar.includes(publicada))apar.porBorrar.push(publicada);
 }
 

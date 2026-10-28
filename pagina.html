@@ -256,7 +256,64 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
     <p class="bloque__nota">Pega el enlace de las redes que quieras enseñar y su icono aparecerá
       abajo del todo de la carta, pintado con tu color principal. Las que dejes en blanco no
       salen. Los enlaces se abren en una pestaña nueva.</p>
-    <div class="redes" id="aparPieRedes"></div>
+    <div class="enlaces" id="aparPieRedes"></div>
+  </section>
+
+  <!-- ===== Pedidos por app ===== -->
+  <section class="bloque">
+    <h3 class="bloque__titulo">Pedidos por app</h3>
+    <p class="bloque__nota">Si vendes a domicilio o para recoger con alguna de estas apps, pega el
+      enlace de tu local en cada una. En la carta salen debajo de las redes sociales. Las que dejes
+      sin enlace no salen. Los enlaces se abren en una pestaña nueva.</p>
+
+    <div class="reparto-aviso">
+      <p class="reparto-aviso__texto">Los logotipos de estas apps son marcas de sus empresas, así que
+        <b>los subes tú</b>, con el archivo oficial que te da cada app como socio. Mientras no subas
+        uno, en tu carta sale el texto que escribas.</p>
+      <button class="reparto-aviso__mas" id="btnRepartoSaberMas" type="button"
+              aria-expanded="false" aria-controls="repartoSaberMas">Saber más</button>
+    </div>
+
+    <div class="reparto-legal" id="repartoSaberMas" hidden>
+      <h4>¿Por qué el logotipo lo subes tú?</h4>
+      <p>El permiso para usar el logotipo de una app lo da la propia app a los locales que venden
+        con ella: es parte de tu acuerdo como socio. Nosotros no somos socios de esas apps, así que
+        no podemos ponerlo por ti. Lo que hacemos es enseñar en tu carta el archivo que subas tú.</p>
+
+      <h4>Qué dice la ley</h4>
+      <p>La Ley de Marcas deja nombrar una marca ajena para decir algo que es verdad, como «pide
+        en Glovo», siempre que se haga de forma honrada y no parezca que la app te patrocina
+        (artículo 37). Para usar su logotipo, además, mandan las normas de cada app.</p>
+
+      <h4>Lo que pide cada app</h4>
+      <ul>
+        <li><b>Uber Eats:</b> da sus logotipos e iconos a los locales en su web para socios
+          («Co-marketing tools»). No se pueden cambiar de color ni deformar, y pide que su equipo
+          de marca («Brand Desk») dé el visto bueno antes de usarlos.</li>
+        <li><b>Deliveroo:</b> su contrato de socio te deja usar su marca para anunciar que estás en
+          Deliveroo, siguiendo sus normas de marca.</li>
+        <li><b>Glovo:</b> lo regula tu acuerdo de socio. Pide los archivos y sus normas en Glovo
+          Partners o a tu gestor de Glovo.</li>
+        <li><b>Just Eat:</b> lo mismo: en su Partner Centre o a tu gestor de Just Eat.</li>
+        <li><b>Too Good To Go:</b> tiene un paquete con sus logotipos en su web («Media assets»).</li>
+      </ul>
+
+      <h4>Consejos</h4>
+      <ul>
+        <li>Usa el archivo oficial, tal cual: sin cambiarle colores ni recortarlo.</li>
+        <li>Mejor el icono cuadrado de la app. Si subes un logotipo alargado, se encoge para caber
+          en el mismo hueco que los demás, sin deformarse.</li>
+        <li>Pon solo las apps en las que de verdad vendes.</li>
+        <li>Si no sabes de dónde sacar el logotipo, escríbenos y te ayudamos.</li>
+      </ul>
+      <p class="reparto-legal__nota">Esto es información general, no asesoramiento legal. Ante la
+        duda, pregunta a la app.</p>
+    </div>
+
+    <p class="campo__pista" id="repartoSinLogos" hidden>Tu plan no incluye imágenes decorativas, así
+      que en tu carta sale el texto de cada app.</p>
+
+    <div class="reparto-lista" id="aparPieReparto"></div>
   </section>
 </main>
 
@@ -271,6 +328,8 @@ var v=g.vars[t]||g.vars.claro;for(var k in v)document.documentElement.style.setP
 <script src="js/plantilla.js"></script>
 <script src="js/idiomas.js"></script>
 <script src="js/imagen-comprimir.js"></script>
+<script src="js/pagina-enlaces.js"></script>
+<script src="js/pagina-reparto.js"></script>
 <script src="js/pagina-apariencia.js"></script>
 </body>
 </html>

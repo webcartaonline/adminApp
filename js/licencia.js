@@ -15,7 +15,9 @@
    «¿puedo enseñar esto?». Los permisos se llaman:
 
      etiquetas           -> las notas del plato y la alerta del grupo
-     imagenesDecorativas -> fondo de portada, bandas y fuentes propias
+     imagenesDecorativas -> fondo de portada, bandas, fuentes propias,
+                            la foto de la ventana emergente y los
+                            logotipos de las apps de pedidos
      imagenMarca         -> el logotipo y el iconito de la pestaña
      imagenItem          -> la foto de cada plato
      idiomaExtra         -> idiomas además del principal (cuántos lo
@@ -25,7 +27,8 @@
 
    Esconder no es proteger: el portero vuelve a mirar la carta al
    publicar y la rechaza si lleva notas, alertas o etiquetas sin el
-   permiso, o más idiomas de los contratados.
+   permiso, imágenes que su plan no incluye (también en los ajustes de
+   la página), o más idiomas de los contratados.
    ========================================================= */
 
 /* ---------- Atajos para el editor ----------
