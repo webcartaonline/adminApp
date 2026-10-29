@@ -1,10 +1,11 @@
 {
-  "version": "12.4.0-BETA",
-  "fecha": "2026-10-28",
-  "titulo": "Nuevo: tus apps de pedidos en la carta",
+  "version": "12.5.0-BETA",
+  "fecha": "2026-10-29",
+  "titulo": "Nuevo: revisa tus cambios antes de publicarlos",
   "cambios": [
-    "En «Ajustes de la carta» hay un apartado nuevo, «Pedidos por app», justo debajo de las redes sociales: Just Eat, Uber Eats, Glovo, Deliveroo y Too Good To Go.",
-    "Pega el enlace de tu local en las que uses y saldrán al final de tu carta, debajo de las redes. Mientras no subas su logotipo, sale el texto que escribas, con los colores y la letra de tu carta.",
-    "Si tu plan incluye imágenes decorativas, puedes subir el logotipo oficial de cada app (te lo da la propia app como socio; en «Saber más» te contamos por qué lo subes tú). Con logotipo, en la carta sale solo el logotipo, del mismo tamaño que los iconos de las redes."
+    "Al pulsar «Publicar cambios» ya no se publica a la primera: se abre una ventana grande con un resumen, en tarjetas, de todo lo que has cambiado (platos, precios, fotos, secciones, ajustes de la carta…). Así ves enseguida si has tocado algo sin querer.",
+    "En esa misma ventana te avisamos de lo que falta en tu carta: nombres en blanco, traducciones sin hacer, alérgenos sin marcar, precios a cero o platos sin foto (si tu plan incluye fotos). Lo puedes arreglar ahí mismo, sin buscar el plato.",
+    "Cuando esté todo bien, pulsa «Publicar» y se publica como siempre. Si cierras la ventana, no se pierde nada: tus cambios siguen ahí.",
+    "Si prefieres empezar de cero, «Descartar todos los cambios» vuelve a dejar la carta tal y como la ven tus clientes. Antes de hacerlo te lo preguntamos, porque no se puede deshacer."
   ]
 }

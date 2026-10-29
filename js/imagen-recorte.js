@@ -67,10 +67,12 @@ function refrescarFondoFoco(){
 }
 
 /* Tras cambiar una foto se repinta todo lo que la enseña: la columna del
-   editor y, si está abierta, la ventana emergente (ventana-anuncio.js). */
+   editor y, si están abiertas, la ventana emergente (ventana-anuncio.js)
+   y la de «Revisar antes de publicar» (revision-ventana.js). */
 function repintarTrasFoto(){
   pintarZona();
   if(typeof pintarVentanaAnuncio==='function')pintarVentanaAnuncio();
+  if(typeof pintarVentanaRevision==='function')pintarVentanaRevision();
 }
 
 function errorImagen(txt){

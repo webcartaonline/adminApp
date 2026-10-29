@@ -45,6 +45,18 @@
     v.abrir();
   }
 
+  /* Olvida la ventana cargada: la próxima vez que se abra, vuelve a
+     empezar desde lo publicado. Lo usa «Descartar todos los cambios»
+     (publicar.js), que borra el borrador justo después. Vaciar el marco
+     para también su reloj de guardado, así no vuelve a escribirlo. */
+  function olvidarAjustesDePagina() {
+    if (!ventana) return;
+    if (ventana.abierta()) ventana.cerrar();
+    ventana.lienzo.querySelector('.vp__marco').srcdoc = '';
+    cargada = false;
+  }
+  window.olvidarAjustesDePagina = olvidarAjustesDePagina;
+
   /* ---------- Arranque ---------- */
   const boton = $('#btnAjustesPagina');
   if (boton) boton.addEventListener('click', abrir);

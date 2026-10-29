@@ -187,6 +187,15 @@ function olvidarFotoQuitada(ruta){
   try{sessionStorage.removeItem(claveDeFotoQuitada(ruta));}catch{}
 }
 
+/* Tira todas las copias de este negocio. Se usa al descartar todos los
+   cambios: ya no hay nada que deshacer. */
+function olvidarFotosQuitadas(){
+  const prefijo=`${CLAVE_FOTOS_QUITADAS}::${clienteActual()}::`;
+  fotosQuitadasGuardadas()
+    .filter(({clave})=>clave.startsWith(prefijo))
+    .forEach(({clave})=>{ try{sessionStorage.removeItem(clave);}catch{} });
+}
+
 /* Al borrar una sección o un grupo, también sobran las fotos de sus platos. */
 function tirarImagenesDe(seccionOGrupo,esSeccion){
   const grupos=esSeccion?(seccionOGrupo.grupos??[]):[seccionOGrupo];

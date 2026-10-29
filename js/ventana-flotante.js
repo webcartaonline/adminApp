@@ -11,7 +11,20 @@
 
    Se oculta al cerrar, no se destruye: abrirla otra vez no
    pierde lo que hubiera dentro.
+
+   Dos opciones más, para la que las necesite:
+     clase    una clase propia en la capa, para darle su tamaño
+              («vp--revision», por ejemplo);
+     animada  se abre desplegándose desde una línea fina en el
+              centro de la pantalla y se cierra plegándose igual.
+              La animación está en vista-previa.css (vp--animada).
+              Con «reducir movimiento» en el móvil, se abre y se
+              cierra de golpe, sin animación.
    ========================================================= */
+
+/* Lo que tarda en plegarse al cerrar. Tiene que ser igual que la
+   duración de vp-plegar en vista-previa.css. */
+const VENTANA_CIERRE_MS = 240;
 
 /* ¿Hay un cuadro de diálogo abierto encima (la ventana de la foto, por
    ejemplo)? Entonces Esc es para él, no para la ventana de debajo. */
@@ -19,9 +32,14 @@ function hayDialogoEncima(){
   return !!document.querySelector('.modal:not([hidden])');
 }
 
-function crearVentanaFlotante({titulo,subtitulo,rotuloCerrar,alCerrar}){
+/* ¿Ha pedido el móvil u ordenador que haya menos movimiento? */
+function prefiereMenosMovimiento(){
+  return !!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+
+function crearVentanaFlotante({titulo,subtitulo,rotuloCerrar,alCerrar,clase='',animada=false}){
   const capa=document.createElement('div');
-  capa.className='vp vp--ajustes';
+  capa.className=['vp','vp--ajustes',clase,animada?'vp--animada':''].filter(Boolean).join(' ');
   capa.hidden=true;
   capa.innerHTML=`
     <div class="vp__ventana" role="dialog" aria-modal="true" aria-label="${escapar(titulo)}">
@@ -43,18 +61,30 @@ function crearVentanaFlotante({titulo,subtitulo,rotuloCerrar,alCerrar}){
     </div>`;
   document.body.appendChild(capa);
 
-  const abierta=()=>!capa.hidden;
+  let plegando=null;   // el reloj del cierre animado, mientras dura
+  const abierta=()=>!capa.hidden&&!plegando;
 
+  /* Al quitarle el «hidden», la animación de apertura arranca sola
+     (el CSS la pone en la ventana visible). */
   function abrir(){
+    if(plegando){ clearTimeout(plegando); plegando=null; capa.classList.remove('vp--saliendo'); }
     capa.hidden=false;
     document.documentElement.classList.add('vp-abierta');
   }
 
-  function cerrar(){
-    if(!abierta())return;
+  function ocultar(){
+    plegando=null;
+    capa.classList.remove('vp--saliendo');
     capa.hidden=true;                 // se oculta, NO se recarga
     document.documentElement.classList.remove('vp-abierta');
     if(typeof alCerrar==='function')alCerrar();
+  }
+
+  function cerrar(){
+    if(!abierta())return;
+    if(!animada||prefiereMenosMovimiento()){ ocultar(); return; }
+    capa.classList.add('vp--saliendo');
+    plegando=setTimeout(ocultar,VENTANA_CIERRE_MS);
   }
 
   capa.querySelector('.vp__cerrar').addEventListener('click',cerrar);

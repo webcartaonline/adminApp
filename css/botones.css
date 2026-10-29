@@ -32,6 +32,12 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;
 
 .btn--peligro{background:transparent;color:var(--aviso);border-color:var(--linea-fuerte)}
 .btn--peligro:hover:not(:disabled){background:var(--aviso);color:#fff;border-color:transparent}
+/* Peligro de verdad: el botón que confirma algo que no se puede deshacer
+   (el «Sí, descartarlo todo» de dialogo-confirmar.js). Lleno de rojo
+   desde el principio, para que no se pulse por despiste. */
+.btn--peligro-fuerte{background:var(--aviso);color:#fff;border-color:transparent;
+  box-shadow:0 10px 26px rgba(239,68,68,.30)}
+.btn--peligro-fuerte:hover:not(:disabled){filter:brightness(1.08)}
 .btn--mini{padding:4px 12px;font-size:.72rem}
 .btn--tema{background:var(--barra-velo);color:var(--barra-texto);border-color:var(--barra-borde)}
 .btn--tema:hover:not(:disabled){background:var(--barra-velo-mas);border-color:var(--barra-borde-mas)}

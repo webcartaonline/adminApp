@@ -9,6 +9,7 @@
 
 const estado = {
   datos:null,                // la carta entera, tal cual está en carta.json
+  publicado:null,            // copia de la carta tal y como la ven hoy los clientes (para «Revisar antes de publicar»)
   licencia:null,             // plan y permisos, tal y como los manda el servidor
   vista:'editor',
   idiomas:['es'],
@@ -44,6 +45,14 @@ function marcarSucio(){
 function marcarAparienciaSucia(sucia){
   estado.aparienciaSucia=!!sucia;
   sincronizarBotonPublicar();
+}
+
+/* Guarda una copia de la carta tal y como está publicada. Se hace al
+   traerla y al publicarla; la ventana «Revisar antes de publicar»
+   compara con ella para contar qué ha cambiado. Es una copia de verdad
+   (no la misma carta): lo que se edite después no la toca. */
+function recordarLoPublicado(){
+  estado.publicado=estado.datos?JSON.parse(JSON.stringify(estado.datos)):null;
 }
 
 /* ---------- Accesores ---------- */

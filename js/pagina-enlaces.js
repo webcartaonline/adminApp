@@ -36,6 +36,10 @@ const EnlacesDelPie=(()=>{
       icono:'<path d="M12 4c2.5 0 4.3 1.9 4.3 4.5v1.6c0 .3.2.5.5.5l1.7.4c-.6 1.3-1.6 2.2-2.9 2.7.9 1.2 2.2 1.9 3.9 2.1-1 1.2-2.4 1.9-4 1.9-.5.8-1.9 1.4-3.5 1.4s-3-.6-3.5-1.4c-1.6 0-3-.7-4-1.9 1.7-.2 3-.9 3.9-2.1-1.3-.5-2.3-1.4-2.9-2.7l1.7-.4c.3 0 .5-.2.5-.5V8.5C7.7 5.9 9.5 4 12 4Z"/>' }
   ];
 
+  /* El nombre de una red tal y como se escribe («TikTok»). Lo usa
+     también el resumen de «Revisar antes de publicar». */
+  const nombreDe=(clave)=>REDES.find((s)=>s.clave===clave)?.nombre||clave;
+
   /* Pone en blanco las redes que falten (un apariencia.json nuevo, o
      uno de antes de que existiera alguna). */
   function completar(valores){
@@ -78,5 +82,5 @@ const EnlacesDelPie=(()=>{
     });
   }
 
-  return { completar, normalizar, pintar, escuchar };
+  return { nombreDe, completar, normalizar, pintar, escuchar };
 })();

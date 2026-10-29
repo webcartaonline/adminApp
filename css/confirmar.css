@@ -1,0 +1,25 @@
+/* =========================================================
+   CUADRO DE «¿ESTÁS SEGURO?» (dialogo-confirmar.js)
+   La capa y la caja son las de .modal (imagenes.css); aquí
+   solo va lo propio: más estrecho, centrado y con los dos
+   botones abajo, uno a cada lado.
+   ========================================================= */
+.confirmar__caja{max-width:440px;text-align:center;padding:28px 26px 22px;
+  animation:confirmar-entra .18s ease both}
+.confirmar__icono{display:inline-grid;place-items:center;width:46px;height:46px;margin:0 auto 12px;
+  border-radius:50%;background:rgba(239,68,68,.13);color:var(--aviso)}
+.confirmar__icono svg{width:24px;height:24px}
+.confirmar__texto{margin-bottom:6px}
+.confirmar__botones{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.confirmar__botones .btn{width:100%;padding:11px 14px}
+/* .modal__acc empuja el principal a la derecha con un margen; aquí no hace falta. */
+.confirmar__botones .btn--principal{margin-left:0}
+
+@keyframes confirmar-entra{from{opacity:0;transform:translateY(6px) scale(.98)}}
+@media(prefers-reduced-motion:reduce){.confirmar__caja{animation:none}}
+
+/* En un móvil muy estrecho, un botón encima del otro: el de seguir arriba. */
+@media(max-width:360px){
+  .confirmar__botones{grid-template-columns:1fr}
+  .confirmar__botones [data-confirmar="si"]{order:-1}
+}

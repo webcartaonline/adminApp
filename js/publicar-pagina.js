@@ -64,6 +64,15 @@ async function publicarApariencia(avisarPaso){
   return {publicado:true};
 }
 
+/* Tira el borrador de los ajustes de la página de este cliente y sus
+   archivos sin subir, sin publicar nada. Lo usa «Descartar todos los
+   cambios» (descartarCambios(), en publicar.js). */
+async function descartarApariencia(){
+  const cliente=clienteActual();
+  try{ await Almacen.borrar('apariencia',cliente); }catch{}
+  for(const f of await archivosSinSubir(cliente)){ try{ await Almacen.borrar('imagenes',f.clave); }catch{} }
+}
+
 /* Los archivos que este cliente dejó preparados. En el cajón van todos
    los clientes juntos, cada clave con su nombre delante. */
 async function archivosSinSubir(cliente){

@@ -17,10 +17,11 @@
 
 /* ---------- Cargar ---------- */
 
+/* Devuelve true si la carta ha llegado y está cargada. */
 async function traer(){
   if(!nubeConfigurada()){
     avisar('Faltan el negocio o la clave. Entra en «Ajustes» y complétalos.','error');
-    return;
+    return false;
   }
   avisar('Cargando la carta…');
   try{
@@ -38,7 +39,7 @@ async function traer(){
     const datos=await leerCarta();
     if(!datos){
       avisar('Este negocio todavía no tiene carta publicada. Contacta con WebCartaOnline.','error');
-      return;
+      return false;
     }
     cargarDatos(datos);
     avisar(mensajeDeBienvenida(licencia),'bien');
@@ -50,8 +51,10 @@ async function traer(){
     try{ await sincronizarPlantilla(); }
     catch(e){ console.warn('Vista previa no disponible:',e.message); }
     if(typeof refrescarBotonVistaPrevia==='function')refrescarBotonVistaPrevia();
+    return true;
   }catch(e){
     avisar(`No se ha podido traer la carta: ${e.message}`,'error');
+    return false;
   }
 }
 
@@ -81,6 +84,7 @@ function cargarDatos(datos){
   estado.datos.secciones=estado.datos.secciones||[];
   estado.idiomas=detectarIdiomas(estado.datos);
   anotarImagenesEnLaCarta();
+  recordarLoPublicado();   // lo que ven hoy los clientes, para el resumen de antes de publicar
   estado.seccionActiva=estado.datos.secciones[0]?.id??null;
   if(estado.seccionActiva)estado.expandidas.add(estado.seccionActiva);
   estado.grupoActivo=null;
@@ -153,6 +157,7 @@ async function publicar(){
     estado.datos.negocio.actualizado=new Date().toISOString();
     await guardarCarta(estado.datos);
     estado.sucio=false;
+    recordarLoPublicado();
 
     // 3) Las fotos que ya no reclama nadie. Al final a propósito.
     const {borradas,fallos}=await borrarFotosSobrantes();
@@ -220,5 +225,30 @@ function resumenDePublicacion(borradas,fallos,apariencia){
   return partes.join(' ');
 }
 
+/* ---------- Descartar ----------
+   Tira TODO lo que no se ha publicado y deja el editor con la carta que
+   ven hoy los clientes. Lo pide la ventana «Revisar antes de publicar»,
+   después de confirmarlo. En este orden, a propósito:
+     1. Se vuelve a traer la carta. Si no llega (sin internet, por
+        ejemplo), no se descarta nada: mejor seguir con los cambios que
+        quedarse sin ellos y sin carta.
+     2. traer() ya olvida las fotos preparadas y las que había que borrar.
+     3. Los ajustes de la página: primero se cierra su ventana (para que
+        no vuelva a guardar el borrador) y luego se borra el borrador.
+     4. Las copias de las fotos quitadas, que solo servían para deshacer. */
+async function descartarCambios(){
+  avisar('Descartando los cambios…');
+  if(!await traer())return false;
+  if(typeof olvidarAjustesDePagina==='function')olvidarAjustesDePagina();
+  await descartarApariencia();
+  marcarAparienciaSucia(false);
+  olvidarFotosQuitadas();
+  if(typeof refrescarBotonVistaPrevia==='function')refrescarBotonVistaPrevia();
+  avisar('Cambios descartados. Tienes delante la carta tal y como la ven tus clientes.','bien');
+  return true;
+}
+
+/* «Publicar cambios» de la barra ya no publica directamente: abre antes
+   la ventana «Revisar antes de publicar» (revision-ventana.js), y es el
+   botón «Publicar» de esa ventana el que llama a publicar(). */
 $('#btnCargar').addEventListener('click',traer);
-$('#btnPublicar').addEventListener('click',publicar);

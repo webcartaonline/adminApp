@@ -63,6 +63,17 @@ function nombreDeIdioma(codigo){
   return NOMBRE_IDIOMA[codigo]||String(codigo).toUpperCase();
 }
 
+/* El nombre de un idioma dicho en español y en minúscula, para meterlo
+   en una frase («Falta en inglés»). Lo sabe el propio navegador, así que
+   no hace falta otra lista; si no lo supiera, el de NOMBRE_IDIOMA. */
+function idiomaEnEspanol(codigo){
+  try{
+    const nombre=new Intl.DisplayNames(['es'],{type:'language'}).of(codigo);
+    if(nombre&&nombre!==codigo)return nombre.toLowerCase();
+  }catch{}
+  return nombreDeIdioma(codigo);
+}
+
 /* " (EN)" al lado de la etiqueta, solo si hay más de un idioma. */
 function etiquetaIdioma(lang){
   return estado.idiomas.length>1?` (${lang.toUpperCase()})`:'';

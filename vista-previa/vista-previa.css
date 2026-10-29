@@ -163,3 +163,73 @@ html.vp-abierta, html.vp-abierta body { overflow: hidden; }
    (La Vista previa se queda en blanco a propósito: ahí lo que se carga
    es la carta del cliente y el blanco es el papel de debajo.) */
 .vp--ajustes .vp__lienzo { background: var(--marfil, #EBEDF7); }
+/* =========================================================
+   VENTANA ANIMADA (modificador vp--animada)
+   Para las ventanas flotantes creadas con «animada:true»
+   (ventana-flotante.js). Se abre desde una línea fina en el
+   centro de la pantalla: primero la línea se estira a lo
+   ancho y luego se despliega hacia arriba y hacia abajo. Al
+   cerrar, lo mismo al revés. Breve y suave, a propósito.
+
+   La apertura arranca sola cada vez que la ventana deja de
+   estar oculta; el cierre lo pone la clase vp--saliendo, que
+   dura VENTANA_CIERRE_MS (240 ms) en ventana-flotante.js.
+   ========================================================= */
+.vp--animada:not([hidden]) { animation: vp-velo-entra .3s ease both; }
+.vp--animada:not([hidden]) .vp__ventana {
+  position: relative;
+  transform-origin: 50% 50%;
+  animation: vp-desplegar .42s cubic-bezier(.22, .9, .24, 1) both;
+}
+/* La línea del principio se ve del color del acento; luego se funde. */
+.vp--animada:not([hidden]) .vp__ventana::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  background: var(--grad, #7A5CFB);
+  pointer-events: none;
+  animation: vp-linea .42s ease both;
+}
+/* Lo de dentro aparece cuando la ventana ya casi está abierta: así no
+   se ve el texto aplastado mientras se despliega. */
+.vp--animada:not([hidden]) .vp__ventana > * { animation: vp-contenido .42s ease both; }
+
+.vp--animada.vp--saliendo { animation: vp-velo-sale .24s ease both; }
+.vp--animada.vp--saliendo .vp__ventana { animation: vp-plegar .24s cubic-bezier(.55, 0, .75, .2) both; }
+.vp--animada.vp--saliendo .vp__ventana::after { animation: vp-linea-sale .24s ease both; }
+.vp--animada.vp--saliendo .vp__ventana > * { animation: vp-contenido-sale .24s ease both; }
+
+@keyframes vp-desplegar {
+  0%   { transform: scale(.16, .004); opacity: 0; }
+  12%  { opacity: 1; }
+  44%  { transform: scale(1, .004); }
+  100% { transform: none; }
+}
+@keyframes vp-plegar {
+  0%   { transform: none; }
+  55%  { transform: scale(1, .004); opacity: 1; }
+  100% { transform: scale(.16, .004); opacity: 0; }
+}
+@keyframes vp-linea       { 0%, 40% { opacity: 1; } 78%, 100% { opacity: 0; } }
+@keyframes vp-linea-sale  { 0%, 20% { opacity: 0; } 55%, 100% { opacity: 1; } }
+@keyframes vp-contenido      { 0%, 58% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes vp-contenido-sale { 0% { opacity: 1; } 35%, 100% { opacity: 0; } }
+@keyframes vp-velo-entra {
+  from { background-color: rgba(9, 12, 26, 0); -webkit-backdrop-filter: blur(0); backdrop-filter: blur(0); }
+}
+@keyframes vp-velo-sale {
+  to { background-color: rgba(9, 12, 26, 0); -webkit-backdrop-filter: blur(0); backdrop-filter: blur(0); }
+}
+
+/* Quien ha pedido menos movimiento en su móvil u ordenador, sin animación. */
+@media (prefers-reduced-motion: reduce) {
+  .vp--animada:not([hidden]),
+  .vp--animada:not([hidden]) .vp__ventana,
+  .vp--animada:not([hidden]) .vp__ventana > *,
+  .vp--animada.vp--saliendo,
+  .vp--animada.vp--saliendo .vp__ventana,
+  .vp--animada.vp--saliendo .vp__ventana > * { animation: none; }
+  .vp--animada .vp__ventana::after { display: none; }
+}

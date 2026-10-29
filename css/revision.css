@@ -1,0 +1,188 @@
+/* =========================================================
+   REVISAR ANTES DE PUBLICAR (revision-ventana.js)
+   La caja que flota es la de vista-previa.css (vp--ajustes),
+   con su animación (vp--animada). Aquí va lo propio:
+
+     · la ventana ocupa TODO el ancho de la pantalla, con un
+       margen para no pegarse a los bordes, y el fondo de
+       detrás se oscurece más que en las otras ventanas, para
+       que la vista vaya directa al resumen;
+     · el resumen va en tarjetas que se reparten en columnas:
+       en un ordenador caben tres o cuatro una al lado de otra;
+       en el móvil, una debajo de otra;
+     · abajo, fijo, el pie con «Descartar» y «Publicar».
+
+   Botones, campos y pastillas son los de siempre (botones.css
+   y formularios.css).
+   ========================================================= */
+
+/* ---------- La ventana ---------- */
+.vp--revision{
+  background:rgba(6,8,18,.72);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  padding:clamp(8px,2.2vw,28px);
+  padding-top:max(clamp(8px,2.2vw,28px),env(safe-area-inset-top));
+  padding-bottom:max(clamp(8px,2.2vw,28px),env(safe-area-inset-bottom));
+}
+.vp--revision .vp__ventana{max-width:none}
+
+/* Dentro: lo que se desplaza arriba y el pie fijo abajo. Se ve el fondo
+   «aurora» de la propia ventana, como en el editor. */
+.vp--ajustes .vp__lienzo--revision{display:flex;flex-direction:column;background:none}
+
+.rev-cuerpo{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  padding:20px clamp(12px,2.4vw,28px) 32px}
+.rev-contenido{max-width:1680px;margin:0 auto}
+
+/* ---------- Mientras se prepara ---------- */
+.rev-cargando{display:flex;align-items:center;justify-content:center;gap:10px;
+  min-height:40vh;margin:0;color:var(--tinta-suave);font-weight:600;font-size:.9rem}
+.rev-cargando__punto{width:10px;height:10px;border-radius:50%;background:var(--grad);
+  box-shadow:var(--glow);animation:rev-latido 1s ease-in-out infinite}
+@keyframes rev-latido{50%{transform:scale(.6);opacity:.5}}
+
+/* ---------- Las cifras de arriba ---------- */
+.rev-resumen{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.rev-cifra{display:inline-flex;align-items:baseline;gap:6px;padding:7px 14px;border-radius:100px;
+  border:1px solid var(--linea);background:var(--marfil-alto);font-size:.8rem;color:var(--tinta-suave);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.rev-cifra b{font-family:var(--display);font-size:1.05rem;color:var(--tinta)}
+.rev-cifra--sube b{color:var(--verde-texto)}
+.rev-cifra--borra b{color:var(--aviso)}
+.rev-cifra--aviso{border-color:transparent;background:var(--naranja-tenue,rgba(242,140,40,.16));color:var(--naranja-hondo)}
+.rev-cifra--aviso b{color:var(--naranja-hondo)}
+.rev-cifra--bien{border-color:transparent;background:var(--verde-tenue);color:var(--verde-texto)}
+.rev-cifra--bien b{color:var(--verde-texto)}
+
+/* ---------- Apartados ---------- */
+.rev-apartado{margin-top:24px}
+.rev-apartado__cabecera{margin-bottom:14px;max-width:760px}
+.rev-apartado__titulo{margin:0 0 4px;font-family:var(--display);font-weight:800;font-size:1.22rem;
+  letter-spacing:-.015em}
+.rev-apartado__intro{margin:0;font-size:.82rem;line-height:1.55;color:var(--tinta-suave)}
+
+/* Las tarjetas se reparten en columnas de unos 340 px: caben las que
+   quepan a lo ancho, y cada una ocupa solo su alto (sin huecos). */
+.rev-rejilla{column-width:340px;column-gap:16px}
+
+.rev-nada,.rev-todo-bien{margin:0;padding:18px 20px;border-radius:var(--radio);font-size:.86rem;
+  border:1px dashed var(--linea-fuerte);color:var(--tinta-suave)}
+.rev-todo-bien{display:flex;align-items:center;gap:12px;border-style:solid;border-color:transparent;
+  background:var(--verde-tenue);color:var(--verde-texto);font-weight:600}
+
+/* ---------- Tarjeta ---------- */
+.rev-tarjeta{break-inside:avoid;display:block;margin:0 0 16px;padding:16px 18px;
+  border:1px solid var(--linea);border-radius:var(--radio);background:var(--marfil-alto);
+  box-shadow:var(--sombra);-webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur))}
+.rev-tarjeta__cabecera{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.rev-tarjeta__rotulos{display:flex;flex-direction:column;min-width:0}
+.rev-tarjeta__zona{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--tinta-suave)}
+.rev-tarjeta__titulo{margin:0;font-family:var(--display);font-weight:800;font-size:1.02rem;
+  letter-spacing:-.01em;line-height:1.2}
+.rev-tarjeta__explicacion{margin:-2px 0 12px;font-size:.76rem;line-height:1.5;color:var(--tinta-suave)}
+
+.rev-icono{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:11px;
+  background:var(--acento-tenue);color:var(--acento-texto)}
+.rev-icono svg{width:18px;height:18px}
+.rev-tarjeta--pagina .rev-icono{background:var(--verde-tenue);color:var(--verde-texto)}
+
+.rev-cuenta{margin-left:auto;flex:none;min-width:28px;padding:3px 9px;border-radius:100px;
+  text-align:center;font-weight:700;font-size:.74rem;background:var(--pastilla);color:var(--tinta-suave)}
+
+/* Los avisos llevan una franja arriba del color de su importancia. */
+.rev-tarjeta--aviso{border-top:3px solid var(--acento-1)}
+.rev-tarjeta--falta{border-top-color:var(--aviso)}
+.rev-tarjeta--falta .rev-icono{background:rgba(239,68,68,.13);color:var(--aviso)}
+.rev-tarjeta--revisa{border-top-color:var(--naranja)}
+.rev-tarjeta--revisa .rev-icono{background:var(--naranja-tenue,rgba(242,140,40,.16));color:var(--naranja-hondo)}
+.rev-tarjeta--aviso .rev-cuenta{background:var(--naranja-tenue,rgba(242,140,40,.16));color:var(--naranja-hondo)}
+.rev-tarjeta--idea .rev-cuenta{background:var(--acento-tenue);color:var(--acento-texto)}
+.rev-tarjeta--resuelta{border-top-color:var(--verde)}
+.rev-tarjeta--resuelta .rev-cuenta{background:var(--verde-tenue);color:var(--verde-texto)}
+
+/* ---------- Líneas de cambio ---------- */
+.rev-lineas,.rev-casos,.rev-detalles{list-style:none;margin:0;padding:0}
+.rev-linea{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;padding:10px 0;
+  border-top:1px solid var(--linea)}
+.rev-lineas > .rev-linea:first-child{border-top:0;padding-top:2px}
+.rev-marca{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;
+  font-weight:800;font-size:.82rem;line-height:1}
+.rev-marca--nuevo{background:var(--verde-tenue);color:var(--verde-texto)}
+.rev-marca--quitado{background:rgba(239,68,68,.13);color:var(--aviso)}
+.rev-marca--cambiado{background:var(--naranja-tenue,rgba(242,140,40,.16));color:var(--naranja-hondo)}
+.rev-marca--movido{background:var(--acento-tenue);color:var(--acento-texto)}
+
+.rev-linea__titulo{margin:0;font-weight:700;font-size:.88rem;line-height:1.35;overflow-wrap:anywhere}
+.rev-linea__donde{margin:1px 0 0;font-size:.72rem;color:var(--tinta-suave)}
+.rev-detalles{display:grid;gap:4px;margin-top:6px;font-size:.79rem;line-height:1.45;overflow-wrap:anywhere}
+.rev-campo{color:var(--tinta-suave);font-weight:600}
+.rev-antes{color:var(--tinta-suave);text-decoration:line-through;text-decoration-color:rgba(239,68,68,.55)}
+.rev-flecha{color:var(--tinta-suave);margin:0 2px}
+.rev-despues{font-weight:600;color:var(--tinta)}
+.rev-vacio{font-weight:400;color:var(--tinta-suave)}
+.rev-color{display:inline-flex;align-items:center;gap:5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:.74rem}
+.rev-muestra{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid var(--linea-fuerte)}
+.rev-etq{display:inline-block;padding:1px 8px;margin:1px 0;border-radius:100px;font-size:.72rem;font-weight:700}
+.rev-etq--mas{background:var(--verde-tenue);color:var(--verde-texto)}
+.rev-etq--menos{background:rgba(239,68,68,.13);color:var(--aviso)}
+
+/* «Ver N más» */
+.rev-mas{border-top:1px solid var(--linea)}
+.rev-mas > summary{cursor:pointer;padding:10px 0 2px;font-size:.78rem;font-weight:700;color:var(--acento-texto);
+  list-style:none}
+.rev-mas > summary::-webkit-details-marker{display:none}
+.rev-mas > summary::before{content:"▸";display:inline-block;margin-right:6px;transition:transform .15s}
+.rev-mas[open] > summary::before{transform:rotate(90deg)}
+.rev-mas[open] > summary{padding-bottom:6px}
+
+/* ---------- Casos de un aviso (con su arreglo) ---------- */
+.rev-caso{padding:11px 0;border-top:1px solid var(--linea)}
+.rev-casos > .rev-caso:first-child{border-top:0;padding-top:2px}
+.rev-caso__cabecera{display:flex;align-items:flex-start}
+.rev-caso__nombre{margin:0;font-weight:700;font-size:.86rem;line-height:1.35;overflow-wrap:anywhere}
+.rev-caso__donde{margin:1px 0 0;font-size:.7rem;color:var(--tinta-suave)}
+.rev-caso__arreglo{margin-top:8px}
+.rev-caso__arreglo input,.rev-caso__arreglo textarea{padding:9px 12px;font-size:.84rem}
+.rev-caso__original{margin:0 0 6px;padding:7px 10px;border-radius:var(--radio-s);background:var(--pastilla);
+  font-size:.76rem;line-height:1.45;color:var(--tinta);overflow-wrap:anywhere}
+.rev-caso__original span{font-weight:700;color:var(--tinta-suave)}
+.rev-caso__motivo{margin:0 0 8px;font-size:.76rem;color:var(--tinta-suave)}
+.rev-chips{margin-top:0;gap:5px}
+.rev-chips .chip{padding:4px 10px;font-size:.7rem}
+.rev-precio{display:flex;flex-direction:column;gap:4px;width:140px}
+
+/* El tic verde de «arreglado»: solo se ve cuando ya está hecho. */
+.rev-caso__hecho{flex:none;display:grid;place-items:center;width:0;height:20px;overflow:hidden;
+  border-radius:50%;background:var(--verde);color:#fff;transition:width .18s ease,margin .18s ease}
+.rev-caso__hecho svg{width:13px;height:13px}
+.rev-caso--hecho .rev-caso__hecho{width:20px;margin-right:8px}
+.rev-caso--hecho .rev-caso__nombre{color:var(--verde-texto)}
+
+/* ---------- El pie, fijo abajo ---------- */
+.rev-pie{flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;
+  padding:12px clamp(12px,2.4vw,28px);
+  border-top:1px solid var(--linea);background:var(--marfil-alto);
+  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur))}
+.rev-pie__nota{margin:0 auto 0 0;font-size:.76rem;color:var(--tinta-suave);line-height:1.4;flex:1 1 260px}
+.rev-pie__botones{display:flex;gap:10px;flex-wrap:wrap}
+.rev-pie__botones .btn{padding:11px 22px;font-size:.86rem}
+.rev-pie__botones .btn--principal{min-width:140px}
+
+/* El aviso de la página (#mensaje, base.css) va pegado abajo y por
+   encima de las ventanas: aquí taparía «Descartar» y «Publicar». Mientras
+   esta ventana está abierta, sale arriba. */
+html.revision-abierta #mensaje{top:0;bottom:auto;padding-bottom:12px;
+  padding-top:max(12px,env(safe-area-inset-top,0px));box-shadow:0 10px 26px rgba(20,26,50,.20)}
+
+/* ---------- Móvil ---------- */
+@media(max-width:600px){
+  .rev-cuerpo{padding-top:16px}
+  .rev-tarjeta{padding:14px;border-radius:var(--radio-m)}
+  .rev-apartado__titulo{font-size:1.08rem}
+  .rev-pie__nota{flex-basis:100%}
+  .rev-pie__botones{width:100%}
+  .rev-pie__botones .btn{flex:1;padding:11px 12px}
+  .rev-pie__botones .btn--principal{min-width:0}
+}
